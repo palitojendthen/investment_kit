@@ -1,0 +1,63 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © palitoj_endthen
+
+//@version=5
+indicator(title = 'multiple_ma_envelope', shorttitle = 'ma_envelope', overlay = true)
+
+
+// input
+src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines of data that use as an input for moving average envelope')
+ma_type = input.string(defval = 'EMA', title = 'MA Type', group = 'Source', options = ['EMA', 'SMA', 'WMA'], tooltip = 'Choose the different type of moving average')
+band = input.float(defval = 0.2, title = 'Band Multiplier', group = 'Value', step = 0.1, tooltip = 'Choose the value of multiplier as an input for upper and lower band')
+length = input.int(defval = 50, title = 'Information Value Length', group = 'Value')
+
+// compute upper and lower band
+ma_env_(s, l, b)=>
+    upper_band = ma_type == 'EMA' ? ta.ema(s, l)*(1+b) : ma_type == 'SMA' ? ta.sma(s, l)*(1+b) : ta.wma(s, l)*(1+b)
+    lower_band = ma_type == 'EMA' ? ta.ema(s, l)*(1-b) : ma_type == 'SMA' ? ta.sma(s, l)*(1-b) : ta.wma(s, l)*(1-b)
+    [upper_band, lower_band]
+
+
+// visualize
+// 10 bar moving average
+[u_10, l_10] = ma_env_(src, 10, band)
+fill(plot(u_10, color = na), plot(l_10, color = na), color.new(#1E90FF, 97))
+
+// 20 bar moving average
+[u_20, l_20] = ma_env_(src, 20, band+.2)
+fill(plot(u_20, color = na), plot(l_20, color = na), color.new(#1E90FF, 97))
+
+// 50 bar moving average
+[u_50, l_50] = ma_env_(src, 50, band+.4)
+fill(plot(u_50, color = na), plot(l_50, color = na), color.new(#1E90FF, 97))
+
+// 100 bar moving average
+[u_100, l_100] = ma_env_(src, 100, band+.6)
+fill(plot(u_100, color = na), plot(l_100, color = na), color.new(#1E90FF, 97))
+
+
+
+// add information table
+y = input.string('top', 'Position', inline = '8', options = ['top', 'middle', 'bottom'], group = 'Adjustment')
+x = input.string('right', '', inline = '8', options = ['left', 'center', 'right'], group = 'Adjustment')
+var table information_table = table.new(y + "_" + x, 2, 5)
+table.cell(information_table, 0, 1, 'Information' , text_halign = text.align_left, text_size = size.auto, text_color = color.new(color.yellow, 50))
+table.cell(information_table, 1, 1, 'Value' , text_size = size.auto, text_color = color.new(color.yellow, 50))
+
+// information table (1) rolling return deviation
+returns = (close/close[1]) -1
+stdev = math.round(ta.stdev(returns, length), 3)
+table.cell(information_table, 0, 2, 'Deviation' , text_halign = text.align_left, text_size = size.small, text_color = color.new(color.white, 50))
+table.cell(information_table, 1, 2, str.tostring(stdev) , text_size = size.small, text_color = color.new(color.white, 50))
+
+// information table (2) rolling drawdown from previous peak (default 50 lookback period)
+src_2 = close
+h = ta.highest(src_2, length)
+drawdown = math.round(float(((src_2[0]/h)-1)),3)
+table.cell(information_table, 0, 3, 'Drawdown' , text_halign = text.align_left, text_size = size.small, text_color = color.new(color.white, 50))
+table.cell(information_table, 1, 3, str.tostring(drawdown), text_size = size.small, text_color = color.new(color.white, 50))
+
+// information table (3) rolling valua-at-Risk
+VaR = math.round(ta.lowest(returns, length), 3)
+table.cell(information_table, 0, 4, 'Value-at-Risk' , text_halign = text.align_left, text_size = size.small, text_color = color.new(color.white, 50))
+table.cell(information_table, 1, 4, str.tostring(VaR) ,text_size = size.small, text_color = color.new(color.white, 50))
