@@ -1,0 +1,52 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © palitoj_endthen
+
+//@version=5
+indicator(title = 'ehlers_predictive_moving_average', shorttitle = 'predictive_moving_average', overlay = false)
+
+// Input
+src = input.source(ohlc4, title = 'Source', group = 'Value', tooltip = 'Determines the input data source, default to OHLC4')
+length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines the length of input data for CCI and Money Flow')
+// show_long = input.bool(defval = false, title = 'Long', group = 'Options', tooltip = 'Determines whether to display the Long position label')
+// show_short = input.bool(defval = false, title = 'Short', group = 'Options', tooltip = 'Determines whether to display the Short position label')
+
+
+// Predictive moving average
+wma_1 = 0.0
+wma_2 = 0.0
+predict = 0.0
+trigger = 0.0
+
+wma_1 := (7*src + 6*src[1] + 5*src[2] + 4*src[3] + 3*src[4] + 2*src[5] + src[6]) /28
+wma_2 := (7*wma_1 + 6*wma_1[1] + 5*wma_1[2] + 4*wma_1[3] + 3*wma_1[4] + 2*wma_1[5] + wma_1[6]) /28
+
+predict := (2*wma_1) - wma_2
+trigger := (4*predict + 3*predict[1] + 2*predict[2] + predict)/10
+
+
+// Deviation
+delta = (close/close[1])-1
+dev = ta.stdev(delta, length)
+
+// Visualize
+series_ = predict > trigger ? predict : trigger
+upper = series_*(1+math.abs(dev))
+lower = series_*(1-math.abs(dev))
+
+p_up = plot(upper, color = color.new(color.white, 80))
+p_low = plot(lower, color = color.new(color.white, 80))
+fill(p_up, p_low, color = color.new(color.yellow, 90))
+plot(series_, color = predict > trigger ? color.green : color.red, style = plot.style_line, linewidth = 2)
+
+// Label
+// uncomment below part, in regards of use label style, and set overlay to true
+// drawbacks: lag of label sign appearance and some are not been covered 
+// l = ta.crossunder(predict, trigger) ? 
+//       label.new (bar_index[1], high,  color = color.red, text = 'Short', textcolor = color.white, style = show_short ? label.style_square : na, yloc = yloc.abovebar, size = size.tiny) :
+//       ta.crossover(predict, trigger) ?
+//           label.new (bar_index[1], low,  color = color.green, text = 'Long', textcolor = color.white, style = show_long ? label.style_label_up : na, yloc = yloc.belowbar, size = size.tiny) :
+//           na
+
+// Alert
+alertcondition(ta.crossover(predict, trigger), title = 'Entry', message = 'Entry point detected')
+alertcondition(ta.crossunder(predict, trigger), title = 'Close', message = 'Close position')
