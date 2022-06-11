@@ -5,22 +5,22 @@
 indicator(title = 'normalize_heatmap', shorttitle = 'n_heatmap', overlay = true)
 
 
-// input
+// Input
 src = input.source(defval = close, title = 'Source', group = 'Source', tooltip =  'Determines of data that use as an input to be normalize')
 length = input.int(defval = 50, title = 'Length', group = 'Value', tooltip = 'Determines time period of data to be normalize')
 show_ma = input.bool(defval = true, title = 'Show Moving Average', group = 'Options', tooltip = 'Determines whether to display moving average')
 
 
-// normalize data
+// Normalize
 h = ta.highest(src, length)
 l = ta.lowest(src, length)
 normalize = (src - l) / (h - l)
 
-// moving average
+// Moving average
 ma = ta.wma(src, length)
 
 
-// heatmap color condition
+// Heatmap
 norm_color = (normalize < 0.05 ? #0000CA :
               normalize < 0.1 ? #0000DF :
               normalize < 0.15 ? #0A4CFF :
@@ -42,9 +42,9 @@ norm_color = (normalize < 0.05 ? #0000CA :
               normalize < 0.95 ? #FF2E04 :
               #DC0404)
 
-// moving average color condition
+// moving average color
 ma_color = src > ma ? color.green : color.red
 
-// visualize
+// Visualize
 plotcandle(open, high, low, close, color = norm_color, wickcolor = norm_color, bordercolor = norm_color)
 plot(show_ma ? ma : na, color = ma_color, linewidth = 3)
