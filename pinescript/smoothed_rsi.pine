@@ -1,0 +1,36 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © palitoj_endthen
+
+//@version=5
+indicator(title = 'smoothed_rsi', overlay = false)
+
+
+// Input
+src = input.source(ohlc4)
+length = input.int(14)
+
+
+// Relative Strength Index
+rsi = ta.rsi(src, length)
+
+// smoothed with super smoother
+a1 = 0.0
+b1 = 0.0
+c1 = 0.0 
+c2 = 0.0 
+c3 = 0.0
+smoothed_rsi = 0.0
+pi = 2 * math.asin(1)
+
+a1 := math.exp( -1.414 * pi / 10) 
+b1 := 2 * a1 * math.cos( 1.414 * 2 * pi / 10) 
+c2 := b1 
+c3 := -a1 * a1 
+c1 := 1 - c2 - c3 
+smoothed_rsi := c1 * (rsi + rsi[1] ) / 2 + c2 * nz(smoothed_rsi[1]) + c3 * nz(smoothed_rsi[2])
+
+
+// Visualize
+plot(smoothed_rsi, color = color.red, linewidth = 1)
+hline(70, color = color.new(color.gray, 50))
+hline(30, color = color.new(color.gray, 50))
