@@ -1,0 +1,164 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © palitoj_endthen
+
+//@version=5
+indicator(title = 'Ehlers - Swami RSI', shorttitle = 'RSI', overlay = false)
+
+// input
+show_confirmation = input.bool(defval = false, title = 'Confirmation Line', tooltip = 'Determines whether to display confirmation line')
+
+//variable
+alpha1 = 0.00
+hp = 0.00
+a1 = 0.00
+b1 = 0.00
+c1 = 0.00
+c2 = 0.00
+c3 = 0.00
+filt = 0.00
+lookback = 0
+close_up = 0.00
+close_down = 0.00
+denom = 0.00
+
+//arrays
+var ratio1 = array.new_float(50)
+var ratio2 = array.new_float(50)
+var rsi1 = array.new_float(50)
+var rsi2 = array.new_float(50)
+var rsi3 = array.new_float(50)
+
+//highpass filter cyclic components whose periods are shorter than 48 bars
+// alpha1 := (math.cos(.707*360/48)+math.sin(.707*360/48)-1)/math.cos(.707*360/48)
+// hp := (1-alpha1/2)*(1-alpha1/2)*(close-2*close[1]+close[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
+
+//smooth with a Super Smoother Filter
+a1 := math.exp(-1.414*3.14159/10)
+b1 := 2*a1*math.cos(1.414*180/10)
+c2 := b1
+c3 := -a1*a1
+c1 := 1-c2-c3
+filt := c1*(close+close[1])/2+c2*nz(filt[1])+c3*nz(filt[2])
+
+for lookback = 2 to 48
+    // range includes half the shortest periods of interest
+    array.set(ratio2, lookback, nz(array.get(ratio1, lookback)))
+    array.set(rsi3, lookback, nz(array.get(rsi2, lookback)))
+    array.set(rsi2, lookback, nz(array.get(rsi1, lookback)))
+    close_up := 0.0
+    close_down := 0.0
+    for count = 0 to lookback-1
+        if filt[count] > filt[count+1]
+            close_up := close_up+(filt[count]-filt[count+1])
+        if filt[count] < filt[count+1]
+            close_down := close_down+(filt[count+1]-filt[count])
+    denom := close_up+close_down
+    if denom != 0
+        array.set(ratio1, lookback, close_up/denom)
+    // smooth rsi with a 10 bar super smoother
+    array.set(rsi1, lookback, c1*(nz(array.get(ratio1, lookback))+nz(array.get(ratio2, lookback)))/2+c2*nz(array.get(rsi2, lookback))+c3*nz(array.get(rsi3, lookback)))
+    // ensure rsi doesnt fall outside color limits
+    if nz(array.get(rsi1, lookback)) < 0
+        array.set(rsi1, lookback, 0)
+    if nz(array.get(rsi1, lookback)) > 1
+        array.set(rsi1, lookback, 1)
+
+
+// visualize as heatmap
+col(n)=>
+    if array.get(rsi1,n) > .5
+        color.rgb(255*(2-2*array.get(rsi1, n)), 255, 0)
+    else if array.get(rsi1, n) < .5
+        color.rgb(255, 2*255*array.get(rsi1, n), 0)
+
+n = 0
+
+n := 1
+plot(1, color = col(n), linewidth = 8)
+
+n := 2
+plot(2, color = col(n), linewidth = 8)
+
+n := 4
+plot(4, color = col(n), linewidth = 8)
+
+n := 6
+plot(6, color = col(n), linewidth = 8)
+
+n := 8
+plot(8, color = col(n), linewidth = 8)
+
+n := 10
+plot(10, color = col(n), linewidth = 8)
+
+n := 11
+plot(11, color = col(n), linewidth = 8)
+
+n := 12
+plot(12, color = col(n), linewidth = 8)
+
+n := 14
+plot(14, color = col(n), linewidth = 8)
+
+n := 16
+plot(16, color = col(n), linewidth = 8)
+
+n := 18
+plot(18, color = col(n), linewidth = 8)
+
+n := 20
+plot(20, color = col(n), linewidth = 8)
+
+n := 21
+plot(21, color = col(n), linewidth = 8)
+
+n := 22
+plot(22, color = col(n), linewidth = 8)
+
+n := 24
+plot(24, color = col(n), linewidth = 8)
+
+n := 26
+plot(26, color = col(n), linewidth = 8)
+
+n := 28
+plot(28, color = col(n), linewidth = 8)
+
+n := 30
+plot(30, color = col(n), linewidth = 8)
+
+n := 31
+plot(31, color = col(n), linewidth = 8)
+
+n := 32
+plot(32, color = col(n), linewidth = 8)
+
+n := 34
+plot(34, color = col(n), linewidth = 8)
+
+n := 36
+plot(36, color = col(n), linewidth = 8)
+
+n := 38
+plot(38, color = col(n), linewidth = 8)
+
+n := 40
+plot(40, color = col(n), linewidth = 8)
+
+n := 41
+plot(41, color = col(n), linewidth = 8)
+
+n := 42
+plot(42, color = col(n), linewidth = 8)
+
+n := 44
+plot(44, color = col(n), linewidth = 8)
+
+n := 46
+plot(46, color = col(n), linewidth = 8)
+
+n := 48
+plot(48, color = col(n), linewidth = 8)
+
+// confrimation line
+line.new(bar_index - 4, 25, bar_index + 2, 25, color = show_confirmation ? color.blue : na, width = 2)
