@@ -2,49 +2,60 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'normalize_heatmap', shorttitle = 'n_heatmap', overlay = true)
+indicator(title = 'normalize_heatmap_indicator', shorttitle = 'n_heatmap', overlay = true, timeframe = '', timeframe_gaps = true)
 
 
-// Input
-src = input.source(defval = close, title = 'Source', group = 'Source', tooltip =  'Determines of data that use as an input to be normalize')
+// input
+src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines of data that use as an input to be normalize')
 length = input.int(defval = 50, title = 'Length', group = 'Value', tooltip = 'Determines time period of data to be normalize')
-show_ma = input.bool(defval = true, title = 'Show Moving Average', group = 'Options', tooltip = 'Determines whether to display moving average')
+show_ma = input.bool(defval = false, title = 'Show Moving Average', group = 'Options', tooltip = 'Determines whether to display moving average')
+color_scheme = input.string(defval = 'Scheme1', title = 'Color Scheme', group = 'Options', options = ['Scheme1', 'Scheme2'], tooltip = 'Choose the color scheme')
 
 
-// Normalize
-h = ta.highest(src, length)
-l = ta.lowest(src, length)
-normalize = (src - l) / (h - l)
+// normalize data
+norm(source_, length_)=>
+    high_ = ta.highest(source_, length_)
+    low_ = ta.lowest(source_, length_)
+    normalized = (source_-low_)/(high_-low_)
 
-// Moving average
-ma = ta.wma(src, length)
+normalize = norm(src, length)
+
+// adding moving average
+wma = ta.wma(src, length)
 
 
-// Heatmap
-norm_color = (normalize < 0.05 ? #0000CA :
-              normalize < 0.1 ? #0000DF :
-              normalize < 0.15 ? #0A4CFF :
-              normalize < 0.2 ? #0A85FF :
-              normalize < 0.25 ? #0AFFB6 :
-              normalize < 0.3 ? #0AFF64 :
-              normalize < 0.35 ? #01EB57 :
-              normalize < 0.4 ? #01C74A :
-              normalize < 0.45 ? #01C701 :
-              normalize < 0.5 ? #33BA02 :
-              normalize < 0.55 ? #EFFF06 :
-              normalize < 0.6 ? #CFDE00 :
-              normalize < 0.65 ? #FFE600 :
-              normalize < 0.7 ? #FCB000 :
-              normalize < 0.75 ? #FF9100 :
-              normalize < 0.8 ? #E88300 :
-              normalize < 0.85 ? #E85D00 :
-              normalize < 0.9 ? #D25400 :
-              normalize < 0.95 ? #FF2E04 :
-              #DC0404)
+// heatmap color condition
+scheme1 = (normalize < 0.05 ? #0000CA :
+             normalize < 0.1 ? #0000DF :
+             normalize < 0.15 ? #0A4CFF :
+             normalize < 0.2 ? #0A85FF :
+             normalize < 0.25 ? #0AFFB6 :
+             normalize < 0.3 ? #0AFF64 :
+             normalize < 0.35 ? #01EB57 :
+             normalize < 0.4 ? #01C74A :
+             normalize < 0.45 ? #01C701 :
+             normalize < 0.5 ? #33BA02 :
+             normalize < 0.55 ? #EFFF06 :
+             normalize < 0.6 ? #CFDE00 :
+             normalize < 0.65 ? #FFE600 :
+             normalize < 0.7 ? #FCB000 :
+             normalize < 0.75 ? #FF9100 :
+             normalize < 0.8 ? #E88300 :
+             normalize < 0.85 ? #E85D00 :
+             normalize < 0.9 ? #D25400 :
+             normalize < 0.95 ? #FF2E04 :
+             #DC0404)
 
-// moving average color
-ma_color = src > ma ? color.green : color.red
+scheme2(x)=>
+    if x > .5
+        color.rgb(255*(2-2*x), 255, 0)
+    else if x < .5
+        color.rgb(255, 2*255*x, 0)
 
-// Visualize
-plotcandle(open, high, low, close, color = norm_color, wickcolor = norm_color, bordercolor = norm_color)
-plot(show_ma ? ma : na, color = ma_color, linewidth = 3)
+// weighted moving average color condition
+wma_color = src > wma ? color.green : color.red
+color_shift = color_scheme == 'Scheme1' ? scheme1 : scheme2(normalize)
+
+// visualize
+plotcandle(open, high, low, close, color = color_shift, wickcolor = color_shift, bordercolor = color_shift)
+plot(show_ma ? wma : na, color = wma_color, linewidth = 3)
