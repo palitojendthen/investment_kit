@@ -40,7 +40,7 @@ fill(p5, p4, color = viz_style == 'Dynamic' ? color.new(color.orange, 95) : na)
 
 // add current level line
 float level_ = viz_style == 'Static' ? dd : src
-var line line_ = line.new(na, na, na, na, xloc = xloc.bar_time, extend = extend.both, color = show_level ? color.fuchsia : na, style = line.style_dotted)
+var line line_ = line.new(na, na, na, na, xloc = xloc.bar_time, extend = extend.both, color = show_level ? color.olive : na, style = line.style_dotted)
 
 line.set_xy1(line_, time, level_)
-line.set_xy2(line_, time + 1, level_)
+line.set_xy2(line_, time+1, level_)
