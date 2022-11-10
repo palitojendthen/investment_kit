@@ -5,13 +5,13 @@
 indicator(title = 'trailing_drawdown', shorttitle = 'drawdown', overlay = false, scale = scale.right)
 
 
-// Input
+// input
 length = input.int(defval = 365, title = 'Length', maxval = 1000, group = 'Value', tooltip = 'Length of timeperiod for previous peaks, default in a year')
 src = input(defval = close, title = 'Source', group = 'Options', tooltip = 'Choose input data source')
 viz_style = input.string(defval = 'Static', title = ' Viz Type', group = 'Options', options = ['Static', 'Dynamic'], tooltip = 'Choose drawdown visualization whether static or dynamic')
+show_level = input.bool(defval = false, title = 'Current Level', group = 'Options', tooltip = 'Determines whether to display current level')
 
-
-// Drawdown
+// drawdown
 drawdown(source_, length_)=>
     var peaks = array.new_float(length_)
     var max_peaks = 0.0
@@ -25,7 +25,7 @@ drawdown(source_, length_)=>
 [max_peaks, dd] = drawdown(src, length)
 
 
-// Visualize
+// visualize
 p1 = plot(dd, color = viz_style == 'Static' ? color.new(color.red, 80) : na, style = plot.style_area)
 p2 = plot(dd, color = viz_style == 'Static' ? color.new(color.orange, 50) : na, style = plot.style_line, linewidth = 2)
 
@@ -37,3 +37,10 @@ fill(p3, p4, color = viz_style == 'Dynamic' ? color.new(color.red, 80) : na)
 [pp_month, dd_month] = drawdown(src, (length/12))
 p5 = plot(viz_style == 'Dynamic' ? pp_month : 0, color = viz_style == 'Dynamic' ? color.navy : na)
 fill(p5, p4, color = viz_style == 'Dynamic' ? color.new(color.orange, 95) : na)
+
+// add current level line
+float level_ = viz_style == 'Static' ? dd : src
+var line line_ = line.new(na, na, na, na, xloc = xloc.bar_time, extend = extend.both, color = show_level ? color.fuchsia : na, style = line.style_dotted)
+
+line.set_xy1(line_, time, level_)
+line.set_xy2(line_, time + 1, level_)
