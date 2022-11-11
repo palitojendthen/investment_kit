@@ -2,45 +2,51 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'ehlers_predictive_moving_average', shorttitle = 'predictive_moving_average', overlay = false)
+indicator(title = 'ehlers_predictive_moving_average', shorttitle = 'predictive_moving_average', overlay = true, timeframe = '', timeframe_gaps = true)
 
 
-// Input
+// input
 src = input.source(ohlc4, title = 'Source', group = 'Value', tooltip = 'Determines the input data source, default to OHLC4')
 length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines the length of input for deviation')
 bar_color = input.bool(defval= false, title = 'Bar Color', group = 'Options', tooltip = 'Determines whether to change the bar color base on crossover or crossunder of predict to trigger')
 
 
-// Predictive Moving Average
-wma_1 = 0.0
-wma_2 = 0.0
+// predictive moving average
+wma1 = 0.0
+wma2 = 0.0
 predict = 0.0
 trigger = 0.0
 
-wma_1 := (7*src + 6*src[1] + 5*src[2] + 4*src[3] + 3*src[4] + 2*src[5] + src[6]) /28
-wma_2 := (7*wma_1 + 6*wma_1[1] + 5*wma_1[2] + 4*wma_1[3] + 3*wma_1[4] + 2*wma_1[5] + wma_1[6]) /28
+wma1 := (7*src + 6*src[1] + 5*src[2] + 4*src[3] + 3*src[4] + 2*src[5] + src[6])/28
+wma2 := (7*wma1 + 6*wma1[1] + 5*wma1[2] + 4*wma1[3] + 3*wma1[4] + 2*wma1[5] + wma1[6])/28
 
-predict := (2*wma_1) - wma_2
+predict := (2*wma1)-wma2
 trigger := (4*predict + 3*predict[1] + 2*predict[2] + predict)/10
 
 
-// Deviation
-delta = (close/close[1])-1
-dev = ta.stdev(delta, length)
+// deviation
+returns = (close/close[1])-1
+stdev = ta.stdev(returns, length)
 
 
-// Visualize
+// visualize
 series_ = predict > trigger ? predict : trigger
-upper = series_*(1+math.abs(dev))
-lower = series_*(1-math.abs(dev))
+upper = series_*(1+math.abs(stdev))
+lower = series_*(1-math.abs(stdev))
 
+// color condition
+color_con = predict > trigger and predict > predict[1] ? color.green : color.red 
+color_con_ = predict > trigger and predict > predict[1]
+
+// bar color
+barcolor(bar_color ? color_con : na)
+
+// line type
+plot(series_, color = color_con, style = plot.style_line, linewidth = 2)
 p_up = plot(upper, color = color.new(color.white, 80))
 p_low = plot(lower, color = color.new(color.white, 80))
-fill(p_up, p_low, color = color.new(color.fuchsia, 90))
-plot(series_, color = predict > trigger ? color.green : color.red, style = plot.style_line, linewidth = 2)
-barcolor(bar_color ? (predict > trigger ? color.green : color.red) : na)
+fill(p_up, p_low, color = color.new(color.gray, 90))
 
-
-// Create Alert
-alertcondition(ta.crossover(predict, trigger), title = 'Entry', message = 'Entry point detected')
-alertcondition(ta.crossunder(predict, trigger), title = 'Close', message = 'Close position')
+// create alert
+alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry point detected')
+alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry point detected')
