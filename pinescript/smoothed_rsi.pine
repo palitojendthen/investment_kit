@@ -2,15 +2,15 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'smoothed_rsi', overlay = false)
+indicator(title = 'rsi', overlay = false)
 
 
-// Input
-src = input.source(ohlc4)
-length = input.int(14)
+// input
+src = input.source(defval = ohlc4, title = 'Source')
+length = input.int(defval = 14, title = 'Length')
 
 
-// Relative Strength Index
+// relative strength index
 rsi = ta.rsi(src, length)
 
 // smoothed with super smoother
@@ -22,15 +22,42 @@ c3 = 0.0
 smoothed_rsi = 0.0
 pi = 2 * math.asin(1)
 
-a1 := math.exp( -1.414 * pi / 10) 
-b1 := 2 * a1 * math.cos( 1.414 * 2 * pi / 10) 
-c2 := b1 
-c3 := -a1 * a1 
-c1 := 1 - c2 - c3 
-smoothed_rsi := c1 * (rsi + rsi[1] ) / 2 + c2 * nz(smoothed_rsi[1]) + c3 * nz(smoothed_rsi[2])
+a1 := math.exp( -1.414*pi/10) 
+b1 := 2 * a1 * math.cos( 1.414*2*pi/10) 
+c2 := b1
+c3 := -a1 * a1
+c1 := 1 - c2 - c3
+smoothed_rsi := c1*(rsi+rsi[1])/2+c2*nz(smoothed_rsi[1])+c3*nz(smoothed_rsi[2])
+
 
 
 // Visualize
-plot(smoothed_rsi, color = color.red, linewidth = 1)
-hline(70, color = color.new(color.gray, 50))
-hline(30, color = color.new(color.gray, 50))
+plot(smoothed_rsi, color = color.blue, linewidth = 2)
+hline(70, color = color.new(color.blue, 50))
+hline(30, color = color.new(color.blue, 50))
+
+
+// trendline
+n = input.int(defval = 20, title = 'Pivot Left')
+n2 = input.int(defval = 30, title = 'Pivot Right')
+pivot_high = 0.0
+pivot_low = 0.0
+
+pivot_high := ta.pivothigh(smoothed_rsi, n, n2)
+pivot_low := ta.pivotlow(smoothed_rsi, n, n2)
+
+x1 = ta.valuewhen(pivot_high, bar_index, 1) - n2
+x2 = ta.valuewhen(pivot_high, bar_index, 0) - n
+y1 = ta.valuewhen(pivot_high, pivot_high, 1)
+y2 = ta.valuewhen(pivot_high, pivot_high, 0)
+
+if y2 < y1
+    line.new(x1, y1, x2, y2, width = 2, color = color.red)
+
+x11 = ta.valuewhen(pivot_low, bar_index, 1) - n2
+x22 = ta.valuewhen(pivot_low, bar_index, 0) - n
+y11 = ta.valuewhen(pivot_low, pivot_low, 1)
+y22 = ta.valuewhen(pivot_low, pivot_low, 0)
+
+if y22 > y11
+    line.new(x11, y11, x22, y22, width = 2, color = color.green)
