@@ -5,7 +5,11 @@
 indicator(title = 'Ehlers - Swami RSI', shorttitle = 'RSI', overlay = false)
 
 // input
-show_confirmation = input.bool(defval = false, title = 'Confirmation Line', tooltip = 'Determines whether to display confirmation line')
+apply_hp_filter = input.bool(defval = false, title = 'High-pass Filter', group = 'Options', tooltip = 'Determines whether to apply high-pass filter')
+show_initial = input.bool(defval = false, title = 'Initial Level', group = 'Options', tooltip = 'Determines whether to display initial level')
+show_confirmation = input.bool(defval = false, title = 'Confirmation Line', group = 'Options', tooltip = 'Determines whether to display confirmation line')
+show_continuation = input.bool(defval = false, title = 'Continuation Line', group = 'Options', tooltip = 'Determines whether to display continuation line')
+hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value')
 
 //variable
 alpha1 = 0.00
@@ -29,8 +33,9 @@ var rsi2 = array.new_float(50)
 var rsi3 = array.new_float(50)
 
 //highpass filter cyclic components whose periods are shorter than 48 bars
-// alpha1 := (math.cos(.707*360/48)+math.sin(.707*360/48)-1)/math.cos(.707*360/48)
-// hp := (1-alpha1/2)*(1-alpha1/2)*(close-2*close[1]+close[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
+pi = 2*math.asin(1)
+alpha1 := (math.cos(.707*2*pi/hp_period) + math.sin(.707*2*pi/hp_period) - 1) / math.cos(.707*2*pi/hp_period)
+hp := (1-alpha1/2)*(1-alpha1/2)*(close-2*nz(close[1])+nz(close[2]))+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
 
 //smooth with a Super Smoother Filter
 a1 := math.exp(-1.414*3.14159/10)
@@ -38,7 +43,7 @@ b1 := 2*a1*math.cos(1.414*180/10)
 c2 := b1
 c3 := -a1*a1
 c1 := 1-c2-c3
-filt := c1*(close+close[1])/2+c2*nz(filt[1])+c3*nz(filt[2])
+filt := c1*((apply_hp_filter ? hp : close) + (apply_hp_filter ? hp[1] : close[1]))/2+c2*nz(filt[1])+c3*nz(filt[2]) 
 
 for lookback = 2 to 48
     // range includes half the shortest periods of interest
@@ -161,4 +166,6 @@ n := 48
 plot(48, color = col(n), linewidth = 8)
 
 // confrimation line
-line.new(bar_index - 4, 25, bar_index + 2, 25, color = show_confirmation ? color.blue : na, width = 2)
+line.new((bar_index-4), 3, (bar_index+2), 3, color = show_initial ? color.blue : na, width = 2)
+line.new((bar_index-4), 25, (bar_index+2), 25, color = show_confirmation ? color.blue : na, width = 2)
+line.new((bar_index-4), 46, (bar_index+2), 46, color = show_continuation ? color.blue : na, width = 2)
