@@ -2,7 +2,8 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'Ehlers - Swami RSI', shorttitle = 'RSI', overlay = false)
+indicator(title = 'ehlers_swami_rsi', shorttitle = 'rsi', overlay = false)
+
 
 // input
 apply_hp_filter = input.bool(defval = false, title = 'High-pass Filter', group = 'Options', tooltip = 'Determines whether to apply high-pass filter')
@@ -11,7 +12,8 @@ show_confirmation = input.bool(defval = false, title = 'Confirmation Line', grou
 show_continuation = input.bool(defval = false, title = 'Continuation Line', group = 'Options', tooltip = 'Determines whether to display continuation line')
 hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value')
 
-//variable
+
+// variable
 alpha1 = 0.00
 hp = 0.00
 a1 = 0.00
@@ -25,19 +27,21 @@ close_up = 0.00
 close_down = 0.00
 denom = 0.00
 
-//arrays
+
+// arrays
 var ratio1 = array.new_float(50)
 var ratio2 = array.new_float(50)
 var rsi1 = array.new_float(50)
 var rsi2 = array.new_float(50)
 var rsi3 = array.new_float(50)
 
-//highpass filter cyclic components whose periods are shorter than 48 bars
+
+// highpass filter cyclic components whose periods are shorter than 48 bars
 pi = 2*math.asin(1)
 alpha1 := (math.cos(.707*2*pi/hp_period) + math.sin(.707*2*pi/hp_period) - 1) / math.cos(.707*2*pi/hp_period)
 hp := (1-alpha1/2)*(1-alpha1/2)*(close-2*nz(close[1])+nz(close[2]))+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
 
-//smooth with a Super Smoother Filter
+// smooth with a Super Smoother Filter
 a1 := math.exp(-1.414*3.14159/10)
 b1 := 2*a1*math.cos(1.414*180/10)
 c2 := b1
@@ -45,6 +49,7 @@ c3 := -a1*a1
 c1 := 1-c2-c3
 filt := c1*((apply_hp_filter ? hp : close) + (apply_hp_filter ? hp[1] : close[1]))/2+c2*nz(filt[1])+c3*nz(filt[2]) 
 
+// swami-rsi
 for lookback = 2 to 48
     // range includes half the shortest periods of interest
     array.set(ratio2, lookback, nz(array.get(ratio1, lookback)))
