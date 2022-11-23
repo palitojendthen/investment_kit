@@ -4,6 +4,7 @@
 //@version=5
 indicator(title = 'ehlers_convolution', shorttitle = 'convolution', overlay = false)
 
+
 // input
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options')
 
