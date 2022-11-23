@@ -39,10 +39,12 @@ smoothed_rsi := c1*(rsi+rsi[1])/2+c2*nz(smoothed_rsi[1])+c3*nz(smoothed_rsi[2])
 
 
 // Visualize
+p1 = plot(smoothed_rsi*(1+.05), color = na)
+p2 = plot(smoothed_rsi*(1-.05), color = na)
+fill(p1, p2, color = color.new(color.blue, 50))
 plot(smoothed_rsi, color = color.blue, linewidth = 2)
 hline(70, color = color.new(color.blue, 50))
 hline(30, color = color.new(color.blue, 50))
-
 
 // rsi trendline
 pivot_high := ta.pivothigh(smoothed_rsi, left, right)
