@@ -29,5 +29,8 @@ __Example of the indicator applied on the chart:__
 3. Swami Stochastic
 ![alt text](https://www.tradingview.com/x/08Wek6cM/)
 
-4. Normalize Heatmap
+4. Normalize Heatmap: normalize_heatmap
 ![alt text](https://www.tradingview.com/x/Gny51Bpb/)
+
+5. Convolution
+![alt text](https://www.tradingview.com/x/rsOIkgp3/)
