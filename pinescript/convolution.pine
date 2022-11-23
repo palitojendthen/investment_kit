@@ -5,12 +5,12 @@
 indicator(title = 'ehlers_convolution', shorttitle = 'convolution', overlay = false)
 
 // input
-shortest_period = input.int(defval = 40, title = 'Shortest Period', group = 'Value')
-longest_period = input.int(defval = 80, title = 'Longest Period', group = 'Value')
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options')
 
 
 // variable
+shortest_period = 40
+longest_period = 80
 float alpha1 = 0.00
 float hp = 0.00
 float a1 = 0.00
@@ -34,7 +34,7 @@ var slope = array.new_float(50)
 var convolution = array.new_float(50)
 
 
-// convolution
+// compute convolution
 // high-pass filter cyclic components whose periods are shorter than 48 bars
 pi = 2*math.asin(1)
 alpha1 := (math.cos(1.414*360/longest_period)+math.sin(1.414*360/longest_period)-1)/math.cos(1.414*360/longest_period)
@@ -69,7 +69,6 @@ for i = 1 to 48
     if filt[.5*i] < filt
         array.set(slope, i, -1)
     array.set(convolution, i, (1+math.exp(3*nz(array.get(corr, i))))-1/(math.exp(3*nz(array.get(corr, i))-1))/2)
-
 
 
 // visualize as heatmap
