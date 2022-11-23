@@ -11,3 +11,7 @@ Use Pine Editor:
   2. Copy & Paste the provided script
   3. Make sure the Version being used is the same as in the provided script
   4. Push the Add to chart button on the Pine Editor
+  
+
+Example of the indicator on the chart:
+![alt text](https://www.tradingview.com/x/9mq0YI2C/) 
