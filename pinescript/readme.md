@@ -1,1 +1,1 @@
-The indicator was mostly write in pinescript, and aim to be used in the TradingView.
+Collections of technical analysis indicator, written in pinescript, aim to be used on TradingView, for analysis purpose. The indicators varied from moving average, volume based momentum, stochastic, through to heatmap visualization that expected to give a comprehensive overview of assets price action and used in the trading decision. Most of the indicator, can also be found directly on the TradingView, though also can be use simply by placed the provided script to pinescript editor.
