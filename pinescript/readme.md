@@ -23,14 +23,11 @@ __Example of the indicator applied on the chart:__
 1. Smoothed Relative Strenght Index: smoothed_rsi
 ![alt text](https://www.tradingview.com/x/9mq0YI2C/)
 
-2. Trailing Drawdown: trailing_drawdown
-![alt text](https://www.tradingview.com/x/HLW8QUrG/)
-
-3. Swami Stochastic
+2. Swami Stochastic
 ![alt text](https://www.tradingview.com/x/08Wek6cM/)
 
-4. Normalize Heatmap: normalize_heatmap
+3. Normalize Heatmap: normalize_heatmap
 ![alt text](https://www.tradingview.com/x/Gny51Bpb/)
 
-5. Convolution
+4. Convolution
 ![alt text](https://www.tradingview.com/x/rsOIkgp3/)
