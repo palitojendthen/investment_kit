@@ -19,4 +19,7 @@ __Use Pine Editor:__
 __Example of the indicator applied on the chart:__
 
 1. Smoothed Relative Strenght Index (smoothed_rsi)
-![alt text](https://www.tradingview.com/x/9mq0YI2C/) 
+![alt text](https://www.tradingview.com/x/9mq0YI2C/)
+
+2. Trailing Drawdown (trailing_drawdown)
+![alt text](https://www.tradingview.com/x/HLW8QUrG/)
