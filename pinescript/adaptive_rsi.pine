@@ -13,29 +13,29 @@ hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value', 
 // variable
 length = 50
 avg_length = 0
-m = 0
-n = 0
-x = 0.0
-y = 0.0
-alpha1 = 0.0
-hp = 0.0
-a1 = 0.0
-b1 = 0.0
-c1 = 0.0
-c2 = 0.0
-c3 = 0.0
-filt = 0.0
-sx = 0.0
-sy = 0.0
-sxx = 0.0
-syy = 0.0
-sxy = 0.0
-max_pwr = 0.0
-dominant_cycle = 0.0
-close_up = 0.0
-close_down = 0.0
-denom = 0.0
-my_rsi = 0.0
+m = 0.00
+n = 0.00
+x = 0.00
+y = 0.09
+alpha1 = 0.00
+hp = 0.00
+a1 = 0.00
+b1 = 0.00
+c1 = 0.00
+c2 = 0.00
+c3 = 0.00
+filt = 0.00
+sx = 0.00
+sy = 0.00
+sxx = 0.00
+syy = 0.00
+sxy = 0.00
+max_pwr = 0.00
+dominant_cycle = 0.00
+close_up = 0.00
+close_down = 0.00
+denom = 0.00
+my_rsi = 0.00
 
 
 // array
@@ -69,20 +69,20 @@ for lag = 0 to 48
     if avg_length == 0
         m := lag
     // initialize correlation sums
-    sx := 0.0
-    sy := 0.0
-    sxx := 0.0
-    syy := 0.0
-    sxy := 0.0
+    sx := 0.00
+    sy := 0.00
+    sxx := 0.00
+    syy := 0.00
+    sxy := 0.00
     // advance samples of both data streams and sum pearson components
     for count = 0 to m
         x := filt[count]
         y := filt[lag+count]
-        sx := nz(sx)+x
-        sy := nz(sy)+y
-        sxx := nz(sxx)+x*x
-        sxy := nz(sxy)+x*y
-        syy := nz(syy)+y*y
+        sx := sx+x
+        sy := sy+y
+        sxx := sxx+x*x
+        sxy := sxy+x*y
+        syy := syy+y*y
     // compute correlation for each value of lag
     if (m*sxx-sx*sx)*(m*syy-sy*sy) > 0
         array.set(corr, lag, ((m*sxy-sx*sy)/math.sqrt((m*sxx-sx*sx)*(m*syy-sy*sy))))
@@ -93,23 +93,23 @@ for period = 10 to 48
     for n2 = 3 to 48
         array.set(cosine_part, period, nz(array.get(cosine_part, period))+nz(array.get(corr, n2))*math.cos(360*n2/period))
         array.set(sine_part, period, nz(array.get(sine_part, period))+nz(array.get(corr, n2))*math.sin(360*n2/period))
-    array.set(sq_sum, period, nz(array.get(cosine_part, period)) * nz(array.get(cosine_part, period))+nz(array.get(sine_part, period))*nz(array.get(sine_part, period)))
+    array.set(sq_sum, period, nz(array.get(cosine_part, period))*nz(array.get(cosine_part, period))+nz(array.get(sine_part, period))*nz(array.get(sine_part, period)))
 
 for period2 = 10 to 48
     array.set(r2, period2, nz(array.get(r1, period2)))
     array.set(r1, period2, .2*nz(array.get(sq_sum, period2))*nz(array.get(sq_sum, period2))+.8*nz(array.get(r2, period2)))
 
 // find maximum power level for normalization
-max_pwr := .991*nz(max_pwr)
-for period3 = 3 to 48
+max_pwr := .991*max_pwr
+for period3 = 10 to 48
     if nz(array.get(r1, period3)) > max_pwr
         max_pwr := nz(array.get(r1, period3))
 for period4 = 3 to 48
     array.set(pwr, period4, nz(array.get(r1, period4))/max_pwr)
 
 // compute the dominant cycle using the cg of the spectrum
-spx = 0.0
-sp = 0.0
+spx = 0.00
+sp = 0.00
 
 for period5 = 10 to 48
     if nz(array.get(pwr, period5)) >= .5
