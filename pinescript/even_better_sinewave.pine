@@ -6,8 +6,9 @@ indicator(title = 'even_better_sinewave_modified', shorttitle = 'even_better_sin
 
 
 // input
-src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines the input data, default ohlc4, user could change to close')
-hp_period = input.int(defval = 89, title = 'High-pass Period', group = 'Value', tooltip = 'Determines the length of High-pass period')
+hp_period = input.int(defval = 89, title = 'High-pass Period', group = 'Value', tooltip = 'Determines the length of High-pass period.')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the input data, default to ohlc4, user could change to other input e.g. close.')
+apply_bar_color = input.bool(defval = false, title = 'Bar color', group = 'Options', tooltip = 'Determines whether to apply bar color, based on even better sinewave indicator signal')
 
 
 // variable
@@ -21,7 +22,7 @@ pwr = 0.0
 // even better sinewave
 // high-pass filter
 pi = 2*math.asin(1)
-alpha1 := (math.cos(.707*2*pi/hp_period) + math.sin(.707*2*pi/hp_period) - 1)/math.cos(.707*2*pi/hp_period)
+alpha1 := (math.cos(.707*2*pi/hp_period) + math.sin(.707*2*pi/hp_period)-1)/math.cos(.707*2*pi/hp_period)
 hp := (1-alpha1/2)*(1-alpha1/2)*(src-2*src[1]+src[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
 
 // smoothed (modified)
@@ -51,12 +52,21 @@ color_ = con == 1 ? color.green : color.red
 
 // sine wave
 p1 = plot(wave, color = color_, linewidth = 3)
+plot(wave*.8, color = color.new(color.aqua, 80))
 
 // threshold
-h1 = hline(.85, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-h2 = hline(.75, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-fill(h1, h2, color = color.new(color.gray, 80))
+// h1 = hline(.85, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
+// h2 = hline(.75, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
+// fill(h1, h2, color = color.new(color.yellow, 80))
 
-h3 = hline(-.75, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-h4 = hline(-.85, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-fill(h3, h4, color = color.new(color.gray, 80))
+// h3 = hline(-.75, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
+// h4 = hline(-.85, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
+// fill(h3, h4, color = color.new(color.yellow, 80))
+
+// bar color
+barcolor(apply_bar_color ? color_ : na)
+
+
+// create alert
+alertcondition(con == 1 , title = 'Entry', message = 'Buy/Long entry point detected')
+alertcondition(con == 0, title = 'Close', message = 'Sell/Short entry point detected')
