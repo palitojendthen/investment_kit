@@ -27,7 +27,7 @@ def ema(x, periods = 14, alpha = .5):
     """
     n = len(x)
     if n < periods:
-        raise ValueError('Length cannot be less than periods')
+        raise ValueError('Periods cannot be greater than data length')
     else:
         sma_ = x.rolling(window = periods).mean()
         ema = pd.DataFrame({'values':np.nan}, index = x.index)
@@ -35,6 +35,24 @@ def ema(x, periods = 14, alpha = .5):
         for i in range(periods, len(x)):
             ema['values'][i] = alpha*x[i]+(1-alpha)*sma_[i]
     return pd.Series(ema['values'])
+
+# Weighted Moving Average
+def wma(x, periods = 14):
+    """
+    computes weighted moving average,
+    of given time-series data
+    """
+    n = len(x)
+    if n < periods:
+        raise ValueError('Periods cannot be greater than data length')
+    else:
+        w = np.arange(1, periods+1)
+        w_sum = w.sum()
+        weights = w/w_sum
+        wma = x.rolling(window = periods).apply(lambda y: np.dot(y, weights), raw = True)    
+    return wma
+
+
 
 
 
