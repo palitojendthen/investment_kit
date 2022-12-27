@@ -52,6 +52,23 @@ def wma(x, periods = 14):
         wma = x.rolling(window = periods).apply(lambda y: np.dot(y, weights), raw = True)    
     return wma
 
+# Hull Moving Average
+def hma(x, periods = 14):
+    """
+    computes hull moving average,
+    of given time-series data,
+    an improvement to fast and smooth moving average 
+    """
+    n = len(x)
+    if n < periods:
+        raise ValueError('Periods cannot be greater than data length')
+    else:
+        wma1 = wma(x, periods = int(periods/2))
+        wma2 = wma(x, periods = periods)
+        hma_ = (2*wma1) - wma2
+        hma = wma(hma_, periods = int(np.sqrt(periods)))    
+    return hma
+
 
 
 
