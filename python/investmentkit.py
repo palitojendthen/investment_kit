@@ -1,5 +1,7 @@
 
-# Library
+"""
+Library
+"""
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -13,28 +15,26 @@ import plotly.express as px
 import yfinance as yf
 
 
-## Portfolio Management ##
+"""
+Technical analysis indicator
+"""
 
-# Rate of Return
-def rate_of_return(x):
+# Exponential Moving Average
+def ema(x, periods = 3, alpha = .5):
     """
-    compute rate of returns of a time series data
+    computes exponential moving average
+    of given time-series data
     """
-    ret = ((x[:-1].values / x[1:]).values - 1).round(2)
-    return np.append(np.nan, ret)
+    sma_ = x.rolling(window = periods).mean()
+    ema = pd.DataFrame({'values':np.nan}, index = x.index)
 
-
-# Compounding Returns
-def compound(r):
-    """
-    compute compounding or geometric mean returns 
-    for returns series
-    """
-    return np.expm1(np.log1p(r).sum())
+    for i in range(periods, len(x)):
+        ema['values'][i] = alpha*x[i]+(1-alpha)*sma_[i]
+    
+    return pd.Series(ema['values'])
 
 
 
-## Technical Analysis Indicator ##
 
 # High-Pass Filter
 def high_pass_filter(src, hp_period = 48, length = 10):
@@ -100,3 +100,25 @@ def simple_decycler(src, hp_period = 89, n_output = 150, show_hysteresis = True)
         return [decycler, src, hysteresis_up, hysteresis_down]
     else:
         return[decycler, src]
+
+
+
+
+## Portfolio Management ##
+
+# Rate of Return
+def rate_of_return(x):
+    """
+    compute rate of returns of a time series data
+    """
+    ret = ((x[:-1].values / x[1:]).values - 1).round(2)
+    return np.append(np.nan, ret)
+
+
+# Compounding Returns
+def compound(r):
+    """
+    compute compounding or geometric mean returns 
+    for returns series
+    """
+    return np.expm1(np.log1p(r).sum())
