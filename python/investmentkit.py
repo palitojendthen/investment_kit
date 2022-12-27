@@ -15,10 +15,10 @@ import plotly.express as px
 import yfinance as yf
 
 
+
 """
 Technical analysis indicator
 """
-
 # Exponential Moving Average
 def ema(x, periods = 3, alpha = .5):
     """
