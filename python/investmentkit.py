@@ -103,7 +103,7 @@ def rsi(x, periods = 14, return_df = None):
     as techincal analysis aim to identify overbought or oversold area,
     reference: https://www.investopedia.com/terms/r/rsi.asp
     """
-    n = len(x)
+    n =len(x)
     df = pd.DataFrame({'value':x.copy()}, index = x.index)
     df['diff'] = x.diff()
     df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
@@ -113,9 +113,9 @@ def rsi(x, periods = 14, return_df = None):
     df['rs'] = df['avg_gain']/df['avg_loss']
     df['rsi'] = (100 - (100/(1+df['rs'])))
     if return_df is not None:
-        return df
+        return df[14:]
     else:
-        return pd.Series(df['rsi'])
+        return pd.Series(df['rsi'][14:])
 
 
  
