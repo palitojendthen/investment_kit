@@ -134,7 +134,21 @@ def stochastic_rsi(x, periods = 14):
     stoch_rsi = ((rsi_-low_)/(high_-low_))*100
     return stoch_rsi
 
+# Fibonacci Retracement Level
+def fibonacci_retracement(x):
+    """
+    find the retracement level of a given price,
+    which expected to have a reverse,
+    reference: https://www.investopedia.com/terms/f/fibonacciretracement.asp
+    """    
+    ratio_ =  pd.Series([0, 23.6, 38.2, 50, 61.8, 78.6, 1])/100
+    level_ = []
+    for i in ratio_:
+        level_.append(x*(1-i))
+    return level_
  
+
+    
 
 
 # High-Pass Filter
