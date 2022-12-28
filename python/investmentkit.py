@@ -181,7 +181,7 @@ def simple_decycler(src, hp_period = 89, return_df = False):
     
 
 """
-Portfolio Management
+Portfolio management
 """
 # Rate of Return
 def rate_of_return(x):
@@ -199,3 +199,4 @@ def compound(r):
     for returns series
     """
     return np.expm1(np.log1p(r).sum())
+
