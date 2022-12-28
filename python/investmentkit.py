@@ -95,10 +95,30 @@ def stochastic(close, high, low, periods = 14, return_d = False, smooth = 3):
             return stoch
         return pd.Series(stoch['%k'])
     
+# Relative Strength Index
+def rsi(x, periods = 14, return_df = None):
+    """
+    computes relative strength index value,
+    of a given time-series data,
+    as techincal analysis aim to identify overbought or oversold area,
+    reference: https://www.investopedia.com/terms/r/rsi.asp
+    """
+    n = len(x)
+    df = pd.DataFrame({'value':x.copy()}, index = x.index)
+    df['diff'] = x.diff()
+    df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
+    df['loss'] = np.where(df['diff'] < 0, df['diff'], 0)
+    df['avg_gain'] = df['gain'].ewm(com = periods-1, adjust = False).mean()
+    df['avg_loss'] = df['loss'].ewm(com = periods-1, adjust = False).mean().abs()
+    df['rs'] = df['avg_gain']/df['avg_loss']
+    df['rsi'] = (100 - (100/(1+df['rs'])))
+    if return_df is not None:
+        return df
+    else:
+        return pd.Series(df['rsi'])
 
 
-
-
+ 
 
 
 # High-Pass Filter
