@@ -13,15 +13,20 @@ Collections of `technical analysis indicator` which written in [Pine Script <sup
 
 
 <h2> Example on chart: </h2>
+<br>
+
+[convolution](https://www.tradingview.com/script/ZCDcMWdn-convolution/): on BTCUSD 1D chart
+
+<img src="https://www.tradingview.com/x/2uSApWIp/" width=90% height=90%>
 
 <br>
 
-[convolution](https://www.tradingview.com/script/ZCDcMWdn-convolution/)
+[swami_stochastic](https://www.tradingview.com/script/oTfNZshU-swami-rsi/): on Silver - TVC 4H chart
 
-<img src="https://www.tradingview.com/x/WsJwKjCT/" width=90% height=90%>
+<img src="https://www.tradingview.com/x/W0DZ2wFt/" width=90% height=90%>
 
 <br>
 
-[swami_stochastic](https://www.tradingview.com/script/oTfNZshU-swami-rsi/)
+[trailing_drawdown](https://www.tradingview.com/script/8Xjkf9XN-trailing-drawdown/): on IXIC (Nasdaq) - TVC 1W chart
 
-<img src="https://www.tradingview.com/x/hWNsyXwZ/" width=90% height=90%>
+<img src="https://www.tradingview.com/x/woIwMBDn/" width=90% height=90%>
