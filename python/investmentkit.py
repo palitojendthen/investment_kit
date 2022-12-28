@@ -180,13 +180,6 @@ def simple_decycler(src, hp_period = 89, return_df = False):
 
     
 
-
-
-
-
-
-
-
 """
 Portfolio Management
 """
