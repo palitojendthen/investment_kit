@@ -17,7 +17,7 @@ import yfinance as yf
 
 
 """
-Technical analysis indicator
+Technical Analysis Indicator
 """
 # Exponential Moving Average
 def ema(x, periods = 14):
@@ -181,7 +181,7 @@ def simple_decycler(src, hp_period = 89, return_df = False):
     
 
 """
-Portfolio management
+Portfolio Management/Optimization
 """
 # Rate of Return
 def rate_of_return(x):
