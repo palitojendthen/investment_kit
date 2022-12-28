@@ -145,7 +145,7 @@ def fibonacci_retracement(x):
     level_ = []
     for i in ratio_:
         level_.append(x*(1-i))
-    return level_
+    return pd.Series(level_)
  
 
     
