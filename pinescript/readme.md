@@ -9,11 +9,19 @@ Collections of `technical analysis indicator` which written in [Pine Script <sup
 * Directing to the `Product -> Chart` section 
 * Click on `Indicators, Metrices, & Strategies` tab
 * Fill in the search bar with the indicator names
-* Adjust the `Parameters` or `Arguements` on each indicators base on the user preference
+* Adjust the `Parameters` or `Arguments` on each indicators base on the user preference
 
 
 <h2> Example on chart: </h2>
 
-[Convollution](https://www.tradingview.com/script/ZCDcMWdn-convolution/)
+<br>
+
+[convolution](https://www.tradingview.com/script/ZCDcMWdn-convolution/)
 
 <img src="https://www.tradingview.com/x/WsJwKjCT/" width=90% height=90%>
+
+<br>
+
+[swami_stochastic](https://www.tradingview.com/script/oTfNZshU-swami-rsi/)
+
+<img src="https://www.tradingview.com/x/hWNsyXwZ/" width=90% height=90%>
