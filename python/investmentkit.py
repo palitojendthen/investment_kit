@@ -117,6 +117,22 @@ def rsi(x, periods = 14, return_df = None):
     else:
         return pd.Series(df['rsi'][14:])
 
+# Stochastic Relative Strength Index
+def stochastic_rsi(x, periods = 14):
+    """
+    computes stochastic oscillator value,
+    instead of use e.g. 'closing' or 'ohlc',
+    the indicator use rsi value as input,
+    as momemntum technical analysis indicator,
+    identify overbought if > 0.8 and oversold if < 0.2,
+    reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/stochrsi
+    """
+    n = len(x)
+    rsi_ = rsi(x, periods = periods)
+    low_ = rsi_.rolling(window = periods).min()
+    high_ = rsi_.rolling(window = periods).max()
+    stoch_rsi = ((rsi_-low_)/(high_-low_))*100
+    return stoch_rsi
 
  
 
