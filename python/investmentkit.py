@@ -104,18 +104,21 @@ def rsi(x, periods = 14, return_df = None):
     reference: https://www.investopedia.com/terms/r/rsi.asp
     """
     n =len(x)
-    df = pd.DataFrame({'value':x.copy()}, index = x.index)
-    df['diff'] = x.diff()
-    df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
-    df['loss'] = np.where(df['diff'] < 0, df['diff'], 0)
-    df['avg_gain'] = df['gain'].ewm(com = periods-1, adjust = False).mean()
-    df['avg_loss'] = df['loss'].ewm(com = periods-1, adjust = False).mean().abs()
-    df['rs'] = df['avg_gain']/df['avg_loss']
-    df['rsi'] = (100 - (100/(1+df['rs'])))
-    if return_df is not None:
-        return df[14:]
+    if n < periods:
+        raise ValueError('Periods cannot be greater than data length')
     else:
-        return pd.Series(df['rsi'][14:])
+        df = pd.DataFrame({'value':x.copy()}, index = x.index)
+        df['diff'] = x.diff()
+        df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
+        df['loss'] = np.where(df['diff'] < 0, df['diff'], 0)
+        df['avg_gain'] = df['gain'].ewm(com = periods-1, adjust = False).mean()
+        df['avg_loss'] = df['loss'].ewm(com = periods-1, adjust = False).mean().abs()
+        df['rs'] = df['avg_gain']/df['avg_loss']
+        df['rsi'] = (100 - (100/(1+df['rs'])))
+        if return_df is not None:
+            return df[14:]
+        else:
+            return pd.Series(df['rsi'][14:])
 
 # Stochastic Relative Strength Index
 def stochastic_rsi(x, periods = 14):
@@ -128,11 +131,14 @@ def stochastic_rsi(x, periods = 14):
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/stochrsi
     """
     n = len(x)
-    rsi_ = rsi(x, periods = periods)
-    low_ = rsi_.rolling(window = periods).min()
-    high_ = rsi_.rolling(window = periods).max()
-    stoch_rsi = ((rsi_-low_)/(high_-low_))*100
-    return stoch_rsi
+    if n < periods:
+        raise ValueError('Periods cannot be greater than data length')
+    else:
+        rsi_ = rsi(x, periods = periods)
+        low_ = rsi_.rolling(window = periods).min()
+        high_ = rsi_.rolling(window = periods).max()
+        stoch_rsi = ((rsi_-low_)/(high_-low_))*100
+        return stoch_rsi
 
 # Fibonacci Retracement Level
 def fibonacci_retracement(x):
@@ -158,25 +164,28 @@ def simple_decycler(src, hp_period = 89, return_df = False):
     reference: https://tlc.thinkorswim.com/center/reference/Tech-Indicators/studies-library/E-F/EhlersSimpleDecycler
     """    
     n = len(src)
-    hp = [0.00]*n
-    decycler = [0.00]*n
-    hysteresis_up = [0.00]*n
-    hysteresis_down = [0.00]*n
-    pi = 2*np.arcsin(1)
-    alpha1 = (np.cos(.707*2*pi/hp_period)+np.sin(.707*2*pi/hp_period)-1)/np.cos(.707*2*pi/hp_period)
-
-    for i in range(1, n):
-        hp[i] = (1-alpha1/2)*(1-alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-alpha1)*hp[i-1]-(1-alpha1)*(1-alpha1)*hp[i-2]
-        decycler[i] = src[i]-hp[i]
-        hysteresis_up[i] = decycler[i]*(1+(.5/100))
-        hysteresis_down[i] = decycler[i]*(1-(.5/100))
-    if return_df:
-        return pd.DataFrame({'hp':hp[hp_period:], 
-                             'decycler':decycler[hp_period:], 
-                             'hysteresis_up':hysteresis_up[hp_period:], 
-                             'hysteresis_down':hysteresis_down[hp_period:]})
+    if n < hp_period:
+        raise ValueError('Periods cannot be greater than data length')
     else:
-        return pd.Series(decycler[hp_period:], index = None)
+        hp = [0.00]*n
+        decycler = [0.00]*n
+        hysteresis_up = [0.00]*n
+        hysteresis_down = [0.00]*n
+        pi = 2*np.arcsin(1)
+        alpha1 = (np.cos(.707*2*pi/hp_period)+np.sin(.707*2*pi/hp_period)-1)/np.cos(.707*2*pi/hp_period)
+
+        for i in range(1, n):
+            hp[i] = (1-alpha1/2)*(1-alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-alpha1)*hp[i-1]-(1-alpha1)*(1-alpha1)*hp[i-2]
+            decycler[i] = src[i]-hp[i]
+            hysteresis_up[i] = decycler[i]*(1+(.5/100))
+            hysteresis_down[i] = decycler[i]*(1-(.5/100))
+        if return_df:
+            return pd.DataFrame({'hp':hp[hp_period:], 
+                                 'decycler':decycler[hp_period:], 
+                                 'hysteresis_up':hysteresis_up[hp_period:], 
+                                 'hysteresis_down':hysteresis_down[hp_period:]})
+        else:
+            return pd.Series(decycler[hp_period:], index = None)
 
     
 
