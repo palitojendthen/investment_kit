@@ -20,12 +20,14 @@ import yfinance as yf
 Technical analysis indicator
 """
 # Exponential Moving Average
-def ema(x, periods = 14, alpha = .5):
+def ema(x, periods = 14):
     """
     computes exponential moving average
     of given time-series data
+    referece: https://www.investopedia.com/terms/e/ema.asp
     """
     n = len(x)
+    alpha = 2/(periods+1)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
     else:
@@ -41,6 +43,7 @@ def wma(x, periods = 14):
     """
     computes weighted moving average,
     of given time-series data
+    reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/wma
     """
     n = len(x)
     if n < periods:
@@ -58,6 +61,7 @@ def hma(x, periods = 14):
     computes hull moving average,
     of given time-series data,
     an improvement to fast and smooth moving average 
+    reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/hull-moving-average
     """
     n = len(x)
     if n < periods:
@@ -68,6 +72,30 @@ def hma(x, periods = 14):
         hma_ = (2*wma1) - wma2
         hma = wma(hma_, periods = int(np.sqrt(periods)))    
     return hma
+
+# Stochastic Oscillator
+def stochastic(close, high, low, periods = 14, return_d = False, smooth = 3):
+    """
+    computes stochastic oscillator,
+    of given time-series data,
+    as an technical analysis indicator aim to identify momentum, 
+    and identify overbought or oversold area
+    reference: https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    """
+    n = len(close)
+    if n < periods:
+        raise ValueError('Periods cannot be greater than data length')
+    else:
+        low_ = low.rolling(window = periods).min()
+        high_ = high.rolling(window = periods).max()
+        stoch = pd.DataFrame({'%k':np.nan}, index = close.index)
+        for i in range(periods, n):
+            stoch['%k'][i] = ((close[i]-low_[i])/(high_[i]-low_[i]))*100
+        if return_d:
+            stoch['%d'] = stoch['%k'].rolling(window = smooth).mean()
+            return stoch
+        return pd.Series(stoch['%k'])
+    
 
 
 
