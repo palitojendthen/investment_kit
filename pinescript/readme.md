@@ -15,4 +15,5 @@ Collections of `technical analysis indicator` which written in [Pine Script <sup
 <h2> Example on chart: </h2>
 
 [Convollution](https://www.tradingview.com/script/ZCDcMWdn-convolution/)
-![Convolution](https://www.tradingview.com/x/xQir8Vqf/)
+
+<img src="https://www.tradingview.com/x/WsJwKjCT/" width=90% height=90%>
