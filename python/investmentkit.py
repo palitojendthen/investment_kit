@@ -33,7 +33,6 @@ def ema(x, periods = 14):
     else:
         sma_ = x.rolling(window = periods).mean()
         ema = pd.DataFrame({'values':np.nan}, index = x.index)
-
         for i in range(periods, len(x)):
             ema['values'][i] = alpha*x[i]+(1-alpha)*sma_[i]
     return pd.Series(ema['values'])
