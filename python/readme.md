@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 import matplotlib as pt
 import sys
-path = r'\path-to-investment_kit'
+path = r'path-to-investment_kit'
 sys.path.insert(0, path)
 import technical_indicator as indicator
 import portfolio_management as portfolio
