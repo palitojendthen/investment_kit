@@ -3,7 +3,7 @@
 Collections of both Technical Analysis Indicator and Portfolio Management/Optimization writen in Python.
 
 
-<h2> Example - how to use: </h2>
+<h2> How to use - example: </h2>
 
 __load library__
 
