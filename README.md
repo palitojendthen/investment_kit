@@ -4,8 +4,8 @@
 
 * Traders
 * Technical Analyst
-* Market Participants
 * Data Analyst/Scientist
+* Market Participants
 
 
 <h2> Index: </h2>
