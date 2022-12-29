@@ -27,5 +27,5 @@ df = pd.read_excel(open('dummy_data.xlsx', 'rb'), sheet_name = 'Sheet1', engine 
 __compute simple decycler__
 ```python
 length = 89
-indicator.simple_decycler(df['price].values, hp_period = length, return_df = True)
+indicator.simple_decycler(df['price'].values, hp_period = length, return_df = True)
 ```
