@@ -30,12 +30,13 @@ length = 89
 df2 = investment.simple_decycler(df['price'].values, hp_period = length,return_df = True)
 ```
 
-__visualize price to simple decycler indicator__
+visualize price to simple decycler indicator
 ```python
 df2['decycler'].plot.line(figsize = (15,8), color = 'blue')
-df2['hysteresis_up'].plot(color = 'yellow')
-df2['hysteresis_down'].plot(color = 'yellow')
+df2['hysteresis_up'].plot(color = 'orange')
+df2['hysteresis_down'].plot(color = 'orange')
 pd.Series(df['price'][89:].values).plot(color = 'grey')
 ```
 
+![result](https://postimg.cc/yk45xVbv)
 
