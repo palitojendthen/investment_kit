@@ -1,6 +1,6 @@
 <h2> Description: </h2>
 
-Collections of technical analysis `indicator` which written in [Pine Script <sup>TM</sup>](https://www.tradingview.com/pine-script-docs/en/v5/Introduction.html), aim to be used by traders, analyst, and market participants on [TradingView](https://www.tradingview.com/) platform. The indicators consists of concepts from moving average, volume analysis, oscillator, momentum, through to the comprehensive heatmap visualization, that expected to give a comprehensive overview on the assets price action in a given time-period, trend, and thus will complementing a study of a trade decision. <br>
+Collections of `Technical Analysis indicator` which written in [Pine Script <sup>TM</sup>](https://www.tradingview.com/pine-script-docs/en/v5/Introduction.html), aim to be used on [TradingView](https://www.tradingview.com/) platform. The indicators consists of concepts from moving average, volume analysis, oscillator, momentum, through to heatmap/swami chart, expected to give a comprehensive overview on the assets price action in a given time-period, trend, etc, thus will complementing a study to a trade decision. <br>
 
 
 <h2> How to use: </h2>
