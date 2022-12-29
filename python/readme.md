@@ -3,7 +3,7 @@
 Collections of both Technical Analysis Indicator and Portfolio Management/Optimization writen in Python.
 
 
-<h2> How to use: </h2>
+<h2> Example - how to use: </h2>
 
 __load library__
 
@@ -27,5 +27,10 @@ df = pd.read_excel(open('dummy_data.xlsx', 'rb'), sheet_name = 'Sheet1', engine 
 __compute simple decycler__
 ```python
 length = 89
-indicator.simple_decycler(df['price'].values, hp_period = length, return_df = True)
+df2 = investment.simple_decycler(df['price'].values, hp_period = length,return_df = True)
+```
+
+__visualize price to simple decycler indicator__
+```
+
 ```
