@@ -15,7 +15,7 @@ import sys
 path = r'\path-to-investment_kit'
 sys.path.insert(0, path)
 import technical_indicator as indicator
-import portfolio_management as portfol
+import portfolio_management as portfolio
 ```
 
 __retrieve data__
