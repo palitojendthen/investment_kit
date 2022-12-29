@@ -10,7 +10,7 @@ __load library__
 ```python
 import pandas as pd
 import numpy as np
-import matplotlib as pt
+import matplotlib.pyplot as pt
 import sys
 path = r'path-to-investment_kit'
 sys.path.insert(0, path)
@@ -30,9 +30,9 @@ length = 89
 df2 = investment.simple_decycler(df['price'].values, hp_period = length,return_df = True)
 ```
 
-visualize price to simple decycler indicator
+__visualize price to simple decycler indicator__
 ```python
-ax = pd.Series(df['price'][89:].values).plot(color = 'grey', figsize = (15,8))
+ax = pd.Series(df['price'][89:].values).plot(color = 'black', figsize = (15,8))
 ax.yaxis.set_label_position("right")
 ax.yaxis.tick_right()
 ax.set_title('Dummy Stock Price Data vs Simple Decycler Indicator')
@@ -41,5 +41,4 @@ df2['hysteresis_up'].plot(color = 'orange')
 df2['hysteresis_down'].plot(color = 'orange')
 ```
 
-<img src="https://i.postimg.cc/J4GWT0cV/Screenshot-2022-12-29-174230.png" width=90% height=90%>
-
+<img src="https://i.postimg.cc/qqNsn3tQ/Screenshot-2022-12-29-180250.png" width=100% height=100%>
