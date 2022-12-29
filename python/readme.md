@@ -27,7 +27,7 @@ df = pd.read_excel(open('dummy_data.xlsx', 'rb'), sheet_name = 'Sheet1', engine 
 __compute simple decycler__
 ```python
 length = 89
-df2 = investment.simple_decycler(df['price'].values, hp_period = length,return_df = True)
+df2 = indicator.simple_decycler(df['price'].values, hp_period = length,return_df = True)
 ```
 
 __visualize price to simple decycler indicator__
