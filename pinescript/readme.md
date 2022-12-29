@@ -30,3 +30,4 @@ Collections of `Technical Analysis indicator` which written in [Pine Script <sup
 [trailing_drawdown](https://www.tradingview.com/script/8Xjkf9XN-trailing-drawdown/): on IXIC (Nasdaq) - TVC 1W chart
 
 <img src="https://www.tradingview.com/x/woIwMBDn/" width=90% height=90%>
+
