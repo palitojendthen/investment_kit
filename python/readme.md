@@ -38,5 +38,5 @@ df2['hysteresis_down'].plot(color = 'orange')
 pd.Series(df['price'][89:].values).plot(color = 'grey')
 ```
 
-![result](https://postimg.cc/yk45xVbv)
+<img src="https://i.postimg.cc/J4GWT0cV/Screenshot-2022-12-29-174230.png" width=90% height=90%>
 
