@@ -24,7 +24,10 @@ __retrieve data__
 df = pd.read_excel(open('dummy_data.xlsx', 'rb'), sheet_name = 'Sheet1', engine = 'openpyxl')
 ```
 
-__compute simple decycler__
+<br>
+
+## compute simple decycler
+
 ```python
 length = 89
 df2 = indicator.simple_decycler(df['price'].values, hp_period = length,return_df = True)
@@ -42,3 +45,22 @@ df2['hysteresis_down'].plot(color = 'orange')
 ```
 
 <img src="https://i.postimg.cc/qqNsn3tQ/Screenshot-2022-12-29-180250.png" width=100% height=100%>
+
+<br>
+
+## compute predictive moving average
+```python
+df2 = investment.predictive_moving_average(df['price'], return_df = True)
+```
+
+__visualize price to predictive moving average__
+```python
+ax = df2['price'][14:].plot(color = 'black', figsize = (15,8))
+ax.yaxis.set_label_position("right")
+ax.yaxis.tick_right()
+ax.set_title('Dummy Stock Price Data vs Predictive Moving Average')
+df2['predict'][14:].plot.line(color = 'green')
+df2['trigger'][14:].plot(color = 'red')
+```
+
+<img src="https://i.postimg.cc/pTkzXmbV/Screenshot-2022-12-30-200658.png" width=100% height=100%>
