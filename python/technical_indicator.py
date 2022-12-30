@@ -20,21 +20,21 @@ import yfinance as yf
 Technical Analysis Indicator
 """
 # Exponential Moving Average
-def ema(x, periods = 14):
+def ema(src, periods = 14):
     """
     computes exponential moving average
     of given time-series data
     referece: https://www.investopedia.com/terms/e/ema.asp
     """
-    n = len(x)
+    n = len(src)
     alpha = 2/(periods+1)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
     else:
-        sma_ = x.rolling(window = periods).mean()
-        ema = pd.DataFrame({'values':np.nan}, index = x.index)
-        for i in range(periods, len(x)):
-            ema['values'][i] = alpha*x[i]+(1-alpha)*sma_[i]
+        sma_ = src.rolling(window = periods).mean()
+        ema = pd.DataFrame({'values':np.nan}, index = src.index)
+        for i in range(periods, n):
+            ema['values'][i] = alpha*src[i]+(1-alpha)*sma_[i]
     return pd.Series(ema['values'])
 
 # Weighted Moving Average
