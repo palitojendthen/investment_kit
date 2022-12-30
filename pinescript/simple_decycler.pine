@@ -1,0 +1,45 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © palitoj_endthen
+
+//@version=5
+indicator(title = 'ehlers_simple_decycler', shorttitle = 'simple_decycler', overlay = true)
+
+// input
+src = input.source(defval = ohlc4, title = 'Source', tooltip = 'Determines the input data, default to OHLC4, users can choose different input such close')
+hp_period = input.int(defval = 89, title = 'High Pass Period', tooltip = 'Determines of High Pass period (impedes low frequency)')
+
+// compute simple decycler
+simple_decycler(source_, hp_period_)=>
+    alpha1 = 0.00
+    hp = 0.00
+    decycler = 0.00
+    pi = 2*math.asin(1)
+
+    alpha1 := (math.cos(.707*2*pi/hp_period_)+math.sin(.707*2*pi/hp_period_)-1)/math.cos(.707*2*pi/hp_period_)
+    hp := (1-alpha1/2)*(1-alpha1/2)*(source_-2*nz(source_[1])+nz(source_[2]))+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
+    decycler := source_-hp
+
+decycler =  simple_decycler(src, hp_period)
+hysteresis_up = decycler*(1+(.5/100))
+hysteresis_down = decycler*(1-(.5/100))
+
+// visualize
+color_con = decycler > decycler[1] and decycler[1] > decycler[2] ? color.green : color.red
+color_con_ = decycler > decycler[1] and decycler[1] > decycler[2]
+
+plot(decycler, color = color_con, linewidth = 3)
+plot(hysteresis_up, color = color.new(color.yellow, 50), linewidth = 1)
+plot(hysteresis_down, color = color.new(color.yellow, 50), linewidth = 1)
+
+// create alert
+alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
+alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
+
+// strategy test
+// long_condition = not (color_con_[1] and color_con_)
+// if long_condition
+//     strategy.entry('long', strategy.long)
+
+// short_condition = color_con_[1] and not color_con_
+// if short_condition
+//     strategy.exit('exit', 'long', profit = 10, loss = 1)
