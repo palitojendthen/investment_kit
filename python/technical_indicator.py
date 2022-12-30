@@ -181,12 +181,13 @@ def simple_decycler(src, hp_period = 89, return_df = False):
             hysteresis_up[i] = decycler[i]*(1+(.5/100))
             hysteresis_down[i] = decycler[i]*(1-(.5/100))
         if return_df:
-            return pd.DataFrame({'hp':hp[hp_period:], 
+            return pd.DataFrame({'price':src[hp_period:],
+                                 'hp':hp[hp_period:], 
                                  'decycler':decycler[hp_period:], 
                                  'hysteresis_up':hysteresis_up[hp_period:], 
                                  'hysteresis_down':hysteresis_down[hp_period:]})
         else:
-            return pd.Series(decycler[hp_period:], index = None)
+            return pd.Series(decycler[hp_period:])
 
 # Ehlers - Predictive Moving Average
 def predictive_moving_average(src, return_df = False):
