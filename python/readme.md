@@ -30,7 +30,7 @@ df = pd.read_excel(open('dummy_data.xlsx', 'rb'), sheet_name = 'Sheet1', engine 
 
 ```python
 length = 89
-df2 = indicator.simple_decycler(df['price'].values, hp_period = length,return_df = True)
+df2 = indicator.simple_decycler(df['price'], hp_period = length, return_df = True)
 ```
 
 __visualize price to simple decycler indicator__
@@ -50,7 +50,7 @@ df2['hysteresis_down'].plot(color = 'orange')
 
 ## compute predictive moving average
 ```python
-df2 = investment.predictive_moving_average(df['price'], return_df = True)
+df2 = indicator.predictive_moving_average(df['price'], return_df = True)
 ```
 
 __visualize price to predictive moving average__
