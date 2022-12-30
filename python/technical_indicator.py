@@ -38,42 +38,42 @@ def ema(src, periods = 14):
     return pd.Series(ema['values'])
 
 # Weighted Moving Average
-def wma(x, periods = 14):
+def wma(src, periods = 14):
     """
     computes weighted moving average,
     of given time-series data
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/wma
     """
-    n = len(x)
+    n = len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
     else:
         w = np.arange(1, periods+1)
         w_sum = w.sum()
         weights = w/w_sum
-        wma = x.rolling(window = periods).apply(lambda y: np.dot(y, weights), raw = True)    
+        wma = src.rolling(window = periods).apply(lambda y: np.dot(y, weights), raw = True)    
     return wma
 
 # Hull Moving Average
-def hma(x, periods = 14):
+def hma(src, periods = 14):
     """
     computes hull moving average,
     of given time-series data,
-    an improvement to fast and smooth moving average 
+    an improvement to fast and smooth moving average
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/hull-moving-average
     """
-    n = len(x)
+    n = len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
     else:
-        wma1 = wma(x, periods = int(periods/2))
-        wma2 = wma(x, periods = periods)
+        wma1 = wma(src, periods = int(periods/2))
+        wma2 = wma(src, periods = periods)
         hma_ = (2*wma1) - wma2
         hma = wma(hma_, periods = int(np.sqrt(periods)))    
     return hma
 
 # Stochastic Oscillator
-def stochastic(close, high, low, periods = 14, return_d = False, smooth = 3):
+def stochastic(close, high, low, periods = 14, return_df = False, smooth = 3):
     """
     computes stochastic oscillator,
     of given time-series data,
@@ -90,25 +90,25 @@ def stochastic(close, high, low, periods = 14, return_d = False, smooth = 3):
         stoch = pd.DataFrame({'%k':np.nan}, index = close.index)
         for i in range(periods, n):
             stoch['%k'][i] = ((close[i]-low_[i])/(high_[i]-low_[i]))*100
-        if return_d:
+        if return_df:
             stoch['%d'] = stoch['%k'].rolling(window = smooth).mean()
             return stoch
         return pd.Series(stoch['%k'])
     
 # Relative Strength Index
-def rsi(x, periods = 14, return_df = None):
+def rsi(src, periods = 14, return_df = None):
     """
     computes relative strength index value,
     of a given time-series data,
     as techincal analysis aim to identify overbought or oversold area,
     reference: https://www.investopedia.com/terms/r/rsi.asp
     """
-    n =len(x)
+    n =len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
     else:
-        df = pd.DataFrame({'value':x.copy()}, index = x.index)
-        df['diff'] = x.diff()
+        df = pd.DataFrame({'value':src.copy()}, index = src.index)
+        df['diff'] = src.diff()
         df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
         df['loss'] = np.where(df['diff'] < 0, df['diff'], 0)
         df['avg_gain'] = df['gain'].ewm(com = periods-1, adjust = False).mean()
@@ -116,12 +116,12 @@ def rsi(x, periods = 14, return_df = None):
         df['rs'] = df['avg_gain']/df['avg_loss']
         df['rsi'] = (100 - (100/(1+df['rs'])))
         if return_df is not None:
-            return df[14:]
+            return df[periods:]
         else:
-            return pd.Series(df['rsi'][14:])
+            return pd.Series(df['rsi'])
 
 # Stochastic Relative Strength Index
-def stochastic_rsi(x, periods = 14):
+def stochastic_rsi(src, periods = 14):
     """
     computes stochastic oscillator value,
     instead of use e.g. 'closing' or 'ohlc',
@@ -130,11 +130,11 @@ def stochastic_rsi(x, periods = 14):
     identify overbought if > 0.8 and oversold if < 0.2,
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/stochrsi
     """
-    n = len(x)
+    n = len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
     else:
-        rsi_ = rsi(x, periods = periods)
+        rsi_ = rsi(src, periods = periods)
         low_ = rsi_.rolling(window = periods).min()
         high_ = rsi_.rolling(window = periods).max()
         stoch_rsi = ((rsi_-low_)/(high_-low_))*100
