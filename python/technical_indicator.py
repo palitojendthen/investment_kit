@@ -156,17 +156,18 @@ def fibonacci_retracement(x):
 # Ehlers - Simple Decycler
 def simple_decycler(src, hp_period = 89, return_df = False):
     """
-    technical analysis indicator originated by John F. Ehlers,
+    technical analysis indicator originated by John F. Ehlers
     by subtracting high-frequency components from price data, 
     while retain the low-frequency components of price data,
     i.e. trends are kept intact with little to no lag
     return trend, including a hyteresis band
     reference: https://tlc.thinkorswim.com/center/reference/Tech-Indicators/studies-library/E-F/EhlersSimpleDecycler
-    """    
+    """
     n = len(src)
     if n < hp_period:
         raise ValueError('Periods cannot be greater than data length')
     else:
+        src = src.values
         hp = [0.00]*n
         decycler = [0.00]*n
         hysteresis_up = [0.00]*n
