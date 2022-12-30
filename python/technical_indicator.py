@@ -195,23 +195,25 @@ def predictive_moving_average(src, return_df = False):
     given signal when predict crossing it's trigger
     reference: John F. Ehlers, Rocket Science for Traders pg. 212
     """
-    n = len(df)
+    n = len(src)
+    src = src.values
     wma1 = [0.00]*n
     wma2 = [0.00]*n
     predict = [0.00]*n
     trigger = [0.00]*n
     series_ = [0.00]*n
     for i in range(7, n):
-        wma1[i] = (7*src[i]+6*src[i-1]+5*src[i-2]+4*src[i-3]+3*src[i-4]+2*src[i-5]+src[i-6])/28
-        wma2[i] = (7*wma1[i]+6*wma1[i-1]+5*wma1[i-2]+4*wma1[i-3]+3*wma1[i-4]+2*wma1[i-5]+wma1[i-6])/28
+        wma1[i] = (7*src[i] + 6*src[i-1] + 5*src[i-2] + 4*src[i-3] + 3*src[i-4] + 2*src[i-5] + src[i-6])/28
+        wma2[i] = (7*wma1[i] + 6*wma1[i-1] + 5*wma1[i-2] + 4*wma1[i-3] + 3*wma1[i-4] + 2*wma1[i-5] + wma1[i-6])/28
         predict[i] = (2*wma1[i])-wma2[i]
-        trigger[i] = (4*predict[i]+3*predict[i-1]+2*predict[i-2]+predict[i])/10
+        trigger[i] = (4*predict[i] + 3*predict[i-1] + 2*predict[i-2] + predict[i])/10
         if predict[i] > trigger[i]:
             series_[i] = predict[i]
         else:
             series_[i] = trigger[i]
     if return_df:
-        return pd.DataFrame({'predict':predict,
+        return pd.DataFrame({'src':src,
+                             'predict':predict,
                              'trigger':trigger})
     else:
         return pd.Series(series_)
