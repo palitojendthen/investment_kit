@@ -220,3 +220,34 @@ def predictive_moving_average(src, return_df = False):
     else:
         return pd.Series(series_)
 
+# Ehlers - Even Better Sinewave
+def even_better_sinewave(src, hp_period = 89):
+    """
+    technical analysis indicator by John F. Ehlers,
+    aims to create artificially predictive indicator,
+    by transfering cyclic data swings into a sinewave
+    referece: John F. Ehlers, Cycle Analytics for Traders pg. 159
+    """
+    n = len(src)
+    src = src.values
+    if n < hp_period:
+        raise ValueError('Periods cannot be greater than data length')
+    else:
+        hp = [0.00]*n
+        decycler = [0.00]*n
+        filt = [0.00]*n
+        wave = [0.00]*n
+        pwr = [0.00]*n
+        pi = 2*np.arcsin(1)
+        alpha1 = (np.cos(.707*2*pi/hp_period)+np.sin(.707*2*pi/hp_period)-1)/np.cos(.707*2*pi/hp_period)
+
+        for i in range(1, n):
+            hp[i] = (1-alpha1/2)*(1-alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-alpha1)*hp[i-1]-(1-alpha1)*(1-alpha1)*hp[i-2]
+            filt[i] = (7*hp[i] + 6*hp[i-1] + 5*hp[i-2] + 4*hp[i-3] + 3*hp[i-4] + 2*hp[i-5] + hp[i])/28
+            wave[i] = (filt[i]+filt[i-1]+filt[i-2])/3
+            pwr[i] = (filt[i]*filt[i]+filt[i-1]*filt[i-1]+filt[i-2]*filt[i-2])/3
+
+            wave[i] = wave[i]/np.sqrt(pwr[i])
+
+        return pd.Series(wave[hp_period:])
+
