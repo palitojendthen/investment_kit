@@ -75,6 +75,10 @@ df2['trigger'][14:].plot(color = 'red')
 
 ## compute even better sinewave
 ```python
+df = pd.read_excel(open('dummy_data2.xlsx', 'rb'), sheet_name = 'Sheet1', engine = 'openpyxl')
+```
+
+```python
 df2 = investment.even_better_sinewave(df['close'], return_df = True)
 ```
 
