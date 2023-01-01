@@ -70,3 +70,38 @@ df2['trigger'][14:].plot(color = 'red')
 ```
 
 <img src="https://i.postimg.cc/pTkzXmbV/Screenshot-2022-12-30-200658.png" width=100% height=100%>
+
+<br>
+
+## compute even better sinewave
+```python
+df2 = investment.even_better_sinewave(df['close'], return_df = True)
+```
+
+__visualize price to even better sinwave__
+```python
+df2['buy'] = np.where((df2['wave'].shift(1) < df2['wave'].shift(0)) | (df2['wave'] > .8), df2['wave'], np.nan)
+df2['sell'] = np.where((df2['wave'].shift(1) > df2['wave'].shift(0)) | (df2['wave'] < -.8), df2['wave'], np.nan)
+df2
+```
+
+```python
+fig = pt.figure(figsize = (12,8))
+gs = gridspec.GridSpec(2, 1, height_ratios=[2, 1]) 
+
+ax0 = pt.subplot(gs[0])
+ax0.plot(df2.index[-200:], df2['price'][-200:], color = 'black')
+ax1 = pt.subplot(gs[1])
+ax1.plot(df2.index[-200:], df2['buy'][-200:], color = 'green')
+ax1.plot(df2.index[-200:], df2['sell'][-200:], color = 'red')
+
+ax0.yaxis.set_label_position("right")
+ax0.yaxis.tick_right()
+ax0.set_title('Dummy Stock Price Data vs Even Better Sinewave')
+ax1.yaxis.set_label_position("right")
+ax1.yaxis.tick_right()
+
+fig.tight_layout()
+```
+
+<img src="https://i.postimg.cc/8CHgYRvD/Screenshot-2023-01-01-170121.png" width=100% height=100%>
