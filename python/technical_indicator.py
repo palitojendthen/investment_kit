@@ -221,7 +221,7 @@ def predictive_moving_average(src, return_df = False):
         return pd.Series(series_)
 
 # Ehlers - Even Better Sinewave
-def even_better_sinewave(src, hp_period = 89):
+def even_better_sinewave(src, hp_period = 89, return_df = None):
     """
     technical analysis indicator by John F. Ehlers,
     aims to create artificially predictive indicator,
@@ -248,6 +248,10 @@ def even_better_sinewave(src, hp_period = 89):
             pwr[i] = (filt[i]*filt[i]+filt[i-1]*filt[i-1]+filt[i-2]*filt[i-2])/3
 
             wave[i] = wave[i]/np.sqrt(pwr[i])
-
-        return pd.Series(wave[hp_period:])
+        
+        if return_df:
+            return pd.DataFrame({'price': src[hp_period:],
+                                'wave': wave[hp_period:]})
+        else:
+            return pd.Series(wave[hp_period:])
 
