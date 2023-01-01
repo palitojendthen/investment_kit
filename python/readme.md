@@ -50,7 +50,7 @@ df2['hysteresis_up'].plot(color = 'orange')
 df2['hysteresis_down'].plot(color = 'orange')
 ```
 
-<img src="https://i.postimg.cc/W4C59xHZ/Screenshot-2023-01-01-160558.png" width=100% height=100%>
+<img src="https://i.postimg.cc/hvpxYdtY/Screenshot-2023-01-01-160938.png" width=100% height=100%>
 
 <br>
 
