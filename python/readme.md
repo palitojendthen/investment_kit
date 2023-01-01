@@ -35,6 +35,11 @@ df2 = indicator.simple_decycler(df['price'], hp_period = length, return_df = Tru
 
 __visualize price to simple decycler indicator__
 ```python
+df2['buy'] = np.where(df2['decycler'].pct_change() > 0, df2['decycler'], np.nan)
+df2['sell'] = np.where((df2['decycler'].pct_change() < 0) | (df2['decycler'].pct_change() == 0), df2['decycler'], np.nan)
+```
+
+```python
 ax = pd.Series(df['price'][89:].values).plot(color = 'black', figsize = (15,8))
 ax.yaxis.set_label_position("right")
 ax.yaxis.tick_right()
@@ -44,7 +49,7 @@ df2['hysteresis_up'].plot(color = 'orange')
 df2['hysteresis_down'].plot(color = 'orange')
 ```
 
-<img src="https://i.postimg.cc/qqNsn3tQ/Screenshot-2022-12-29-180250.png" width=100% height=100%>
+<img src="https://i.postimg.cc/W4C59xHZ/Screenshot-2023-01-01-160558.png" width=100% height=100%>
 
 <br>
 
