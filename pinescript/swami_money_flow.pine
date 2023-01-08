@@ -17,7 +17,6 @@ mf(length)=>
     cmf = math.sum(average_day, length)/math.sum(volume, length)
     smooth = (4*cmf + 3*cmf[1] + 2*cmf[2] + cmf[3])/10
 
-
 mf1 = mf(1)
 mf2 = mf(2)
 mf3 = mf(3)
@@ -50,7 +49,7 @@ mf29 = mf(29)
 mf30 = mf(30)
 
 
-// Color condition
+// Color
 col(x) => x < -0.6 ? #680000 :
           x > -0.6 and x < -0.56 ? #750000 :
           x > -0.56 and x < -0.52 ? #840000 :
@@ -64,11 +63,11 @@ col(x) => x < -0.6 ? #680000 :
           x > -0.24 and x < -0.2 ? #E83600 :
           x > -0.2 and x < -0.16 ? #F23800 :
           x > -0.16 and x < -0.12 ? #FF3C00 :
-          x > -0.12 and x < -0.08 ? #FF5E00 :
-          x > -0.08 and x < -0.04 ? #FF8000 :
-          x > -0.04 and x < 0 ? #FF9A00 :
-          x > 0 and x < 0.04 ? #FFCD00 :
-          x > 0.04 and x < 0.08 ? #FFEF00 :
+          x > -0.12 and x < -0.08 ? #E45300 :
+          x > -0.08 and x < -0.04 ? #EE5700 :
+          x > -0.04 and x < 0 ? #FF5E00 :
+          x > 0 and x < 0.04 ? #FF9A00 :
+          x > 0.04 and x < 0.08 ? #FFCD00 :
           x > 0.08 and x < 0.12 ? #D5FF00 :
           x > 0.12 and x < 0.16 ? #ABFF00 :
           x > 0.16 and x < 0.2 ? #66FF00 :
@@ -84,35 +83,34 @@ col(x) => x < -0.6 ? #680000 :
           #003F0D
 
 
-
 // Visualize
-p1 = plot(-0.6, color = col(mf1), linewidth = 12)
-p2 = plot(-0.56, color = col(mf2), linewidth = 12)
-p3 = plot(-0.52, color = col(mf3), linewidth = 12)
-p4 = plot(-0.48, color = col(mf4), linewidth = 12)
-p5 = plot(-0.44, color = col(mf5), linewidth = 12)
-p6 = plot(-0.4, color = col(mf6), linewidth = 12)
-p7 = plot(-0.36, color = col(mf7), linewidth = 12)
-p8 = plot(-0.32, color = col(mf8), linewidth = 12)
-p9 = plot(-0.28, color = col(mf9), linewidth = 12)
-p10 = plot(-0.24, color = col(mf10), linewidth = 12)
-p11 = plot(-0.2, color = col(mf11), linewidth = 12)
-p12 = plot(-0.16, color = col(mf12), linewidth = 12)
-p13 = plot(-0.12, color = col(mf13), linewidth = 12)
-p14 = plot(-0.08, color = col(mf14), linewidth = 12)
-p15 = plot(-0.04, color = col(mf15), linewidth = 12)
-p16 = plot(0, color = col(mf16), linewidth = 12)
-p17 = plot(0.04, color = col(mf17), linewidth = 12)
-p18 = plot(0.08, color = col(mf18), linewidth = 12)
-p19 = plot(0.12, color = col(mf19), linewidth = 12)
-p20 = plot(0.16, color = col(mf20), linewidth = 12)
-p21 = plot(0.2, color = col(mf21), linewidth = 12)
-p22 = plot(0.24, color = col(mf22), linewidth = 12)
-p23 = plot(0.28, color = col(mf23), linewidth = 12)
-p24 = plot(0.32, color = col(mf24), linewidth = 12)
-p25 = plot(0.36, color = col(mf25), linewidth = 12)
-p26 = plot(0.4, color = col(mf26), linewidth = 12)
-p27 = plot(0.44, color = col(mf27), linewidth = 12)
-p28 = plot(0.48, color = col(mf28), linewidth = 12)
-p29 = plot(0.52, color = col(mf29), linewidth = 12)
-p30 = plot(0.56, color = col(mf30), linewidth = 12)
+p1 = plot(1, color = col(mf1), linewidth = 22)
+p2 = plot(2, color = col(mf2), linewidth = 22)
+p3 = plot(3, color = col(mf3), linewidth = 22)
+p4 = plot(4, color = col(mf4), linewidth = 22)
+p5 = plot(5, color = col(mf5), linewidth = 22)
+p6 = plot(6, color = col(mf6), linewidth = 22)
+p7 = plot(7, color = col(mf7), linewidth = 22)
+p8 = plot(8, color = col(mf8), linewidth = 22)
+p9 = plot(9, color = col(mf9), linewidth = 22)
+p10 = plot(10, color = col(mf10), linewidth = 22)
+p11 = plot(11, color = col(mf11), linewidth = 22)
+p12 = plot(12, color = col(mf12), linewidth = 22)
+p13 = plot(13, color = col(mf13), linewidth = 22)
+p14 = plot(14, color = col(mf14), linewidth = 22)
+p15 = plot(15, color = col(mf15), linewidth = 22)
+p16 = plot(16, color = col(mf16), linewidth = 22)
+p17 = plot(17, color = col(mf17), linewidth = 22)
+p18 = plot(18, color = col(mf18), linewidth = 22)
+p19 = plot(19, color = col(mf19), linewidth = 22)
+p20 = plot(20, color = col(mf20), linewidth = 22)
+p21 = plot(21, color = col(mf21), linewidth = 22)
+p22 = plot(22, color = col(mf22), linewidth = 22)
+p23 = plot(23, color = col(mf23), linewidth = 22)
+p24 = plot(24, color = col(mf24), linewidth = 22)
+p25 = plot(25, color = col(mf25), linewidth = 22)
+p26 = plot(26, color = col(mf26), linewidth = 22)
+p27 = plot(27, color = col(mf27), linewidth = 22)
+p28 = plot(28, color = col(mf28), linewidth = 22)
+p29 = plot(29, color = col(mf29), linewidth = 22)
+p30 = plot(30, color = col(mf30), linewidth = 22)
