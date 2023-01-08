@@ -7,7 +7,6 @@ indicator(title = 'ehlers_inverse_fisher_transform_of_adaptive_stochastic', shor
 // input
 hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value', tooltip = 'Determines the length of High-pass Period')
 src = input.source(defval = close, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to close')
-apply_bar_color = input.bool(defval = false, title = 'Bar Color', group = 'Options', tooltip = 'Determines whether to apply bar color')
 
 
 // variable
@@ -148,17 +147,17 @@ ifish := (math.exp(2*3*value1)-1)/(math.exp(2*3*value1)+1)
 trigger := .9*ifish[1]
 
 // visualize
-color_con = ifish > trigger ? color.green : color.red
-color_con_ = ifish > trigger
+color_con = ifish > trigger and ifish > ifish[1] ? color.green : color.red
+color_con_ = ifish > trigger and ifish > ifish[1]
+
 plot(ifish, color = color_con, linewidth = 3)
 plot(trigger, color = color.new(color.aqua, 50))
 
-// bar color
-barcolor(apply_bar_color ? color_con : na)
 
 // create alert
 alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
 alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
+
 
 // // strategy test
 // long_condition = not (color_con_[1] and color_con_)
@@ -168,4 +167,3 @@ alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell
 // short_condition = color_con_[1] and not color_con_
 // if short_condition
 //     strategy.exit('exit', 'long', profit = 10, loss = 1)
-
