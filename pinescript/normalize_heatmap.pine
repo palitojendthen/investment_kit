@@ -2,15 +2,16 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'normalize_heatmap_indicator', shorttitle = 'n_heatmap', overlay = true, timeframe = '', timeframe_gaps = true)
+indicator(title = 'normalize_heatmap_indicator', shorttitle = 'normalize_heatmap', overlay = true, timeframe = '', timeframe_gaps = true)
 
 
 // input
-src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines of data that use as an input to be normalize')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines input data used to be normalize')
+color_scheme = input.string(defval = 'Scheme1', title = 'Color Scheme', group = 'Options', options = ['Scheme1', 'Scheme2'], tooltip = 'Determines whether to applied scheme1-rainbow or scheme2-rgb heatmap')
+ma_type = input.string('WMA', title = 'Moving Average Type', group = 'Options', options = ['WMA', 'EMA', 'SMA', 'RMA'],tooltip = 'Choose between Moving Average Types')
+show_ma = input.bool(defval = false, title = 'Moving Average', group = 'Options', tooltip = 'Determines whether to display moving average')
 length = input.int(defval = 50, title = 'Length', group = 'Value', tooltip = 'Determines time period of data to be normalize')
-show_ma = input.bool(defval = false, title = 'Show Moving Average', group = 'Options', tooltip = 'Determines whether to display moving average')
-color_scheme = input.string(defval = 'Scheme1', title = 'Color Scheme', group = 'Options', options = ['Scheme1', 'Scheme2'], tooltip = 'Choose the color scheme')
-
+alert_ = input.float(defval = .1, title = 'Alert', group = 'Value', tooltip = 'Determines normalize threshold to buy/sell alert')
 
 // normalize data
 norm(source_, length_)=>
@@ -20,8 +21,12 @@ norm(source_, length_)=>
 
 normalize = norm(src, length)
 
-// adding moving average
-wma = ta.wma(src, length)
+// moving average
+float ma = switch ma_type
+    'WMA' => ta.wma(src, length)
+    'EMA' => ta.ema(src, length)
+    'SMA' => ta.sma(src, length)
+    'RMA' => ta.rma(src, length)
 
 
 // heatmap color condition
@@ -52,10 +57,23 @@ scheme2(x)=>
     else if x < .5
         color.rgb(255, 2*255*x, 0)
 
-// weighted moving average color condition
-wma_color = src > wma ? color.green : color.red
+// moving average color condition
+ma_color = src > ma and ma > ma[1] ? color.green : color.red
+ma_color_ = src > ma and ma > ma[1]
 color_shift = color_scheme == 'Scheme1' ? scheme1 : scheme2(normalize)
 
 // visualize
 plotcandle(open, high, low, close, color = color_shift, wickcolor = color_shift, bordercolor = color_shift)
-plot(show_ma ? wma : na, color = wma_color, linewidth = 3)
+plot(show_ma ? ma : na, color = ma_color, linewidth = 2)
+
+
+// create alert
+// moving average alert
+alertcondition((not ma_color_[1] and ma_color_), title = 'MA Entry', message = 'Buy/Long entry detected')
+alertcondition((ma_color_[1] and not ma_color_), title = 'MA Close', message = 'Sell/Short entry detected ')
+
+// normalize heatmap alert
+buy_alert = normalize < alert_
+sell_alert = normalize < (1-alert_)
+alertcondition(buy_alert, title = 'Normalized Entry', message = 'Buy/Long entry detected')
+alertcondition(sell_alert, title = 'Normalized Close', message = 'Sell/Short entry detected')
