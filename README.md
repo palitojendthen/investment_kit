@@ -1,6 +1,6 @@
 <h2> Description: </h2>
 
-`investment_kit` a public/open-source library, that consists a collections of `Technical Analysis Indicator`, `Portfolio Management`, to `Portfolio Optimization` tools, which covered a widely used theory such `Stochastic Oscillator`, `Momentum Indicator`, `Trend`, `Volume Analysis`, through advanced concept of `Heatmap`/`Swami Chart`, by e.g. `John W. Wilder`, `Mark Chaikin`, to `John F. Ehlers` on the technical analysis aspect, along with e.g. `Modern Portfolio Theory` by `Markowitz`, `Portfolio Performance`, to `Risk Management` on the portfolio management aspect. The provided properties aim to be applied to support study/analysis when in face of trading decision, asset allocation/management, and so on, by:
+`investment_kit` a public/open-source library, that consists a collections of `Technical Analysis Indicator`, `Portfolio Management`, to `Portfolio Optimization` tools, which covered a widely used theory such `Stochastic Oscillator`, `Momentum Indicator`, `Trend`, `Volume Analysis`, through advanced concept of `Heatmap`/`Swami Chart`, by e.g. `John W. Wilder`, `Mark Chaikin`, `Perry J. Kaufman`, to `John F. Ehlers` on the technical analysis aspect, along with e.g. `Modern Portfolio Theory` by `Markowitz`, `Portfolio Performance`, to `Risk Management` on the portfolio management aspect. The provided properties aim to be applied to support study/analysis when in face of trading decision, asset allocation/management, and so on, by:
 
 * Traders
 * Technical Analyst
