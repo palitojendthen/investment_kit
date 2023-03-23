@@ -2,36 +2,41 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'deseasonalized/centered_ma', shorttitle = 'deseasonalized_mod')
+indicator(title = 'Modifief Deseasonalized/Centered MA with Label', shorttitle = 'deseasonalized', overlay = true)
 
 
-// Input
-src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Choose the input data, default to OHLC4')
-length = input.int(defval = 10, title = 'Length', group = 'Source', tooltip = 'Determines the length for deseasonalized, consider overfitting/bias-variance trade-off')
-tf = input.timeframe('D', title = 'Time-Frame', group = 'Source', tooltip = 'Choose the input timeframe')
-buy = input.bool(defval = true, title = 'Buy Signal', group = 'Options', tooltip = 'Determines whether to show the Buy signal')
-sell = input.bool(defval = true, title = 'Sell Signal', group = 'Options', tooltip = 'Determines whether to show the Sell signal')
+// input
+src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines the source of input data, default to ohlc4')
+ma_type = input.string('WMA', title = 'Moving Average Type', group = 'Source', options = ['WMA', 'EMA', 'SMA', 'RMA'],tooltip = 'Choose between Moving Average Types')
+length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines the length for deseasonalized, consider overfitting/bias-variance trade-off')
+buy = input.bool(defval = true, title = 'Buy Signal', group = 'Options', tooltip = 'Determines whether to show the Buy signal label')
+sell = input.bool(defval = true, title = 'Sell Signal', group = 'Options', tooltip = 'Determines whether to show the Sell signal label')
 lag = input.bool(defval = true, title = 'Hysteresis', group = 'Options')
 
 
-// Deseasonalized
-deseasonalize(s, l)=>
-    wma = ta.wma(s, l)
-    seasonality_mod = s/ta.wma(wma, l)
-    deseasonalized_mod = s/seasonality_mod
+// deseasonalized
+deseasonalize(src_, length_)=>
+    // moving average
+    float ma = switch ma_type
+        'WMA' => ta.wma(src_, length_)
+        'EMA' => ta.ema(src_, length_)
+        'SMA' => ta.sma(src_, length_)
+        'RMA' => ta.rma(src_, length_)
+    seasonality_mod = src_/ta.wma(ma, length_)
+    deseasonalized_mod = src_/seasonality_mod
 
-src_adjusted = request.security(syminfo.tickerid, tf, src)
-deseasonalized = deseasonalize(src_adjusted, length)
+deseasonalized = deseasonalize(src, length)
 
 
-// Visualize
+// visualize
 color_con = deseasonalized > deseasonalized[1] and deseasonalized[1] > deseasonalized[2] ? color.green : color.red
-color_con_ = deseasonalized > deseasonalized[1] and deseasonalized[1] > deseasonalized[2]
+color_con_ = deseasonalized > deseasonalized[1] and deseasonalized[1] > deseasonalized[2] 
 
 plot(deseasonalized, color = color_con, linewidth = 3)
-plot(lag ? deseasonalized*(1+(.5/100)) : na, color = color.new(color.yellow, 50))
-plot(lag ? deseasonalized*(1-(.5/100)) : na, color = color.new(color.yellow, 50))
+plot(lag ? deseasonalized*(1+(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
+plot(lag ? deseasonalized*(1-(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
 
+// label
 if (not color_con_[1] and color_con_)
     b = label.new(bar_index[1], deseasonalized*(1-.01), text = buy ? 'B' : na, style = label.style_label_upper_right, color = buy ? color.gray : na, textcolor = color.white, size = size.normal)
     label.set_tooltip(b, 'Expected to be uptrend.\nPosistion: Buy/Entry Long')
@@ -43,7 +48,16 @@ else
         na
 
 
-// Create Alert
-alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry point')
-alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry point')
+// create alert
+alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
+alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
 
+
+// strategy test
+// long_condition = not (color_con_[1] and color_con_)
+// if long_condition
+//     strategy.entry('long', strategy.long)
+
+// short_condition = color_con_[1] and not color_con_
+// if short_condition
+//     strategy.exit('exit', 'long', profit = 10, loss = 1)
