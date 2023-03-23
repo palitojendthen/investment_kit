@@ -2,21 +2,21 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'even_better_sinewave_modified', shorttitle = 'even_better_sinewave', overlay = false, timeframe = '', timeframe_gaps = true)
+indicator(title = 'John F. Ehlers - Even Better Sinewave Modified', shorttitle = 'even_better_sinewave', overlay = false, timeframe = '', timeframe_gaps = true)
 
 
 // input
-hp_period = input.int(defval = 89, title = 'High-pass Period', group = 'Value', tooltip = 'Determines the length of High-pass period.')
-src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the input data, default to ohlc4, user could change to other input e.g. close.')
-apply_bar_color = input.bool(defval = false, title = 'Bar color', group = 'Options', tooltip = 'Determines whether to apply bar color, based on even better sinewave indicator signal')
+hp_period = input.int(defval = 89, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of the High-Pass period.')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
+apply_bar_color = input.bool(defval = false, title = 'Bar color', group = 'Options', tooltip = 'Determines whether to apply bar color')
 
 
 // variable
-alpha1 = 0.0
-hp = 0.0
-filt = 0.0
-wave = 0.0
-pwr = 0.0
+alpha1 = 0.00
+hp = 0.00
+filt = 0.00
+wave = 0.00
+pwr = 0.00
 
 
 // even better sinewave
@@ -48,25 +48,26 @@ else if wave > .8
 else if wave < wave[1]
     con := con
 
-color_ = con == 1 ? color.green : color.red
+color_con = con == 1 ? color.green : color.red
 
 // sine wave
-p1 = plot(wave, color = color_, linewidth = 3)
+p1 = plot(wave, color = color_con, linewidth = 3)
 plot(wave*.8, color = color.new(color.aqua, 80))
 
-// threshold
-// h1 = hline(.85, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-// h2 = hline(.75, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-// fill(h1, h2, color = color.new(color.yellow, 80))
-
-// h3 = hline(-.75, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-// h4 = hline(-.85, linewidth = 1, color = color.new(color.yellow, 50), linestyle = hline.style_solid)
-// fill(h3, h4, color = color.new(color.yellow, 80))
-
 // bar color
-barcolor(apply_bar_color ? color_ : na)
+barcolor(apply_bar_color ? color_con : na)
 
 
 // create alert
 alertcondition(con == 1 , title = 'Entry', message = 'Buy/Long entry point detected')
 alertcondition(con == 0, title = 'Close', message = 'Sell/Short entry point detected')
+
+
+// strategy test
+// long_condition = con == 1
+// if long_condition
+//     strategy.entry('long', strategy.long)
+
+// short_condition = con == 0
+// if short_condition
+//     strategy.exit('exit', 'long', profit = 10, loss = 1)
