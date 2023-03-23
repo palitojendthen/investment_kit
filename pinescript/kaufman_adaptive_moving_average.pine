@@ -127,10 +127,10 @@ fastest = 2/(fast_length+1)
 slowest = 2/(slow_length+1)
 
 // eficiency ratio
-nom = src - src[int(dominant_cycle)]
-nom := nom > 0 ? nom : nom*-1
+num = src - src[int(dominant_cycle)]
+num := num > 0 ? num : num*-1
 denom2 = math.sum(math.abs(src-src[1]), int(dominant_cycle))
-er = nom/denom2
+er = num/denom2
 
 // smoothing constant
 sc = math.pow(er*(fastest-slowest)+slowest, 2)
@@ -144,7 +144,7 @@ kama := nz(kama[1]) + sc*(src-nz(kama[1]))
 color_con = kama > kama[1] and kama[1] > kama[2] ? color.green : color.red
 color_con_ = kama > kama[1] and kama[1] > kama[2]
 
-plot(kama, color = color_con, linewidth = 2)
+plot(kama, color = color_con, linewidth = 3)
 plot(hysteresis ? kama*(1+(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
 plot(hysteresis ? kama*(1-(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
 barcolor(bar_color ? color_con : na)
