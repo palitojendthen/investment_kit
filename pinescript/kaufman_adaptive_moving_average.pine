@@ -88,7 +88,7 @@ for lag = 0 to length-1
 for period = 8 to length-1
     array.set(cosine_part, period, 0)
     array.set(sine_part, period, 0)
-    for n2 = 8 to 14-1
+    for n2 = 8 to length-1
         array.set(cosine_part, period, nz(array.get(cosine_part, period))+nz(array.get(corr, n2))*math.cos(360*n2/period))
         array.set(sine_part, period, nz(array.get(sine_part, period))+nz(array.get(corr, n2))*math.sin(360*n2/period))
     array.set(sq_sum, period, nz(array.get(cosine_part, period))*nz(array.get(cosine_part, period))+nz(array.get(sine_part, period))*nz(array.get(sine_part, period)))
@@ -162,3 +162,4 @@ alertcondition((color_con_[1] and not color_con_ and barstate.isconfirmed), titl
 // short_condition = color_con_[1] and not color_con_
 // if short_condition
 //     strategy.exit('exit', 'long', profit = 10, loss = 1)
+
