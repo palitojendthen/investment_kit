@@ -2,15 +2,15 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'ehlers_swami_rsi', shorttitle = 'rsi', overlay = false)
+indicator(title = 'John F. Ehlers - Swami Chart RSI', shorttitle = 'rsi', overlay = false)
 
 
 // input
-apply_hp_filter = input.bool(defval = false, title = 'High-pass Filter', group = 'Options', tooltip = 'Determines whether to apply high-pass filter')
 show_initial = input.bool(defval = false, title = 'Initial Level', group = 'Options', tooltip = 'Determines whether to display initial level')
-show_confirmation = input.bool(defval = false, title = 'Confirmation Line', group = 'Options', tooltip = 'Determines whether to display confirmation line')
-show_continuation = input.bool(defval = false, title = 'Continuation Line', group = 'Options', tooltip = 'Determines whether to display continuation line')
-hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value')
+show_confirmation = input.bool(defval = true, title = 'Confirmation Line', group = 'Options', tooltip = 'Determines whether to display confirmation line')
+show_continuation = input.bool(defval = false, title = 'Continuation Line', group = 'Options', tooltip = 'Determines whether to display continuation level')
+apply_hp_filter = input.bool(defval = true, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply High-Pass filter')
+hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of High-Pass Period')
 
 
 // variable
