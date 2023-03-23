@@ -2,11 +2,11 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'ehlers_inverse_fisher_transform_of_adaptive_stochastic', shorttitle = 'inverse_fisher_adaptive_stochastic', overlay = false)
+indicator(title = 'John F. Ehlers - Inverse Fisher Adaptive Stochastic', shorttitle = 'inverse_fisher_adaptive_stochastic', overlay = false)
 
 // input
-hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value', tooltip = 'Determines the length of High-pass Period')
-src = input.source(defval = close, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to close')
+hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of High-Pass Period')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
 
 
 // variable
