@@ -2,11 +2,10 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'ehlers_convolution', shorttitle = 'convolution', overlay = false)
-
+indicator(title = 'John F. Ehlers - Convolution', shorttitle = 'convolution', overlay = false)
 
 // input
-src = input.source(defval = ohlc4, title = 'Source', group = 'Options')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
 
 
 // variable
@@ -42,7 +41,7 @@ alpha1 := (math.cos(1.414*360/longest_period)+math.sin(1.414*360/longest_period)
 hp := (1-alpha1/2)*(1-alpha1/2)*(src-2*src[1]+src[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
 
 // smooth with super smoother filter
-a1 := math.exp(-1.414*3.14159/shortest_period)
+a1 := math.exp(-1.414*pi/shortest_period)
 b1 := 2*a1*math.cos(1.414*180/shortest_period)
 c2 := b1
 c3 := -a1*a1
@@ -82,7 +81,6 @@ col(n)=>
 
 // plot
 n = 0
-
 n := 2
 plot(2, color = col(n), linewidth = 8)
 
