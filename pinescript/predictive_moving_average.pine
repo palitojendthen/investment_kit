@@ -2,38 +2,33 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'ehlers_predictive_moving_average', shorttitle = 'predictive_moving_average', overlay = true, timeframe = '', timeframe_gaps = true)
+indicator(title = 'John F. Ehlers - Predictive Moving Average', shorttitle = 'predictive_moving_average', overlay = true, timeframe = '', timeframe_gaps = true)
 
 
 // input
-src = input.source(ohlc4, title = 'Source', group = 'Value', tooltip = 'Determines the input data source, default to OHLC4')
-length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines the length of input for deviation')
-bar_color = input.bool(defval= false, title = 'Bar Color', group = 'Options', tooltip = 'Determines whether to change the bar color base on crossover or crossunder of predict to trigger')
+src = input.source(ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines the source of input data, default to ohlc4')
+band = input.float(defval = 2, title = '%Band', group = 'Value', minval = 1, maxval = 100, step = 1, tooltip = 'Determines the % of applied band')
+bar_color = input.bool(defval= true, title = 'Bar Color', group = 'Options', tooltip = 'Determines whether to apply bar color, base on crossover or crossunder of predict to trigger')
 
 
 // predictive moving average
-wma1 = 0.0
-wma2 = 0.0
-predict = 0.0
-trigger = 0.0
+wma1 = 0.00
+wma2 = 0.00
+predict = 0.00
+trigger = 0.00
 
-wma1 := (7*src + 6*src[1] + 5*src[2] + 4*src[3] + 3*src[4] + 2*src[5] + src[6])/28
-wma2 := (7*wma1 + 6*wma1[1] + 5*wma1[2] + 4*wma1[3] + 3*wma1[4] + 2*wma1[5] + wma1[6])/28
+wma1 := (7*src+6*src[1]+5*src[2]+4*src[3]+3*src[4]+2*src[5]+src[6])/28
+wma2 := (7*wma1+6*wma1[1]+5*wma1[2]+4*wma1[3]+3*wma1[4]+2*wma1[5]+wma1[6])/28
 
 predict := (2*wma1)-wma2
-trigger := (4*predict + 3*predict[1] + 2*predict[2] + predict)/10
+trigger := (4*predict+3*predict[1]+2*predict[2]+predict)/10
 
-
-// deviation
-returns = (close/close[1])-1
-stdev = ta.stdev(returns, length)
+series_ = predict > trigger ? predict : trigger
+upper = series_*(1+(band/100))
+lower = series_*(1-(band/100))
 
 
 // visualize
-series_ = predict > trigger ? predict : trigger
-upper = series_*(1+math.abs(stdev))
-lower = series_*(1-math.abs(stdev))
-
 // color condition
 color_con = predict > trigger and predict > predict[1] ? color.green : color.red 
 color_con_ = predict > trigger and predict > predict[1]
@@ -43,10 +38,20 @@ barcolor(bar_color ? color_con : na)
 
 // line type
 plot(series_, color = color_con, style = plot.style_line, linewidth = 2)
-p_up = plot(upper, color = color.new(color.white, 80))
-p_low = plot(lower, color = color.new(color.white, 80))
-fill(p_up, p_low, color = color.new(color.gray, 90))
+p_up = plot(upper, color = color.new(color.yellow, 70))
+p_low = plot(lower, color = color.new(color.yellow, 70))
+
 
 // create alert
 alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry point detected')
 alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry point detected')
+
+
+// strategy test
+// long_condition = not (color_con_[1] and color_con_)
+// if long_condition
+//     strategy.entry('long', strategy.long)
+
+// short_condition = color_con_[1] and not color_con_
+// if short_condition
+//     strategy.exit('exit', 'long', profit = 10, loss = 1)
