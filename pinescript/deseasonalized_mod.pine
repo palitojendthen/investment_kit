@@ -2,7 +2,7 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'Modifief Deseasonalized/Centered MA with Label', shorttitle = 'deseasonalized', overlay = true)
+indicator(title = 'Modified Deseasonalized/Centered MA with Label', shorttitle = 'deseasonalized', overlay = true)
 
 
 // input
