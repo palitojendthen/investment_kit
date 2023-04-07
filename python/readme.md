@@ -42,7 +42,7 @@ df2['sell'] = np.where((df2['decycler'].pct_change() < 0) | (df2['decycler'].pct
 ```
 
 ```python
-ax = pd.Series(df['price'][89:].values).plot(color = 'black', figsize = (15,8))
+ax = pd.Series(df['Close'][length:]).plot(color = 'black', figsize = (20,12))
 ax.yaxis.set_label_position("right")
 ax.yaxis.tick_right()
 ax.set_title('Dummy Stock Price Data vs Simple Decycler Indicator')
@@ -63,15 +63,15 @@ df2 = indicator.predictive_moving_average(df['price'], return_df = True)
 
 __visualize price to predictive moving average__
 ```python
-ax = df2['price'][14:].plot(color = 'black', figsize = (15,8))
+ax = df2['price'][-150:].plot(color = 'black', figsize = (20,12))
 ax.yaxis.set_label_position("right")
 ax.yaxis.tick_right()
-ax.set_title('Dummy Stock Price Data vs Predictive Moving Average')
-df2['predict'][14:].plot.line(color = 'green')
-df2['trigger'][14:].plot(color = 'red')
+ax.set_title('Dummy Stock Price Data vs Predictive Moving Average Indicator')
+df2['predict'][-150:].plot.line(color = 'green')
+df2['trigger'][-150:].plot(color = 'red')
 ```
 
-<img src="https://i.postimg.cc/pTkzXmbV/Screenshot-2022-12-30-200658.png" width=100% height=100%>
+<img src="https://i.postimg.cc/cHjDrRLW/2.png" width=100% height=100%>
 
 <br>
 
