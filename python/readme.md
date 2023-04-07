@@ -11,6 +11,7 @@ __load library__
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as pt
+import yfinance as yf
 import sys
 path = r'path-to-investment_kit'
 sys.path.insert(0, path)
@@ -21,7 +22,8 @@ import portfolio_management as portfolio
 __retrieve data__
 
 ```python
-df = pd.read_excel(open('dummy_data.xlsx', 'rb'), sheet_name = 'Sheet1', engine = 'openpyxl')
+start_date = '2021-1-1'; end_date = '2022-12-31'
+df = yf.download(tickers = 'JPM', threads = True, start = start_date, end = end_date)
 ```
 
 <br>
@@ -50,7 +52,7 @@ df2['hysteresis_up'].plot(color = 'orange')
 df2['hysteresis_down'].plot(color = 'orange')
 ```
 
-<img src="https://i.postimg.cc/857wMr9S/1.png" width=100% height=100%>
+<img src="https://i.postimg.cc/FKVdYDW5/1.png" width=100% height=100%>
 
 <br>
 
