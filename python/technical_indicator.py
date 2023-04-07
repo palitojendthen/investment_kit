@@ -124,7 +124,7 @@ def rsi(src, periods = 14, return_df = None):
         if return_df is not None:
             return df[periods:]
         else:
-            return pd.Series(df['rsi'])
+            return pd.Series(df['rsi'][periods:])
 
 # Stochastic Relative Strength Index
 def stochastic_rsi(src, periods = 14):
@@ -223,11 +223,11 @@ def predictive_moving_average(src, return_df = False):
         else:
             series_[i] = trigger[i]
     if return_df:
-        return pd.DataFrame({'price':src,
-                             'predict':predict,
-                             'trigger':trigger})
+        return pd.DataFrame({'price':src[14:],
+                             'predict':predict[14:],
+                             'trigger':trigger[14:]})
     else:
-        return pd.Series(series_)
+        return pd.Series(series_[14:])
 
 # Ehlers - Even Better Sinewave
 def even_better_sinewave(src, hp_period = 89, return_df = None):
