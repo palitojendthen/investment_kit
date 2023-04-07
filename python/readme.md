@@ -32,7 +32,7 @@ df = yf.download(tickers = 'JPM', threads = True, start = start_date, end = end_
 
 ```python
 length = 89
-df2 = indicator.simple_decycler(df['price'], hp_period = length, return_df = True)
+df2 = indicator.simple_decycler(df['Close'], hp_period = length, return_df = True)
 ```
 
 __visualize price to simple decycler indicator__
@@ -58,7 +58,7 @@ df2['hysteresis_down'].plot(color = 'orange')
 
 ## compute predictive moving average
 ```python
-df2 = indicator.predictive_moving_average(df['price'], return_df = True)
+df2 = indicator.predictive_moving_average(df['Close'], return_df = True)
 ```
 
 __visualize price to predictive moving average__
@@ -77,11 +77,7 @@ df2['trigger'][-150:].plot(color = 'red')
 
 ## compute even better sinewave
 ```python
-df = pd.read_excel(open('dummy_data2.xlsx', 'rb'), sheet_name = 'Sheet1', engine = 'openpyxl')
-```
-
-```python
-df2 = investment.even_better_sinewave(df['close'], return_df = True)
+df2 = indicator.even_better_sinewave(df['Close'], return_df = True)
 ```
 
 __visualize price to even better sinwave__
@@ -92,7 +88,7 @@ df2
 ```
 
 ```python
-fig = pt.figure(figsize = (12,8))
+fig = pt.figure(figsize = (20,12))
 gs = gridspec.GridSpec(2, 1, height_ratios=[2, 1]) 
 
 ax0 = pt.subplot(gs[0])
@@ -110,4 +106,4 @@ ax1.yaxis.tick_right()
 fig.tight_layout()
 ```
 
-<img src="https://i.postimg.cc/8CHgYRvD/Screenshot-2023-01-01-170121.png" width=100% height=100%>
+<img src="https://i.postimg.cc/G3MHZXS9/3.png" width=100% height=100%>
