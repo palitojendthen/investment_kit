@@ -26,6 +26,7 @@ def ema(src, periods = 14):
     of given time-series data
     referece: https://www.investopedia.com/terms/e/ema.asp
     """
+    src = src.dropna()
     n = len(src)
     alpha = 2/(periods+1)
     if n < periods:
@@ -44,6 +45,7 @@ def wma(src, periods = 14):
     of given time-series data
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/wma
     """
+    src = src.dropna()
     n = len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
@@ -62,6 +64,7 @@ def hma(src, periods = 14):
     an improvement to fast and smooth moving average
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/hull-moving-average
     """
+    src = src.dropna()
     n = len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
@@ -81,6 +84,8 @@ def stochastic(close, high, low, periods = 14, return_df = False, smooth = 3):
     and identify overbought or oversold area
     reference: https://www.investopedia.com/terms/s/stochasticoscillator.asp
     """
+    close, high, low = close.dropna(), high.dropna(), low.dropna()
+    
     n = len(close)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
@@ -103,7 +108,8 @@ def rsi(src, periods = 14, return_df = None):
     as techincal analysis aim to identify overbought or oversold area,
     reference: https://www.investopedia.com/terms/r/rsi.asp
     """
-    n =len(src)
+    src = src.dropna()
+    n = len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
     else:
@@ -130,6 +136,7 @@ def stochastic_rsi(src, periods = 14):
     identify overbought if > 0.8 and oversold if < 0.2,
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/stochrsi
     """
+    src = src.dropna()
     n = len(src)
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
@@ -141,16 +148,18 @@ def stochastic_rsi(src, periods = 14):
         return stoch_rsi
 
 # Fibonacci Retracement Level
-def fibonacci_retracement(x):
+def fibonacci_retracement(src):
     """
     find the retracement level of a given price,
     which expected to have a reverse,
     reference: https://www.investopedia.com/terms/f/fibonacciretracement.asp
-    """    
+    """
+    n = len(src)
+    src = src[n-1]
     ratio_ =  pd.Series([0, 23.6, 38.2, 50, 61.8, 78.6, 1])/100
     level_ = []
     for i in ratio_:
-        level_.append(x*(1-i))
+        level_.append(src*(1-i))
     return pd.Series(level_)
 
 # Ehlers - Simple Decycler
@@ -163,11 +172,11 @@ def simple_decycler(src, hp_period = 89, return_df = False):
     return trend, including a hyteresis band
     reference: https://tlc.thinkorswim.com/center/reference/Tech-Indicators/studies-library/E-F/EhlersSimpleDecycler
     """
+    src = src.dropna()
     n = len(src)
     if n < hp_period:
         raise ValueError('Periods cannot be greater than data length')
     else:
-        src = src.values
         hp = [0.00]*n
         decycler = [0.00]*n
         hysteresis_up = [0.00]*n
@@ -197,8 +206,8 @@ def predictive_moving_average(src, return_df = False):
     given signal when predict crossing it's trigger
     reference: John F. Ehlers, Rocket Science for Traders pg. 212
     """
+    src = src.dropna()
     n = len(src)
-    src = src.values
     wma1 = [0.00]*n
     wma2 = [0.00]*n
     predict = [0.00]*n
@@ -214,7 +223,7 @@ def predictive_moving_average(src, return_df = False):
         else:
             series_[i] = trigger[i]
     if return_df:
-        return pd.DataFrame({'src':src,
+        return pd.DataFrame({'price':src,
                              'predict':predict,
                              'trigger':trigger})
     else:
@@ -228,8 +237,8 @@ def even_better_sinewave(src, hp_period = 89, return_df = None):
     by transfering cyclic data swings into a sinewave
     referece: John F. Ehlers, Cycle Analytics for Traders pg. 159
     """
+    src = src.dropna()
     n = len(src)
-    src = src.values
     if n < hp_period:
         raise ValueError('Periods cannot be greater than data length')
     else:
