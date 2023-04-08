@@ -264,3 +264,49 @@ def even_better_sinewave(src, hp_period = 89, return_df = None):
         else:
             return pd.Series(wave[hp_period:])
 
+# Kaufman - Adaptive Moving Average
+def kama(src, length = 14, fast_length = 2, slow_length = 30, return_df = False):
+    """
+    technical analysis indicator originated by Perry J. Kaufman,
+    an adaptive trendline indicator, with notion of using the fastest trend possible,
+    based on the smallest calculation period for the existing market conditions,
+    by applying an exponential smoothing formula to vary the speed of the trend,
+    reference: https://corporatefinanceinstitute.com/resources/capital-markets/kaufmans-adaptive-moving-average-kama/
+    """
+    src = src.dropna()
+    n = len(src)
+
+    if n < length:
+        raise ValueError('Periods cannot be greater than data length')
+    else:
+        fastest = 2/(fast_length+1)
+        slowest = 2/(slow_length+1)
+        
+        # variable
+        num = [0.00]*n
+        delta = [0.00]*n
+        denom = [0.00]*n
+        er = [0.00]*n
+        sc = [0.00]*n
+        kama = [0.00]*n
+        
+        for i in range(length, n):
+            
+            # efficiency ratio
+            num[i] = abs(src[i] - src[i-length])
+            delta[i] = abs(src[i] - src[i-1])
+            denom[length-1:] = np.convolve(delta, np.ones(length), 'valid')
+            er[i] = num[i]/denom[i]
+            
+            # smoothing constant
+            sc[i] = math.pow(er[i]*(fastest-slowest)+slowest, 2)
+            
+            # adaptive moving average
+            kama[i] = kama[i-1]+sc[i]*(src[i]-kama[i-1])
+        
+        if return_df:
+            return pd.DataFrame({'price':src[slow_length+length:],
+                                 'kama': kama[slow_length+length:]})
+        else:
+            return pd.Series(kama[slow_length+length:])
+
