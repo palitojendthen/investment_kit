@@ -107,3 +107,31 @@ fig.tight_layout()
 ```
 
 <img src="https://i.postimg.cc/G3MHZXS9/3.png" width=100% height=100%>
+
+<br>
+
+## compute adaptive moving average
+```python
+start_date = '2021-1-1'; end_date = '2022-12-31'
+df = yf.download(tickers = 'BTC-USD', threads = True, start = start_date, end = end_date)
+```
+
+```python
+df2 = indicator.kama(df['Close'], return_df = True)
+```
+
+__visualize price to kaufman adaptive moving average indicator__
+```python
+df2['buy'] = np.where(df2['kama'].pct_change() > 0, df2['kama'], np.nan)
+df2['sell'] = np.where((df2['kama'].pct_change() < 0) | (df2['kama'].pct_change() == 0), df2['kama'], np.nan)
+```
+```python
+ax = pd.Series(df2['price']).plot(color = 'black', figsize = (20,12))
+ax.yaxis.set_label_position("right")
+ax.yaxis.tick_right()
+ax.set_title('BTCUSD vs KAMA Indicator')
+df2['buy'].plot.line(color = 'green')
+df2['sell'].plot.line(color = 'red')
+```
+
+<img src="https://i.postimg.cc/VkBzphtK/4.png" width=100% height=100%>
