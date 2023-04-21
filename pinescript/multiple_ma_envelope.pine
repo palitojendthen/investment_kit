@@ -29,18 +29,18 @@ ma_env(source_, length_, mult_)=>
 
 // visualize
 // moving average envelope
-// 10 percent
+// length = 10
 [u10, l10] = ma_env(src, 10, mult)
 fill(plot(u10, color = na), plot(l10, color = na), color.new(#1E90FF, 97))
-// 20 percent
+// length = 20
 [u20, l20] = ma_env(src, 20, mult+.2)
 fill(plot(u20, color = na), plot(l20, color = na), color.new(#1E90FF, 97))
-// 50 precent
+// length = 50
 [u50, l50] = ma_env(src, 50, mult+.4)
 fill(plot(u50, color = na), plot(l50, color = na), color.new(#1E90FF, 97))
-// 70 percent
+// length = 100
 [u100, l100] = ma_env(src, 100, mult+.6)
-fill(plot(u100, color = na), plot(l100, color = na), color.new(#1E90FF, 95))
+fill(plot(u100, color = na), plot(l100, color = na), color.new(#1E90FF, 97))
 
 // moving average
 plot(show_ma ? ma : na, color = color.maroon, linewidth = 2)
