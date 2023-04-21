@@ -20,8 +20,8 @@ c1 = 0.00
 c2 = 0.00
 c3 = 0.00
 smoothed_rsi = 0.00
-pivot_high = 0.00
-pivot_low = 0.00
+// pivot_high = 0.00
+// pivot_low = 0.00
 
 
 // relative strength index (rsi)
@@ -37,19 +37,18 @@ c1 := 1-c2-c3
 smoothed_rsi := c1*(rsi+rsi[1])/2+c2*nz(smoothed_rsi[1])+c3*nz(smoothed_rsi[2])
 
 
-// Visualize
-p1 = plot(smoothed_rsi*(1+.05), color = na)
-p2 = plot(smoothed_rsi*(1-.05), color = na)
-fill(p1, p2, color = color.new(color.blue, 80))
-plot(smoothed_rsi, color = color.blue, linewidth = 2)
-hline(70, color = color.new(color.blue, 50), linestyle = hline.style_dashed)
-hline(30, color = color.new(color.blue, 50), linestyle = hline.style_dashed)
+// visualize
+hline(70, color = color.new(color.blue, 80), linestyle = hline.style_dashed)
+hline(30, color = color.new(color.blue, 80), linestyle = hline.style_dashed)
+plot(smoothed_rsi, color = color.maroon, linewidth = 2)
 
 // rsi trendline
-pivot_high := ta.pivothigh(smoothed_rsi, left, right)
-pivot_low := ta.pivotlow(smoothed_rsi, left, right)
+float pivot_high = na
+float pivot_low = na
+pivot_high := ta.pivothigh(smoothed_rsi, left, right)[1]
+pivot_low := ta.pivotlow(smoothed_rsi, left, right)[1]
 
-for int i = 0 to 1
+for int i = 0 to length-1
     // array to store x, y value, and line
     var x1 = array.new_int(length)
     var x2 = array.new_int(length)
@@ -80,6 +79,5 @@ for int i = 0 to 1
     if nz(array.get(yl2, i)) > nz(array.get(yl1, i))
         if ta.change(array.get(yl2, i), length) > 0
             array.push(line_, line.new( nz(array.get(xl1, i)), nz(array.get(yl1, i)), nz(array.get(xl2, i)), nz(array.get(yl2, i)), color = trendline ? color.green : na))
-    
     if array.size(line.all) > length
         line.delete(array.get(line.all,0))
