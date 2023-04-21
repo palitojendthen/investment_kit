@@ -1,0 +1,152 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © palitoj_endthen
+
+//@version=5
+indicator(title = 'Adaptive Money Flow Index', shorttitle = 'adaptive_mfi', overlay = false)
+
+
+// input
+length = input.int(defval = 20, title = 'Length', group = 'Value', tooltip = 'Determines the initial length of lookback period - input array')
+hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the High-Pass Period e.g. 48, 89, or 125')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data')
+upper = input.int(defval = 70, title = 'Upper Threshold', group = 'Value', tooltip = 'Determines the value of Overbought area')
+lower = input.int(defval = 30, title = 'Lower Threshold', group = 'Value', tooltip = 'Determines the value of Oversold area')
+
+
+// dominant cycle
+// determined an applied adaptive input length with dominant cycle - Ehlers
+// variable
+avg_length = 0
+m = 0.00
+n = 0.00
+x = 0.00
+y = 0.09
+alpha1 = 0.00
+hp = 0.00
+a1 = 0.00
+b1 = 0.00
+c1 = 0.00
+c2 = 0.00
+c3 = 0.00
+filt = 0.00
+sx = 0.00
+sy = 0.00
+sxx = 0.00
+syy = 0.00
+sxy = 0.00
+max_pwr = 0.00
+dominant_cycle = 0.00
+
+// array
+var corr = array.new_float(length)
+var cosine_part = array.new_float(length)
+var sine_part = array.new_float(length)
+var sq_sum = array.new_float(length)
+var r1 = array.new_float(length)
+var r2 = array.new_float(length)
+var pwr = array.new_float(length)
+
+// high-pass filter cyclic components whose periods are shorter than 48 bars
+pi = 2*math.asin(1)
+alpha1 := (math.cos(.707*2*pi/hp_period) + math.sin(.707*2*pi/hp_period)-1) / math.cos(.707*2*pi/hp_period)
+hp := (1-alpha1/2)*(1-alpha1/2)*(src-2*src[1]+src[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
+
+// smooth with super smoother filter
+a1 := math.exp(-1.414*pi/10)
+b1 := 2*a1*math.cos(1.414*180/10)
+c2 := b1
+c3 := -a1*a1
+c1 := 1-c2-c3
+filt := c1*(hp+hp[1])/2+c2*nz(filt[1])+c3*nz(filt[2])
+
+// pearson correlation for each value of lag
+for lag = 0 to length-1
+    // set the averaging length as m
+    m := avg_length
+    if avg_length == 0
+        m := lag
+    // initialize correlation sums
+    sx := 0.00
+    sy := 0.00
+    sxx := 0.00
+    syy := 0.00
+    sxy := 0.00
+    // advance samples of both data streams and sum pearson components
+    for count = 0 to m
+        x := filt[count]
+        y := filt[lag+count]
+        sx := sx+x
+        sy := sy+y
+        sxx := sxx+x*x
+        sxy := sxy+x*y
+        syy := syy+y*y
+    // compute correlation for each value of lag
+    if (m*sxx-sx*sx)*(m*syy-sy*sy) > 0
+        array.set(corr, lag, ((m*sxy-sx*sy)/math.sqrt((m*sxx-sx*sx)*(m*syy-sy*sy))))
+
+for period = 1 to length-1
+    array.set(cosine_part, period, 0)
+    array.set(sine_part, period, 0)
+    for n2 = 1 to length-1
+        array.set(cosine_part, period, nz(array.get(cosine_part, period))+nz(array.get(corr, n2))*math.cos(360*n2/period))
+        array.set(sine_part, period, nz(array.get(sine_part, period))+nz(array.get(corr, n2))*math.sin(360*n2/period))
+    array.set(sq_sum, period, nz(array.get(cosine_part, period))*nz(array.get(cosine_part, period))+nz(array.get(sine_part, period))*nz(array.get(sine_part, period)))
+
+for period2 = 1 to length-1
+    array.set(r2, period2, nz(array.get(r1, period2)))
+    array.set(r1, period2, .2*nz(array.get(sq_sum, period2))*nz(array.get(sq_sum, period2))+.8*nz(array.get(r2, period2)))
+
+// find maximum power level for normalization
+max_pwr := .991*max_pwr
+for period3 = 1 to length-1
+    if nz(array.get(r1, period3)) > max_pwr
+        max_pwr := nz(array.get(r1, period3))
+for period4 = 1 to length-1
+    array.set(pwr, period4, nz(array.get(r1, period4))/max_pwr)
+
+// compute the dominant cycle using the cg of the spectrum
+spx = 0.00
+sp = 0.00
+
+for period5 = 1 to length-1
+    if nz(array.get(pwr, period5)) >= .5
+        spx := spx+period5*nz(array.get(pwr, period5))
+        sp := sp+nz(array.get(pwr, period5))
+
+if sp != 0
+    dominant_cycle := spx/sp
+if dominant_cycle < 1
+    dominant_cycle := 1
+if dominant_cycle > length
+    dominant_cycle := length
+
+
+// money flow index
+// variable
+typical_price = hlc3
+vol = volume
+p_rmfi = 0.00
+n_rmfi = 0.00
+mfr = 0.00
+mfi = 0.00
+smfi = 0.00
+
+// adaptive money flow index
+raw_mfi = typical_price*vol
+
+for i = 0 to int(dominant_cycle)-1
+    if typical_price[i] > typical_price[i+1]
+        p_rmfi += typical_price[i]
+    if typical_price[i] < typical_price[i+1]
+        n_rmfi += typical_price[i]
+    mfr := p_rmfi/n_rmfi
+    mfi := 100 - (100/(1+mfr))
+    smfi := c1*(mfi+mfi[1])/2+c2*nz(smfi[1])+c3*nz(smfi[2])
+
+
+// visualize
+h1 = hline(upper, color = color.new(color.blue, 80))
+h2 = hline(50, color = color.new(color.blue, 80))
+h3 = hline(lower, color = color.new(color.blue, 80))
+fill(h1, h3, color = color.new(color.blue, 95))
+plot(smfi, color = color.maroon, linewidth = 2)
