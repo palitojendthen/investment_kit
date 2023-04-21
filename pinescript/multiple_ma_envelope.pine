@@ -2,12 +2,13 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'multiple_ma_envelope', shorttitle = 'ma_envelope', overlay = true)
+indicator(title = 'Multiple Length Moving Average Envelope', shorttitle = 'ma_envelope', overlay = true)
 
 
 // input
-src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines input data for moving averages')
-ma_type = input.string(defval = 'WMA', title = 'MA Type', group = 'Source', options = ['EMA', 'SMA', 'WMA', 'HMA'], tooltip = 'Determines type of moving average')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines input data for moving averages')
+ma_type = input.string(defval = 'WMA', title = 'MA Type', group = 'Options', options = ['EMA', 'SMA', 'WMA', 'HMA'], tooltip = 'Determines type of moving average')
+show_ma = input.bool(defval = true, title = 'Moving Average', group = 'Options', tooltip = 'Determines whether to display moving average')
 length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines length of moving average')
 mult = input.float(defval = 0.1, title = 'Band Multiplier', group = 'Value', step = 0.1, tooltip = 'Determines value of multiplier for upper and lower band')
 value_at_risk = input.float(defval = 5.0, title = 'Confidence', group = 'Value', tooltip = 'Input confidence level, no need to conver to decimal ')
@@ -27,43 +28,43 @@ ma_env(source_, length_, mult_)=>
 
 
 // visualize
-// 10 bar
+// moving average envelope
+// 10 percent
 [u10, l10] = ma_env(src, 10, mult)
 fill(plot(u10, color = na), plot(l10, color = na), color.new(#1E90FF, 97))
-
-// 20 bar
+// 20 percent
 [u20, l20] = ma_env(src, 20, mult+.2)
 fill(plot(u20, color = na), plot(l20, color = na), color.new(#1E90FF, 97))
-
-// 50 bar
+// 50 precent
 [u50, l50] = ma_env(src, 50, mult+.4)
 fill(plot(u50, color = na), plot(l50, color = na), color.new(#1E90FF, 97))
-
-// 100 bar
+// 70 percent
 [u100, l100] = ma_env(src, 100, mult+.6)
 fill(plot(u100, color = na), plot(l100, color = na), color.new(#1E90FF, 95))
 
+// moving average
+plot(show_ma ? ma : na, color = color.maroon, linewidth = 2)
+
 
 // information Value
-y = input.string('top', 'Position', inline = '8', options = ['top', 'middle', 'bottom'], group = 'Adjustment')
-x = input.string('right', '', inline = '8', options = ['left', 'center', 'right'], group = 'Adjustment')
+y = input.string('top', 'Position', inline = '8', options = ['top', 'middle', 'bottom'], group = 'Information Value')
+x = input.string('right', '', inline = '8', options = ['left', 'center', 'right'], group = 'Information Value')
 var table information_table = table.new(y + "_" + x, 2, 5)
-table.cell(information_table, 0, 1, 'Information' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(#1E90FF, 50))
-table.cell(information_table, 1, 1, 'Value' , text_size = size.normal, text_color = color.new(#1E90FF, 50))
+table.cell(information_table, 0, 1, 'Information' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.maroon, 50))
+table.cell(information_table, 1, 1, 'Value' , text_size = size.normal, text_color = color.new(color.maroon, 50))
 
 // deviation
 returns = (close/close[1]) -1
-stdev = math.round(ta.stdev(returns, length), 3)
-table.cell(information_table, 0, 2, 'Deviation' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.white, 50))
-table.cell(information_table, 1, 2, str.tostring(stdev) , text_size = size.normal, text_color = color.new(color.white, 50))
+stdev = math.round(ta.stdev(returns, length), 3)*100
+table.cell(information_table, 0, 2, 'Std. Deviation' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.white, 50))
+table.cell(information_table, 1, 2, str.tostring(stdev)+'%' , text_size = size.normal, text_color = color.new(color.white, 50))
 
-// drawdown
-h = ta.highest(src, length)
-drawdown = math.round(float(((src[0]/h)-1)),3)
-table.cell(information_table, 0, 3, 'Drawdown' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.white, 50))
-table.cell(information_table, 1, 3, str.tostring(drawdown), text_size = size.normal, text_color = color.new(color.white, 50))
+// compounding growth
+compounded_growth = math.round(((math.pow((close/close[length]), (1/length))-1)*100),3)
+table.cell(information_table, 0, 3, 'Growth Rate' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.white, 50))
+table.cell(information_table, 1, 3, str.tostring(compounded_growth) + '%', text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.white, 50))
 
 // value-at-risk
-VaR = math.round(ta.percentile_nearest_rank(returns, length, value_at_risk),3)
+VaR = math.round(ta.percentile_nearest_rank(returns, length, value_at_risk),3)*100
 table.cell(information_table, 0, 4, 'Value-at-Risk' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.white, 50))
-table.cell(information_table, 1, 4, str.tostring(VaR) ,text_size = size.normal, text_color = color.new(color.white, 50))
+table.cell(information_table, 1, 4, str.tostring(VaR)+'%' ,text_size = size.normal, text_color = color.new(color.white, 50))
