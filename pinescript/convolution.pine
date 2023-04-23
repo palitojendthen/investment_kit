@@ -11,21 +11,21 @@ src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip 
 // variable
 shortest_period = 40
 longest_period = 80
-float alpha1 = 0.00
-float hp = 0.00
-float a1 = 0.00
-float b1 = 0.00
-float c1 = 0.00
-float c2 = 0.00
-float c3 = 0.00
-float filt = 0.00
-float x = 0.00
-float y = 0.00
-float sx = 0.00
-float sy = 0.00
-float sxx = 0.00
-float syy = 0.00
-float sxy = 0.00
+alpha1 = 0.00
+hp = 0.00
+a1 = 0.00
+b1 = 0.00
+c1 = 0.00
+c2 = 0.00
+c3 = 0.00
+filt = 0.00
+x = 0.00
+y = 0.00
+sx = 0.00
+sy = 0.00
+sxx = 0.00
+syy = 0.00
+sxy = 0.00
 
 
 // array
