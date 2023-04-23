@@ -2,7 +2,7 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'John F. Ehlers - Even Better Sinewave Modified', shorttitle = 'even_better_sinewave', overlay = false, timeframe = '', timeframe_gaps = true)
+indicator(title = 'Even Better Sinewave - John F. Ehlers - Modified', shorttitle = 'even_better_sinewave', overlay = false, timeframe = '', timeframe_gaps = true)
 
 
 // input
