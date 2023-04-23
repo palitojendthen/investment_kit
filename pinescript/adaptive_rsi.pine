@@ -9,7 +9,7 @@ indicator(title = 'Adaptive relative Strength Index - John F. Ehlers', shorttitl
 src = input.source(defval = close, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to close')
 hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value', tooltip = 'Determines the length of High-pass period')
 overbought = input.float(defval = .7, title = 'Overbought Level', group = 'Value', tooltip = 'Determines the Overbought Level/Area, default to 0.7')
-oversold = input.float(defval = .3, title = 'Oversold Level', group = 'Value', tooltip = 'Determines the Oversold Level/Area, default to 0.7')
+oversold = input.float(defval = .3, title = 'Oversold Level', group = 'Value', tooltip = 'Determines the Oversold Level/Area, default to 0.3')
 
 // variable
 length = 50
