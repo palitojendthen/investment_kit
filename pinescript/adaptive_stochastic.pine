@@ -2,12 +2,14 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'ehlers_adaptive_stochastic', shorttitle = 'adaptive_stochastic', overlay = false)
+indicator(title = 'Adaptive Stochastic - John F. Ehlers', shorttitle = 'adaptive_stochastic', overlay = false)
 
 
 // input
 src = input.source(defval = close, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to close')
 hp_period = input.int(defval = 48, title = 'High-pass Period', group = 'Value', tooltip = 'Determines the length of High-pass Period')
+overbought = input.float(defval = .7, title = 'Overbought Level', group = 'Value', tooltip = 'Determines the Overbought Level/Area, default to 0.7')
+oversold = input.float(defval = .3, title = 'Oversold Level', group = 'Value', tooltip = 'Determines the Overbought Level/Area, default to 0.3')
 
 
 // variable
@@ -123,8 +125,8 @@ if dominant_cycle > 48
 highest = 0.00
 lowest = 0.00
 stoc = 0.00
-smooth_num = 0.00
-smooth_denom = 0.00
+// smooth_num = 0.00
+// smooth_denom = 0.00
 adaptive_stoc = 0.00
 
 highest := filt
@@ -141,9 +143,6 @@ adaptive_stoc := c1*(stoc+stoc[1])/2+c2*nz(adaptive_stoc[1])+c3*nz(adaptive_stoc
 
 
 // visualize
-hline(.3, color = color.new(color.blue, 50), linestyle = hline.style_dotted)
-hline(.7, color = color.new(color.blue, 50), linestyle = hline.style_dotted)
-p1 = plot(adaptive_stoc*(1+.06), color = na)
-p2 = plot(adaptive_stoc*(1-.06), color = na)
-fill(p1, p2, color = color.new(color.blue, 80))
-plot(adaptive_stoc, color = color.blue, linewidth = 2)
+hline(overbought, color = color.new(color.blue, 50), linestyle = hline.style_dotted)
+hline(oversold, color = color.new(color.blue, 50), linestyle = hline.style_dotted)
+plot(adaptive_stoc, color = color.maroon, linewidth = 3)
