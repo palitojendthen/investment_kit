@@ -2,11 +2,12 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'ehlers_simple_decycler', shorttitle = 'simple_decycler', overlay = true)
+indicator(title = 'Simple Decycler - John F. Ehlers', shorttitle = 'simple_decycler', overlay = true)
 
 // input
-src = input.source(defval = ohlc4, title = 'Source', tooltip = 'Determines the input data, default to OHLC4, users can choose different input such close')
-hp_period = input.int(defval = 89, title = 'High Pass Period', tooltip = 'Determines of High Pass period (impedes low frequency)')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the input data, default to OHLC4, users can choose different input such close')
+hp_period = input.int(defval = 89, title = 'High Pass Period', group = 'Value', tooltip = 'Determines of High Pass period (impedes low frequency)')
+
 
 // compute simple decycler
 simple_decycler(source_, hp_period_)=>
@@ -23,6 +24,7 @@ decycler =  simple_decycler(src, hp_period)
 hysteresis_up = decycler*(1+(.5/100))
 hysteresis_down = decycler*(1-(.5/100))
 
+
 // visualize
 color_con = decycler > decycler[1] and decycler[1] > decycler[2] ? color.green : color.red
 color_con_ = decycler > decycler[1] and decycler[1] > decycler[2]
@@ -31,9 +33,11 @@ plot(decycler, color = color_con, linewidth = 3)
 plot(hysteresis_up, color = color.new(color.yellow, 50), linewidth = 1)
 plot(hysteresis_down, color = color.new(color.yellow, 50), linewidth = 1)
 
+
 // create alert
 alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
 alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
+
 
 // strategy test
 // long_condition = not (color_con_[1] and color_con_)
