@@ -6,11 +6,13 @@ indicator(title = 'Smoothed RSI with Trendline', shorttitle = 'smoothed_rsi', ov
 
 
 // input
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
+trendline = input.bool(defval = true, title = 'Trendline', group = 'Options', tooltip = 'Determines whether to display trendline overlay to rsi')
 length = input.int(defval = 14, title = 'Length', group = 'Value', tooltip = 'Determines the length of the RSI lookback period')
 left = input.int(defval = 30, title = 'Pivot Left', group = 'Value', tooltip = 'Determines length of the left pivot')
 right = input.int(defval = 20, title = 'Pivot Right', group = 'Value', tooltip = 'Determines length of the right pivot')
-src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
-trendline = input.bool(defval = true, title = 'Trendline', group = 'Options', tooltip = 'Determines whether to display trendline overlay to rsi')
+overbought = input.int(defval = 70, title = 'Overbought Level', group = 'Value', tooltip = 'Determines the Overbought Level/Area, default to 70')
+oversold = input.int(defval = 30, title = 'Oversold Level', group = 'Value', tooltip = 'Determines the Overbought Level/Area, default to 30')
 
 
 // variable
@@ -20,11 +22,9 @@ c1 = 0.00
 c2 = 0.00
 c3 = 0.00
 smoothed_rsi = 0.00
-// pivot_high = 0.00
-// pivot_low = 0.00
 
 
-// relative strength index (rsi)
+// relative strength index
 rsi = ta.rsi(src, length)
 
 // smoothed with super smoother
@@ -38,13 +38,14 @@ smoothed_rsi := c1*(rsi+rsi[1])/2+c2*nz(smoothed_rsi[1])+c3*nz(smoothed_rsi[2])
 
 
 // visualize
-hline(70, color = color.new(color.blue, 80), linestyle = hline.style_dashed)
-hline(30, color = color.new(color.blue, 80), linestyle = hline.style_dashed)
-plot(smoothed_rsi, color = color.maroon, linewidth = 2)
+hline(overbought, color = color.new(color.blue, 50), linestyle = hline.style_dashed)
+hline(oversold, color = color.new(color.blue, 50), linestyle = hline.style_dashed)
+plot(smoothed_rsi, color = color.maroon, linewidth = 3)
+
 
 // rsi trendline
-float pivot_high = na
-float pivot_low = na
+float pivot_high = 0.00
+float pivot_low = 0.00
 pivot_high := ta.pivothigh(smoothed_rsi, left, right)[1]
 pivot_low := ta.pivotlow(smoothed_rsi, left, right)[1]
 
@@ -73,11 +74,11 @@ for int i = 0 to length-1
     array.set(yl2, i, ta.valuewhen(pivot_low, pivot_low, 0))
 
     // trendline
-    if nz(array.get(y2, i)) < nz(array.get(y1, i))
-        if ta.change(array.get(y2, i), length) < 0
+    if ta.change(array.get(y2, i), length) < 0
+        if nz(array.get(y2, i)) < nz(array.get(y1, i))    
             array.push(line_, line.new(nz(array.get(x1, i)), nz(array.get(y1, i)), nz(array.get(x2, i)), nz(array.get(y2, i)), color = trendline ? color.red : na))
-    if nz(array.get(yl2, i)) > nz(array.get(yl1, i))
-        if ta.change(array.get(yl2, i), length) > 0
+    if ta.change(array.get(yl2, i), length) > 0
+        if nz(array.get(yl2, i)) > nz(array.get(yl1, i))    
             array.push(line_, line.new( nz(array.get(xl1, i)), nz(array.get(yl1, i)), nz(array.get(xl2, i)), nz(array.get(yl2, i)), color = trendline ? color.green : na))
     if array.size(line.all) > length
         line.delete(array.get(line.all,0))
