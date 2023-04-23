@@ -2,7 +2,7 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'John F. Ehlers - Swami Chart RSI', shorttitle = 'rsi', overlay = false)
+indicator(title = 'Swami Chart RSI - John F. Ehlers', shorttitle = 'swami_rsi', overlay = false)
 
 
 // input
