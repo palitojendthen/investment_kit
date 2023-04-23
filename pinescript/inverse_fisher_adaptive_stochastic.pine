@@ -2,7 +2,7 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'John F. Ehlers - Inverse Fisher Adaptive Stochastic', shorttitle = 'inverse_fisher_adaptive_stochastic', overlay = false)
+indicator(title = 'Inverse Fisher Transform of Adaptive Stochastic - John F. Ehlers ', shorttitle = 'inverse_fisher_adaptive_stochastic', overlay = false)
 
 // input
 hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of High-Pass Period')
