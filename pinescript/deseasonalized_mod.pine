@@ -2,16 +2,16 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'Modified Deseasonalized/Centered MA with Label', shorttitle = 'deseasonalized', overlay = true)
+indicator(title = 'Modified Deseasonalized/Centered MA', shorttitle = 'deseasonalized', overlay = true)
 
 
 // input
-src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines the source of input data, default to ohlc4')
-ma_type = input.string('WMA', title = 'Moving Average Type', group = 'Source', options = ['WMA', 'EMA', 'SMA', 'RMA'],tooltip = 'Choose between Moving Average Types')
-length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines the length for deseasonalized, consider overfitting/bias-variance trade-off')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
+ma_type = input.string('WMA', title = 'Moving Average Type', group = 'Options', options = ['WMA', 'EMA', 'SMA', 'RMA'],tooltip = 'Choose between Moving Average Types')
 buy = input.bool(defval = true, title = 'Buy Signal', group = 'Options', tooltip = 'Determines whether to show the Buy signal label')
 sell = input.bool(defval = true, title = 'Sell Signal', group = 'Options', tooltip = 'Determines whether to show the Sell signal label')
 lag = input.bool(defval = true, title = 'Hysteresis', group = 'Options')
+length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines the length for deseasonalized, consider overfitting/bias-variance trade-off')
 
 
 // deseasonalized
