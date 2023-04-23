@@ -13,6 +13,14 @@ upper = input.int(defval = 70, title = 'Upper Threshold', group = 'Value', toolt
 lower = input.int(defval = 30, title = 'Lower Threshold', group = 'Value', tooltip = 'Determines the value of Oversold area')
 
 
+// cumulative volume check
+var cum_vol = 0.0
+cum_vol += nz(volume)
+
+if barstate.islast and cum_vol == 0
+    runtime.error('No volume is provided by the data vendor')
+
+
 // dominant cycle
 // determined an applied adaptive input length with dominant cycle - Ehlers
 // variable
