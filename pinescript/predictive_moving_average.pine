@@ -2,7 +2,7 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'John F. Ehlers - Predictive Moving Average', shorttitle = 'predictive_moving_average', overlay = true, timeframe = '', timeframe_gaps = true)
+indicator(title = 'Predictive Moving Average - John F. Ehlers', shorttitle = 'predictive_moving_average', overlay = true, timeframe = '', timeframe_gaps = true)
 
 
 // input
