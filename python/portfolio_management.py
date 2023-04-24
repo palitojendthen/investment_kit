@@ -49,3 +49,21 @@ def var_historic(r, level = 5):
         return -np.percentile(r, level)
     else:
         raise TypeError("expected r to be series or data frame")
+
+# Annualize Returns
+def annualize_rets(r, periods_per_year=12):
+    """
+    compute the annualized set of returns,
+    periods per year default to 12 - monthly
+    """
+    compounded_growth = (1+r).prod()
+    n_periods = r.shape[0]
+    return compounded_growth**(periods_per_year/n_periods) - 1
+
+# Annualize Volatility
+def annualize_vol(r, periods_per_year = 12):
+    """
+    compute the annualized volatility set of returns,
+    periods per year default to 12 - monthly
+    """
+    return r.std()*(periods_per_year**.5)
