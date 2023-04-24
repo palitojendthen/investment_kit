@@ -27,7 +27,6 @@ def rate_of_return(x):
     ret = ((x[:-1].values / x[1:]).values - 1).round(2)
     return np.append(np.nan, ret)
 
-
 # Compounding Returns
 def compound(r):
     """
@@ -35,7 +34,7 @@ def compound(r):
     for returns series
     """
     return np.expm1(np.log1p(r).sum())
- 
+
 # Historic Value-at-Risk
 def var_historic(r, level = 5):
     """
