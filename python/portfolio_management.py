@@ -36,3 +36,16 @@ def compound(r):
     """
     return np.expm1(np.log1p(r).sum())
  
+# Historic Value-at-Risk
+def var_historic(r, level = 5):
+    """
+    computes historic value at risk (var),
+    which means 95% i.e. level of confidence, that at worst
+    the estimated price performance would drop at specified level
+    """
+    if isinstance(r, pd.DataFrame):
+        return r.aggregate(var_historic, level = level)
+    elif isinstance(r, pd.Series):
+        return -np.percentile(r, level)
+    else:
+        raise TypeError("expected r to be series or data frame")
