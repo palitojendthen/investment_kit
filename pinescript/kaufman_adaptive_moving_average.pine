@@ -15,9 +15,9 @@ hysteresis = input.bool(defval = true, title = 'Hysteresis', group = 'Options', 
 bar_color = input.bool(defval = false, title = 'Bar Color', group = 'Options', tooltip = 'Determines whether to apply bar color')
 
 
-// determine applied lendth with dominant cycle (Ehlers)
+// determine applied length with dominant cycle (Ehlers)
 // variable
-avg_length = 0
+avg_length = 3
 m = 0.00
 n = 0.00
 x = 0.00
@@ -39,13 +39,13 @@ max_pwr = 0.00
 dominant_cycle = 0.00
 
 // array
-var corr = array.new_float(length)
-var cosine_part = array.new_float(length)
-var sine_part = array.new_float(length)
-var sq_sum = array.new_float(length)
-var r1 = array.new_float(length)
-var r2 = array.new_float(length)
-var pwr = array.new_float(length)
+var corr = array.new_float(50)
+var cosine_part = array.new_float(50)
+var sine_part = array.new_float(50)
+var sq_sum = array.new_float(50)
+var r1 = array.new_float(50)
+var r2 = array.new_float(50)
+var pwr = array.new_float(50)
 
 // high-pass filter cyclic components whose periods are shorter than 48 bars
 pi = 2*math.asin(1)
@@ -61,7 +61,7 @@ c1 := 1-c2-c3
 filt := c1*(hp+hp[1])/2+c2*nz(filt[1])+c3*nz(filt[2])
 
 // pearson correlation for each value of lag
-for lag = 0 to length-1
+for lag = 1 to 48
     // set the averaging length as m
     m := avg_length
     if avg_length == 0
@@ -73,7 +73,7 @@ for lag = 0 to length-1
     syy := 0.00
     sxy := 0.00
     // advance samples of both data streams and sum pearson components
-    for count = 0 to m
+    for count = 0 to m-1
         x := filt[count]
         y := filt[lag+count]
         sx := sx+x
@@ -85,31 +85,31 @@ for lag = 0 to length-1
     if (m*sxx-sx*sx)*(m*syy-sy*sy) > 0
         array.set(corr, lag, ((m*sxy-sx*sy)/math.sqrt((m*sxx-sx*sx)*(m*syy-sy*sy))))
 
-for period = 8 to length-1
+for period = 8 to 48
     array.set(cosine_part, period, 0)
     array.set(sine_part, period, 0)
-    for n2 = 8 to length-1
+    for n2 = 3 to 48
         array.set(cosine_part, period, nz(array.get(cosine_part, period))+nz(array.get(corr, n2))*math.cos(360*n2/period))
         array.set(sine_part, period, nz(array.get(sine_part, period))+nz(array.get(corr, n2))*math.sin(360*n2/period))
     array.set(sq_sum, period, nz(array.get(cosine_part, period))*nz(array.get(cosine_part, period))+nz(array.get(sine_part, period))*nz(array.get(sine_part, period)))
 
-for period2 = 8 to length-1
+for period2 = 8 to 48
     array.set(r2, period2, nz(array.get(r1, period2)))
     array.set(r1, period2, .2*nz(array.get(sq_sum, period2))*nz(array.get(sq_sum, period2))+.8*nz(array.get(r2, period2)))
 
 // find maximum power level for normalization
 max_pwr := .991*max_pwr
-for period3 = 8 to length-1
+for period3 = 8 to 48
     if nz(array.get(r1, period3)) > max_pwr
         max_pwr := nz(array.get(r1, period3))
-for period4 = 8 to length-1
+for period4 = 8 to 48
     array.set(pwr, period4, nz(array.get(r1, period4))/max_pwr)
 
 // compute the dominant cycle using the cg of the spectrum
 spx = 0.00
 sp = 0.00
 
-for period5 = 8 to length-1
+for period5 = 8 to 48
     if nz(array.get(pwr, period5)) >= .5
         spx := spx+period5*nz(array.get(pwr, period5))
         sp := sp+nz(array.get(pwr, period5))
@@ -129,8 +129,8 @@ slowest = 2/(slow_length+1)
 // eficiency ratio
 num = src - src[int(dominant_cycle)]
 num := num > 0 ? num : num*-1
-denom2 = math.sum(math.abs(src-src[1]), int(dominant_cycle))
-er = num/denom2
+denom = math.sum(math.abs(src-src[1]), int(dominant_cycle))
+er = num/denom
 
 // smoothing constant
 sc = math.pow(er*(fastest-slowest)+slowest, 2)
@@ -155,11 +155,17 @@ alertcondition((color_con_[1] and not color_con_ and barstate.isconfirmed), titl
 
 
 // strategy test
-// long_condition = not (color_con_[1] and color_con_)
-// if long_condition
-//     strategy.entry('long', strategy.long)
+// percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
+// long_condition = color_con_
+// short_condition = not color_con_
 
-// short_condition = color_con_[1] and not color_con_
-// if short_condition
-//     strategy.exit('exit', 'long', profit = 10, loss = 1)
+// long_sl = 0.00
+// long_sl := long_condition ? kama*(1-percent_sl/100) : nz(long_sl[1])
+
+// if long_condition
+//     strategy.entry(id = 'long', direction = strategy.long)
+// if not long_condition
+//     strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
+
+// plot(strategy.position_size > 0 ? long_sl : na, color = color.gray, style = plot.style_linebr)
 
