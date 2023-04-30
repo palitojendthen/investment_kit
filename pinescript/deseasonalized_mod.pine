@@ -7,7 +7,7 @@ indicator(title = 'Modified Deseasonalized/Centered MA', shorttitle = 'deseasona
 
 // input
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
-ma_type = input.string('WMA', title = 'Moving Average Type', group = 'Options', options = ['WMA', 'EMA', 'SMA', 'RMA'],tooltip = 'Choose between Moving Average Types')
+ma_type = input.string('WMA', title = 'Moving Average Type', group = 'Options', options = ['WMA', 'EMA', 'SMA', 'RMA'], tooltip = 'Choose between Moving Average Types')
 buy = input.bool(defval = true, title = 'Buy Signal', group = 'Options', tooltip = 'Determines whether to show the Buy signal label')
 sell = input.bool(defval = true, title = 'Sell Signal', group = 'Options', tooltip = 'Determines whether to show the Sell signal label')
 lag = input.bool(defval = true, title = 'Hysteresis', group = 'Options')
@@ -54,10 +54,16 @@ alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell
 
 
 // strategy test
-// long_condition = not (color_con_[1] and color_con_)
-// if long_condition
-//     strategy.entry('long', strategy.long)
+// percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
+// long_condition = color_con_
+// short_condition = not color_con_
 
-// short_condition = color_con_[1] and not color_con_
-// if short_condition
-//     strategy.exit('exit', 'long', profit = 10, loss = 1)
+// long_sl = 0.00
+// long_sl := long_condition ? deseasonalized*(1-percent_sl/100) : nz(long_sl[1])
+
+// if long_condition
+//     strategy.entry(id = 'long', direction = strategy.long)
+// if not long_condition
+//     strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
+
+// plot(strategy.position_size > 0 ? long_sl : na, color = color.gray, style = plot.style_linebr)
