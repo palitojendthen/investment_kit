@@ -2,7 +2,8 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'Inverse Fisher Transform of Adaptive Stochastic - John F. Ehlers ', shorttitle = 'inverse_fisher_adaptive_stochastic', overlay = false)
+indicator(title = 'John F. Ehlers - Inverse Fisher Transform of Adaptive Stochastic', shorttitle = 'inverse_fisher_adaptive_stochastic', overlay = false)
+
 
 // input
 hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of High-Pass Period')
@@ -160,10 +161,14 @@ alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell
 
 
 // // strategy test
-// long_condition = not (color_con_[1] and color_con_)
-// if long_condition
-//     strategy.entry('long', strategy.long)
+// percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
+// long_condition = color_con_
+// short_condition = not color_con_
 
-// short_condition = color_con_[1] and not color_con_
-// if short_condition
-//     strategy.exit('exit', 'long', profit = 10, loss = 1)
+// long_sl = 0.00
+// long_sl := long_condition ? close*(1-percent_sl/100) : nz(long_sl[1])
+
+// if long_condition
+//     strategy.entry(id = 'long', direction = strategy.long)
+// if not long_condition
+//     strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
