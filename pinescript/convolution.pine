@@ -6,7 +6,7 @@ indicator(title = 'John F. Ehlers - Convolution', shorttitle = 'convolution', ov
 
 // input
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
-
+apply_hp = input.bool(defval = false, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply high-pass filter on the input')
 
 // variable
 shortest_period = 40
@@ -46,7 +46,8 @@ b1 := 2*a1*math.cos(1.414*180/shortest_period)
 c2 := b1
 c3 := -a1*a1
 c1 := 1-c2-c3
-filt := c1*(src+src[1])/2+c2*nz(filt[1])+c3*nz(filt[2])
+// filt := c1*(src+src[1])/2+c2*nz(filt[1])+c3*nz(filt[2])
+filt := c1*((apply_hp ? hp : src) + (apply_hp ? hp[1] : src[1]))/2+c2*nz(filt[1])+c3*nz(filt[2])
 
 // convolution
 for i = 1 to 48
