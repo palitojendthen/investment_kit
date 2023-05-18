@@ -43,7 +43,7 @@ fill(plot(u4, color = na), plot(l4, color = na), color.new(#1E90FF, 97))
 plot(show_ma ? ma : na, color = color.maroon, linewidth = 2)
 
 
-// information Value
+// information table
 y = input.string(defval = 'top', title = 'Position', inline = '8', options = ['top', 'middle', 'bottom'], group = 'Information Value')
 x = input.string(defval = 'right', title = '', inline = '8', options = ['left', 'center', 'right'], group = 'Information Value')
 var table information_table = table.new(y + "_" + x, 2, 5)
@@ -51,7 +51,7 @@ table.cell(information_table, 0, 1, 'Information' , text_halign = text.align_lef
 table.cell(information_table, 1, 1, 'Value' , text_size = size.normal, text_color = color.new(color.maroon, 50))
 
 // deviation
-returns = (close/close[1]) -1
+returns = (close/close[1])-1
 stdev = math.round(ta.stdev(returns, length), 3)*100
 table.cell(information_table, 0, 2, 'Std. Deviation' , text_halign = text.align_left, text_size = size.normal, text_color = color.new(color.white, 50))
 table.cell(information_table, 1, 2, str.tostring(stdev)+'%' , text_size = size.normal, text_color = color.new(color.white, 50))
