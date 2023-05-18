@@ -7,9 +7,9 @@ indicator(title = 'Trailing Drawdown', shorttitle = 'drawdown', overlay = false,
 
 // input
 src = input(defval = close, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to close')
-viz_style = input.string(defval = 'Static', title = ' Type', group = 'Options', options = ['Static', 'Dynamic'], tooltip = 'Choose drawdown display type between static or dynamic', inline = 'f')
-show_level = input.bool(defval = true, title = 'Level', group = 'Options', tooltip = 'Determines whether to display current level, default to true', inline = 'f')
-length = input.int(defval = 252, title = 'Lookback Period', minval = 100, maxval = 1000, group = 'Value', tooltip = 'Determines lookback period for compute trailing drawdown, default in a year')
+viz_style = input.string(defval = 'Static', title = ' Type', group = 'Options', options = ['Static', 'Dynamic'], tooltip = 'Choose drawdown display type between static or dynamic')
+show_level = input.bool(defval = true, title = 'Level', group = 'Lookback Period', tooltip = 'Determines whether to display current level, default to true', inline = 'f')
+length = input.int(defval = 252, title = 'Length', minval = 100, maxval = 1000, group = 'Lookback Period', tooltip = 'Determines lookback period for compute trailing drawdown, default in a year', inline = 'f')
 
 
 // drawdown
