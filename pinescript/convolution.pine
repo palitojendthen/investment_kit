@@ -5,8 +5,9 @@
 indicator(title = 'John F. Ehlers - Convolution', shorttitle = 'convolution', overlay = false)
 
 // input
-src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
-apply_hp = input.bool(defval = false, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply high-pass filter on the input')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data', inline = 'f')
+apply_hp = input.bool(defval = false, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply igh-pass filter', inline = 'f')
+
 
 // variable
 shortest_period = 40
@@ -36,18 +37,17 @@ var convolution = array.new_float(50)
 
 // compute convolution
 // high-pass filter cyclic components whose periods are shorter than 48 bars
-pi = 2*math.asin(1)
 alpha1 := (math.cos(1.414*360/longest_period)+math.sin(1.414*360/longest_period)-1)/math.cos(1.414*360/longest_period)
 hp := (1-alpha1/2)*(1-alpha1/2)*(src-2*src[1]+src[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
 
 // smooth with super smoother filter
+pi = 2*math.asin(1)
 a1 := math.exp(-1.414*pi/shortest_period)
 b1 := 2*a1*math.cos(1.414*180/shortest_period)
 c2 := b1
 c3 := -a1*a1
 c1 := 1-c2-c3
-// filt := c1*(src+src[1])/2+c2*nz(filt[1])+c3*nz(filt[2])
-filt := c1*((apply_hp ? hp : src) + (apply_hp ? hp[1] : src[1]))/2+c2*nz(filt[1])+c3*nz(filt[2])
+filt := c1*((apply_hp?hp:src)+(apply_hp?hp[1]:src[1]))/2+c2*nz(filt[1])+c3*nz(filt[2])
 
 // convolution
 for i = 1 to 48
@@ -83,88 +83,88 @@ col(n)=>
 // plot
 n = 0
 n := 2
-plot(2, color = col(n), linewidth = 8)
+plot(n, title = 'n2', color = col(n), linewidth = 8)
 
 n := 3
-plot(3, color = col(n), linewidth = 8)
+plot(n, title = 'n3', color = col(n), linewidth = 8)
 
 n := 4
-plot(4, color = col(n), linewidth = 8)
+plot(n, title = 'n4', color = col(n), linewidth = 8)
 
 n := 6
-plot(6, color = col(n), linewidth = 8)
+plot(n, title = 'n6', color = col(n), linewidth = 8)
 
 n := 8
-plot(8, color = col(n), linewidth = 8)
+plot(n, title = 'n8', color = col(n), linewidth = 8)
 
 n := 10
-plot(10, color = col(n), linewidth = 8)
+plot(n, title = 'n10', color = col(n), linewidth = 8)
 
 n := 11
-plot(11, color = col(n), linewidth = 8)
+plot(n, title = 'n11', color = col(n), linewidth = 8)
 
 n := 12
-plot(12, color = col(n), linewidth = 8)
+plot(n, title = 'n12', color = col(n), linewidth = 8)
 
 n := 14
-plot(14, color = col(n), linewidth = 8)
+plot(n, title = 'n14', color = col(n), linewidth = 8)
 
 n := 16
-plot(16, color = col(n), linewidth = 8)
+plot(n, title = 'n16', color = col(n), linewidth = 8)
 
 n := 18
-plot(18, color = col(n), linewidth = 8)
+plot(n, title = 'n18', color = col(n), linewidth = 8)
 
 n := 20
-plot(20, color = col(n), linewidth = 8)
+plot(n, title = 'n20', color = col(n), linewidth = 8)
 
 n := 21
-plot(21, color = col(n), linewidth = 8)
+plot(n, title = 'n21', color = col(n), linewidth = 8)
 
 n := 22
-plot(22, color = col(n), linewidth = 8)
+plot(n, title = 'n22', color = col(n), linewidth = 8)
 
 n := 24
-plot(24, color = col(n), linewidth = 8)
+plot(n, title = 'n24', color = col(n), linewidth = 8)
 
 n := 26
-plot(26, color = col(n), linewidth = 8)
+plot(n, title = 'n26', color = col(n), linewidth = 8)
 
 n := 28
-plot(28, color = col(n), linewidth = 8)
+plot(n, title = 'n28', color = col(n), linewidth = 8)
 
 n := 30
-plot(30, color = col(n), linewidth = 8)
+plot(n, title = 'n30', color = col(n), linewidth = 8)
 
 n := 31
-plot(31, color = col(n), linewidth = 8)
+plot(n, title = 'n31', color = col(n), linewidth = 8)
 
 n := 32
-plot(32, color = col(n), linewidth = 8)
+plot(n, title = 'n32', color = col(n), linewidth = 8)
 
 n := 34
-plot(34, color = col(n), linewidth = 8)
+plot(n, title = 'n34', color = col(n), linewidth = 8)
 
 n := 36
-plot(36, color = col(n), linewidth = 8)
+plot(n, title = 'n36', color = col(n), linewidth = 8)
 
 n := 38
-plot(38, color = col(n), linewidth = 8)
+plot(n, title = 'n38', color = col(n), linewidth = 8)
 
 n := 40
-plot(40, color = col(n), linewidth = 8)
+plot(n, title = 'n40', color = col(n), linewidth = 8)
 
 n := 41
-plot(41, color = col(n), linewidth = 8)
+plot(n, title = 'n41', color = col(n), linewidth = 8)
 
 n := 42
-plot(42, color = col(n), linewidth = 8)
+plot(n, title = 'n42', color = col(n), linewidth = 8)
 
 n := 44
-plot(44, color = col(n), linewidth = 8)
+plot(n, title = 'n44', color = col(n), linewidth = 8)
 
 n := 46
-plot(46, color = col(n), linewidth = 8)
+plot(n, title = 'n46', color = col(n), linewidth = 8)
 
 n := 48
-plot(48, color = col(n), linewidth = 8)
+plot(n, title = 'n48', color = col(n), linewidth = 8)
