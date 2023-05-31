@@ -2,14 +2,13 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'John F. Ehlers - Even Better Sinewave Modified', shorttitle = 'even_better_sinewave', overlay = false)
+indicator(title = 'John F. Ehlers - Even Better Sinewave Modified', shorttitle = 'even_better_sinewave', overlay = false, timeframe = '', timeframe_gaps = true)
 
 
 // input
-hp_period = input.int(defval = 89, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of the High-Pass period.')
-src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
-apply_bar_color = input.bool(defval = false, title = 'Bar color', group = 'Options', tooltip = 'Determines whether to apply bar color')
-
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4', inline = 'f')
+apply_bar_color = input.bool(defval = false, title = 'Bar color', group = 'Options', tooltip = 'Determines whether to apply bar color', inline = 'f')
+hp_period = input.int(defval = 89, title = 'High-Pass Period', group = 'Lookback Period', tooltip = 'Determines the length of the High-Pass period')
 
 // variable
 alpha1 = 0.00
@@ -17,10 +16,10 @@ hp = 0.00
 filt = 0.00
 wave = 0.00
 pwr = 0.00
-
+con = 0
 
 // even better sinewave
-// high-pass filter
+// highpass filter cyclic components whose periods are shorter than 48 bars
 pi = 2*math.asin(1)
 alpha1 := (math.cos(.707*2*pi/hp_period) + math.sin(.707*2*pi/hp_period)-1)/math.cos(.707*2*pi/hp_period)
 hp := (1-alpha1/2)*(1-alpha1/2)*(src-2*src[1]+src[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
@@ -38,7 +37,6 @@ wave := wave/math.sqrt(pwr)
 
 // Visualize
 // color condition
-con = 0
 if wave < -.8
     con := con
 else if wave > wave[1]
@@ -50,9 +48,9 @@ else if wave < wave[1]
 
 color_con = con == 1 ? color.green : color.red
 
-// sine wave
+// plot
 p1 = plot(wave, color = color_con, linewidth = 3)
-plot(wave*.8, color = color.new(color.aqua, 80))
+plot(wave[1]*.9, color = color.new(color.aqua, 80))
 
 // bar color
 barcolor(apply_bar_color ? color_con : na)
