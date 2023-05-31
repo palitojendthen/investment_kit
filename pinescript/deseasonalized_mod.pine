@@ -7,16 +7,15 @@ indicator(title = 'Modified Deseasonalized/Centered MA', shorttitle = 'deseasona
 
 // input
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
-ma_type = input.string('WMA', title = 'Moving Average Type', group = 'Options', options = ['WMA', 'EMA', 'SMA', 'RMA'], tooltip = 'Choose between Moving Average Types')
-buy = input.bool(defval = true, title = 'Buy Signal', group = 'Options', tooltip = 'Determines whether to show the Buy signal label')
-sell = input.bool(defval = true, title = 'Sell Signal', group = 'Options', tooltip = 'Determines whether to show the Sell signal label')
-lag = input.bool(defval = true, title = 'Hysteresis', group = 'Options')
-length = input.int(defval = 10, title = 'Length', group = 'Value', tooltip = 'Determines the length for deseasonalized, consider overfitting/bias-variance trade-off')
+ma_type = input.string('WMA', title = 'MA Type', group = 'Options', options = ['WMA', 'EMA', 'SMA', 'RMA'], tooltip = 'Choose between Moving Average Types')
+length = input.int(defval = 10, title = 'Lookback Period', group = 'Options', tooltip = 'Determines the length for deseasonalized, consider overfitting/bias-variance trade-off')
+buy = input.bool(defval = true, title = 'Buy', group = 'Toggle', tooltip = 'Determines whether to show the Buy signal label', inline = 'f')
+sell = input.bool(defval = true, title = 'Sell', group = 'Toggle', tooltip = 'Determines whether to show the Sell signal label', inline = 'f')
+lag = input.bool(defval = true, title = 'Hysteresis', group = 'Toggle', tooltip = 'Determines whether to display a hysteresis band', inline = 'f')
 
 
 // deseasonalized
 deseasonalize(src_, length_)=>
-    // moving average
     float ma = switch ma_type
         'WMA' => ta.wma(src_, length_)
         'EMA' => ta.ema(src_, length_)
