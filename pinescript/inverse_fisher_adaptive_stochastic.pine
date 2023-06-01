@@ -6,8 +6,8 @@ indicator(title = 'John F. Ehlers - Inverse Fisher Transform of Adaptive Stochas
 
 
 // input
-hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of High-Pass Period')
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
+hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Options', tooltip = 'Determines the length of High-Pass Period')
 
 
 // variable
@@ -146,6 +146,7 @@ trigger = 0.00
 value1 := 2*(adaptive_stoc-.5)
 ifish := (math.exp(2*3*value1)-1)/(math.exp(2*3*value1)+1)
 trigger := .9*ifish[1]
+
 
 // visualize
 color_con = ifish > trigger and ifish > ifish[1] ? color.green : color.red
