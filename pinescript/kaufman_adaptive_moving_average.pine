@@ -6,13 +6,12 @@ indicator(title = 'Perry J. Kaufman - Adaptive Moving Average - Modified', short
 
 
 // input
-length = input.int(defval = 14, title = 'Length', group = 'Value', tooltip = 'Determines the length of input data')
-fast_length = input.int(defval = 2,title = 'Fast Length', group = 'Value', minval = 2, maxval = 30, tooltip = 'Determines the length of fast input')
-slow_length = input.int(defval = 30, title = 'Slow Length', group = 'Value', minval = 2, maxval = 30, tooltip = 'Determines the length of slow input')
-hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of High-Pass period')
-src = input.source(defval = ohlc4, title = 'Source', group = 'Source', tooltip = 'Determines the source of input data, default to ohlc4')
-hysteresis = input.bool(defval = true, title = 'Hysteresis', group = 'Options', tooltip = 'Determines whether to display hysteresis band')
-bar_color = input.bool(defval = false, title = 'Bar Color', group = 'Options', tooltip = 'Determines whether to apply bar color')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data, default to ohlc4')
+length = input.int(defval = 14, title = 'Length', group = 'Options', minval = 10, maxval = 20, tooltip = 'Determines the length of input data')
+hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Options', tooltip = 'Determines the length of High-Pass period')
+band = input.float(defval = .5, title = 'Hysteresis Mult', group = 'Options', minval = .1, maxval = .9, tooltip = 'Determines the float hysteresis multiplier, default to 0.5 with minimum value of 0.1 for lower timeframe, and greater of 0.9')
+hysteresis = input.bool(defval = true, title = 'Hysteresis', group = 'Toggle', tooltip = 'Determines whether to display hysteresis band', inline = 'f')
+bar_color = input.bool(defval = false, title = 'Bar Color', group = 'Toggle', tooltip = 'Determines whether to apply bar color', inline = 'f')
 
 
 // determine applied length with dominant cycle (Ehlers)
@@ -49,7 +48,7 @@ var pwr = array.new_float(50)
 
 // high-pass filter cyclic components whose periods are shorter than 48 bars
 pi = 2*math.asin(1)
-alpha1 := (math.cos(.707*2*pi/hp_period) + math.sin(.707*2*pi/hp_period)-1) / math.cos(.707*2*pi/hp_period)
+alpha1 := (math.cos(.707*360/hp_period)+math.sin(.707*360/hp_period)-1)/math.cos(.707*360/hp_period)
 hp := (1-alpha1/2)*(1-alpha1/2)*(src-2*src[1]+src[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
 
 // smooth with super smoother filter
@@ -85,7 +84,7 @@ for lag = 1 to 48
     if (m*sxx-sx*sx)*(m*syy-sy*sy) > 0
         array.set(corr, lag, ((m*sxy-sx*sy)/math.sqrt((m*sxx-sx*sx)*(m*syy-sy*sy))))
 
-for period = 8 to 48
+for period = 10 to 48
     array.set(cosine_part, period, 0)
     array.set(sine_part, period, 0)
     for n2 = 3 to 48
@@ -93,23 +92,23 @@ for period = 8 to 48
         array.set(sine_part, period, nz(array.get(sine_part, period))+nz(array.get(corr, n2))*math.sin(360*n2/period))
     array.set(sq_sum, period, nz(array.get(cosine_part, period))*nz(array.get(cosine_part, period))+nz(array.get(sine_part, period))*nz(array.get(sine_part, period)))
 
-for period2 = 8 to 48
+for period2 = 10 to 48
     array.set(r2, period2, nz(array.get(r1, period2)))
     array.set(r1, period2, .2*nz(array.get(sq_sum, period2))*nz(array.get(sq_sum, period2))+.8*nz(array.get(r2, period2)))
 
 // find maximum power level for normalization
 max_pwr := .991*max_pwr
-for period3 = 8 to 48
+for period3 = 10 to 48
     if nz(array.get(r1, period3)) > max_pwr
         max_pwr := nz(array.get(r1, period3))
-for period4 = 8 to 48
+for period4 = 3 to 48
     array.set(pwr, period4, nz(array.get(r1, period4))/max_pwr)
 
 // compute the dominant cycle using the cg of the spectrum
 spx = 0.00
 sp = 0.00
 
-for period5 = 8 to 48
+for period5 = 10 to 48
     if nz(array.get(pwr, period5)) >= .5
         spx := spx+period5*nz(array.get(pwr, period5))
         sp := sp+nz(array.get(pwr, period5))
@@ -123,8 +122,8 @@ if dominant_cycle > 14
 
 
 // kaufman adaptive moving average
-fastest = 2/(fast_length+1)
-slowest = 2/(slow_length+1)
+fastest = float(2)/(2+1)
+slowest = float(2)/(30+1)
 
 // eficiency ratio
 num = src - src[int(dominant_cycle)]
@@ -145,9 +144,10 @@ color_con = kama > kama[1] and kama[1] > kama[2] ? color.green : color.red
 color_con_ = kama > kama[1] and kama[1] > kama[2]
 
 plot(kama, color = color_con, linewidth = 3)
-plot(hysteresis ? kama*(1+(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
-plot(hysteresis ? kama*(1-(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
+plot(hysteresis ? kama*(1+(band/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
+plot(hysteresis ? kama*(1-(band/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
 barcolor(bar_color ? color_con : na)
+
 
 // alert condition
 alertcondition((not color_con_[1] and color_con_ and barstate.isconfirmed), title = 'Kama Entry', message = 'Buy/Long entry detected')
