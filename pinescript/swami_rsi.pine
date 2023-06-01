@@ -6,11 +6,9 @@ indicator(title = 'Swami Chart RSI - John F. Ehlers', shorttitle = 'swami_rsi', 
 
 
 // input
-show_initial = input.bool(defval = false, title = 'Initial Level', group = 'Options', tooltip = 'Determines whether to display initial level')
-show_confirmation = input.bool(defval = true, title = 'Confirmation Line', group = 'Options', tooltip = 'Determines whether to display confirmation line')
-show_continuation = input.bool(defval = false, title = 'Continuation Line', group = 'Options', tooltip = 'Determines whether to display continuation level')
-apply_hp_filter = input.bool(defval = true, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply High-Pass filter')
 hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the length of High-Pass Period')
+show_confirmation = input.bool(defval = true, title = 'Confirmation', group = 'Options', tooltip = 'Determines whether to display confirmation line', inline = 'f')
+apply_hp_filter = input.bool(defval = false, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply High-Pass filter', inline = 'f')
 
 
 // variable
@@ -84,93 +82,93 @@ col(n)=>
 n = 0
 
 n := 1
-plot(1, color = col(n), linewidth = 8)
+plot(1, title = 'N1', color = col(n), linewidth = 8)
 
 n := 2
-plot(2, color = col(n), linewidth = 8)
+plot(2, title = 'N2', color = col(n), linewidth = 8)
 
 n := 4
-plot(4, color = col(n), linewidth = 8)
+plot(4, title = 'N4', color = col(n), linewidth = 8)
 
 n := 6
-plot(6, color = col(n), linewidth = 8)
+plot(6, title = 'N6', color = col(n), linewidth = 8)
 
 n := 8
-plot(8, color = col(n), linewidth = 8)
+plot(8, title = 'N8', color = col(n), linewidth = 8)
 
 n := 10
-plot(10, color = col(n), linewidth = 8)
+plot(10, title = 'N10', color = col(n), linewidth = 8)
 
 n := 11
-plot(11, color = col(n), linewidth = 8)
+plot(11, title = 'N11', color = col(n), linewidth = 8)
 
 n := 12
-plot(12, color = col(n), linewidth = 8)
+plot(12, title = 'N12', color = col(n), linewidth = 8)
 
 n := 14
-plot(14, color = col(n), linewidth = 8)
+plot(14, title = 'N14', color = col(n), linewidth = 8)
 
 n := 16
-plot(16, color = col(n), linewidth = 8)
+plot(16, title = 'N16', color = col(n), linewidth = 8)
 
 n := 18
-plot(18, color = col(n), linewidth = 8)
+plot(18, title = 'N18', color = col(n), linewidth = 8)
 
 n := 20
-plot(20, color = col(n), linewidth = 8)
+plot(20, title = 'N20', color = col(n), linewidth = 8)
 
 n := 21
-plot(21, color = col(n), linewidth = 8)
+plot(21, title = 'N21', color = col(n), linewidth = 8)
 
 n := 22
-plot(22, color = col(n), linewidth = 8)
+plot(22, title = 'N22', color = col(n), linewidth = 8)
 
 n := 24
-plot(24, color = col(n), linewidth = 8)
+plot(24, title = 'N24', color = col(n), linewidth = 8)
 
 n := 26
-plot(26, color = col(n), linewidth = 8)
+plot(26, title = 'N26', color = col(n), linewidth = 8)
 
 n := 28
-plot(28, color = col(n), linewidth = 8)
+plot(28, title = 'N28', color = col(n), linewidth = 8)
 
 n := 30
-plot(30, color = col(n), linewidth = 8)
+plot(30, title = 'N30', color = col(n), linewidth = 8)
 
 n := 31
-plot(31, color = col(n), linewidth = 8)
+plot(31, title = 'N31', color = col(n), linewidth = 8)
 
 n := 32
-plot(32, color = col(n), linewidth = 8)
+plot(32, title = 'N32', color = col(n), linewidth = 8)
 
 n := 34
-plot(34, color = col(n), linewidth = 8)
+plot(34, title = 'N34', color = col(n), linewidth = 8)
 
 n := 36
-plot(36, color = col(n), linewidth = 8)
+plot(36, title = 'N36', color = col(n), linewidth = 8)
 
 n := 38
-plot(38, color = col(n), linewidth = 8)
+plot(38, title = 'N38', color = col(n), linewidth = 8)
 
 n := 40
-plot(40, color = col(n), linewidth = 8)
+plot(40, title = 'N40', color = col(n), linewidth = 8)
 
 n := 41
-plot(41, color = col(n), linewidth = 8)
+plot(41, title = 'N41', color = col(n), linewidth = 8)
 
 n := 42
-plot(42, color = col(n), linewidth = 8)
+plot(42, title = 'N42', color = col(n), linewidth = 8)
 
 n := 44
-plot(44, color = col(n), linewidth = 8)
+plot(44, title = 'N44', color = col(n), linewidth = 8)
 
 n := 46
-plot(46, color = col(n), linewidth = 8)
+plot(46, title = 'N46', color = col(n), linewidth = 8)
 
 n := 48
-plot(48, color = col(n), linewidth = 8)
+plot(48, title = 'N48', color = col(n), linewidth = 8)
 
 // confrimation line
-line.new((bar_index-4), 3, (bar_index+2), 3, color = show_initial ? color.blue : na, width = 2)
+line.new((bar_index-4), 3, (bar_index+2), 3, color = na)
 line.new((bar_index-4), 25, (bar_index+2), 25, color = show_confirmation ? color.blue : na, width = 2)
-line.new((bar_index-4), 46, (bar_index+2), 46, color = show_continuation ? color.blue : na, width = 2)
+line.new((bar_index-4), 46, (bar_index+2), 46, color = na)
