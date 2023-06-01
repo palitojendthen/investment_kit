@@ -39,9 +39,10 @@ filt2 := (1-alpha1/2)*(filt-filt[1])+(1-alpha1)*nz(filt2[1])
 
 
 // visualize
+color_ = filt > filt[1] and filt > 0 ? color.green : filt > filt[1] and filt < 0 ? color.new(color.green, 80) : filt < filt[1] and filt > 0 ? color.new(color.red, 80) : color.red
 color_con = filt > filt2 ? color.green : color.red
 color_con_ = filt > filt2
-plot(filt, color = color_con, linewidth = 3)
+plot(filt, color = color_, linewidth = 3)
 hline(0, color = color.gray, linestyle = hline.style_dashed)
 
 
