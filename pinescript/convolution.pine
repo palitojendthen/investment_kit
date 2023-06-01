@@ -6,7 +6,7 @@ indicator(title = 'John F. Ehlers - Convolution', shorttitle = 'convolution', ov
 
 // input
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data', inline = 'f')
-apply_hp = input.bool(defval = false, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply igh-pass filter', inline = 'f')
+apply_hp = input.bool(defval = false, title = 'High-Pass Filter', group = 'Options', tooltip = 'Determines whether to apply High-Pass filter', inline = 'f')
 
 
 // variable
@@ -35,7 +35,7 @@ var slope = array.new_float(50)
 var convolution = array.new_float(50)
 
 
-// compute convolution
+// convolution
 // high-pass filter cyclic components whose periods are shorter than 48 bars
 alpha1 := (math.cos(1.414*360/longest_period)+math.sin(1.414*360/longest_period)-1)/math.cos(1.414*360/longest_period)
 hp := (1-alpha1/2)*(1-alpha1/2)*(src-2*src[1]+src[2])+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
