@@ -13,12 +13,12 @@ length = input.int(defval = 252, title = 'Length', minval = 100, maxval = 1000, 
 
 
 // drawdown
-drawdown(src_, length_)=>
-    var peaks = array.new_float(length_)
+drawdown(_src, _length)=>
+    var peaks = array.new_float(_length)
     var max_peaks = 0.0
-    for i = 1 to length_-1
-        if src_ > src_[i]
-            array.set(peaks, i, src_)
+    for i = 1 to _length-1
+        if _src > _src[i]
+            array.set(peaks, i, _src)
         max_peaks := array.max(peaks)
     dd = (src/max_peaks)-1
     [max_peaks, dd]
@@ -39,7 +39,7 @@ p5 = plot(viz_style == 'Dynamic' ? pp_month : 0, color = viz_style == 'Dynamic' 
 fill(p5, p4, color = viz_style == 'Dynamic' ? color.new(color.orange, 95) : na)
 
 // add current level line
-float level_ = viz_style == 'Static' ? dd : src
-var line line_ = line.new(na, na, na, na, xloc = xloc.bar_time, extend = extend.both, color = show_level ? color.olive : na, style = line.style_dotted)
-line.set_xy1(line_, time, level_)
-line.set_xy2(line_, time+1, level_)
+float _level = viz_style == 'Static' ? dd : src
+var line _line = line.new(na, na, na, na, xloc = xloc.bar_time, extend = extend.both, color = show_level ? color.olive : na, style = line.style_dotted)
+line.set_xy1(_line, time, _level)
+line.set_xy2(_line, time+1, _level)
