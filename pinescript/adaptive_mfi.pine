@@ -7,12 +7,11 @@ indicator(title = 'Adaptive Money Flow Index', shorttitle = 'adaptive_mfi', over
 
 // input
 hp_period = input.int(defval = 48, title = 'High-Pass Period', group = 'Value', tooltip = 'Determines the High-Pass Period e.g. 48, 89, 125, etc')
-length = input.int(defval = 5, title = 'Length', group = 'Value', tooltip = 'Determines')
-src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data use for compute dominant cycle, default to ohlc4')
-color_type = input.string(defval = 'Solid', title = 'Color Scheme', group = 'Options', options = ['Solid', 'Signal', 'Normalized'], tooltip = 'Determines the color scheme of adaptive money flow index')
-show_smfi_trendline = input.bool(defval = true, title = 'SMFI Trendline', group = 'Options', tooltip = 'Determines whether to display trendline of the Smoothed Monef Flow Index')
+src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the source of input data use to compute dominant cycle, default to ohlc4')
+color_type = input.string(defval = 'Solid', title = 'Color Scheme', group = 'Options', options = ['Solid', 'Normalized'], tooltip = 'Determines the color scheme of adaptive money flow index')
 
-// check cumulative volume
+
+// check cumulative volume (tradingview)
 vol = volume
 cum_vol = 0.0
 cum_vol += nz(vol)
@@ -128,7 +127,7 @@ if dominant_cycle > 48
     dominant_cycle := 48
 
 
-// money flow index - Chaikin
+// money flow index
 // variable
 typical_price = hlc3
 p_rmfi = 0.00
@@ -141,9 +140,9 @@ smfi = 0.00
 raw_mfi = typical_price*vol
 
 // adaptive money flow index
-len = int(dominant_cycle)
+dc = int(dominant_cycle)
 
-for i = 0 to len-1
+for i = 0 to dc-1
     // positive money flow
     if typical_price[i] > typical_price[i+1]
         p_rmfi += raw_mfi[i]
@@ -159,26 +158,9 @@ for i = 0 to len-1
 
 
 // visualize
-// color scheme 1 - based on money flow index angle (signal)
-x1 = 0.00
-x2 = 0.00
-y1 = 0.00
-y2 = 0.00
-radian = 0.00
-angle = 0.00
-
-x1 := smfi[length]
-x2 := smfi
-y1 := bar_index[length]
-y2 := bar_index
-radian := math.atan((y2-y1)/(x2-x1))
-angle := (radian*180)/(pi-90)
-color_con = smfi > smfi[1] and smfi[1] > smfi[2] and angle < 0 ? color.green : color.red
-color_con_ = smfi > smfi[1] and smfi[1] > smfi[2] and angle < 0
-
-// color scheme 2 - Normalized SMFI
-high_smfi = ta.highest(smfi, int(dominant_cycle))
-low_smfi = ta.lowest(smfi, int(dominant_cycle))
+// color scheme 2 - Normalized
+high_smfi = ta.highest(smfi, dc)
+low_smfi = ta.lowest(smfi, dc)
 norm_smfi = (smfi-low_smfi)/(high_smfi-low_smfi)
 
 col(x) =>
@@ -187,56 +169,21 @@ col(x) =>
     else if x < .5
         color.rgb(255, 2*255*x, 0)
 
-// color scheme 3 - solid
-color_fin = color_type == 'Solid' ? color.maroon : color_type == 'Signal' ? color_con : col(norm_smfi)
-
+// color scheme
+color_fin = color_type == 'Solid' ? color.maroon : col(norm_smfi)
 
 // plot
-hline_ = hline(50, color = color.new(color.blue, 50))
+_hline = hline(50, color = color.new(color.blue, 50))
 plot(smfi, color = color_fin, linewidth = 2)
 
 
 // create alert
-alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
-alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
+_alert = norm_smfi > .5
+alertcondition((not _alert[1] and _alert), title = 'Entry', message = 'Buy/Long entry detected')
+alertcondition((_alert and not _alert[1]), title = 'Close', message = 'Sell/Short entry detected')
 
 
-// linear regression - trendline of smfi
-slope(src_, length_) =>
-    max_bars_back(src_, 5000)
-    if not barstate.islast or length_ <= 1
-        [float(na), float(na), float(na)]
-    else
-        sumX = 0.0
-        sumY = 0.0
-        sumXSqr = 0.0
-        sumXY = 0.0
-        for i = 0 to length_ - 1 by 1
-            val = src_[i]
-            per = i + 1.0
-            sumX += per
-            sumY += val
-            sumXSqr += per * per
-            sumXY += val * per
-        slope = (length_ * sumXY - sumX * sumY) / (length_ * sumXSqr - sumX * sumX)
-        average = sumY / length_
-        intercept = average - slope * sumX / length_ + slope
-        [slope, average, intercept]
-
-[s, a, i] = slope(smfi, len)
-
-startPrice = i + s * (len - 1)
-endPrice = i
-var line baseLine = na
-if na(baseLine) and not na(startPrice)
-    baseLine := line.new(bar_index - len + 1, startPrice, bar_index, endPrice, width = 1, extend = extend.right, color = show_smfi_trendline ? color.new(color.silver, 50) : na, style = line.style_dotted)
-else
-    line.set_xy1(baseLine, bar_index - len + 1, startPrice)
-    line.set_xy2(baseLine, bar_index, endPrice)
-    na
-
-
-// strategy test
+// // strategy test
 // percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
 // long_condition = ta.crossover(smfi, 50)
 // short_condition = ta.crossunder(smfi, 50)
