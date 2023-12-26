@@ -15,32 +15,32 @@ lag = input.bool(defval = true, title = 'Hysteresis', group = 'Toggle', tooltip 
 
 
 // deseasonalized
-deseasonalize(src_, length_)=>
+deseasonalize(_src, _length)=>
     float ma = switch ma_type
-        'WMA' => ta.wma(src_, length_)
-        'EMA' => ta.ema(src_, length_)
-        'SMA' => ta.sma(src_, length_)
-        'RMA' => ta.rma(src_, length_)
-    seasonality_mod = src_/ta.wma(ma, length_)
-    deseasonalized_mod = src_/seasonality_mod
+        'WMA' => ta.wma(_src, _length)
+        'EMA' => ta.ema(_src, _length)
+        'SMA' => ta.sma(_src, _length)
+        'RMA' => ta.rma(_src, _length)
+    seasonality_mod = _src/ta.wma(ma, _length)
+    deseasonalized_mod = _src/seasonality_mod
 
 deseasonalized = deseasonalize(src, length)
 
 
 // visualize
 color_con = deseasonalized > deseasonalized[1] and deseasonalized[1] > deseasonalized[2] ? color.green : color.red
-color_con_ = deseasonalized > deseasonalized[1] and deseasonalized[1] > deseasonalized[2] 
+_color_con = deseasonalized > deseasonalized[1] and deseasonalized[1] > deseasonalized[2] 
 
 plot(deseasonalized, color = color_con, linewidth = 3)
 plot(lag ? deseasonalized*(1+(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
 plot(lag ? deseasonalized*(1-(.5/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
 
 // label
-if (not color_con_[1] and color_con_)
+if (not _color_con[1] and _color_con)
     b = label.new(bar_index[1], deseasonalized*(1-.01), text = buy ? 'B' : na, style = label.style_label_upper_right, color = buy ? color.gray : na, textcolor = color.white, size = size.normal)
     label.set_tooltip(b, 'Expected to be uptrend.\nPosistion: Buy/Entry Long')
 else
-    if (color_con_[1] and not color_con_)
+    if (_color_con[1] and not _color_con)
         s = label.new(bar_index[1], deseasonalized*(1+.01), text = sell ? 'S' : na, style = label.style_label_lower_right, color = sell ? color.blue : na, textcolor = color.white, size = size.normal)
         label.set_tooltip(s, 'Expected to be downtrend.\nPosistion: Sell/Entry Short')
     else
@@ -48,14 +48,14 @@ else
 
 
 // create alert
-alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
-alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
+alertcondition((not _color_con[1] and _color_con), title = 'Entry', message = 'Buy/Long entry detected')
+alertcondition((_color_con and not _color_con), title = 'Close', message = 'Sell/Short entry detected')
 
 
-// strategy test
+// // strategy test
 // percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
-// long_condition = color_con_
-// short_condition = not color_con_
+// long_condition = _color_con
+// short_condition = not _color_con
 
 // long_sl = 0.00
 // long_sl := long_condition ? deseasonalized*(1-percent_sl/100) : nz(long_sl[1])
