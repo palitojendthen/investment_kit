@@ -2,7 +2,7 @@
 // © palitoj_endthen
 
 //@version=5
-strategy(title = 'John F. Ehlers - Predictive Moving Average', shorttitle = 'predictive_moving_average', overlay = true)
+indicator(title = 'John F. Ehlers - Predictive Moving Average', shorttitle = 'predictive_moving_average', overlay = true)
 
 
 // input
@@ -48,17 +48,17 @@ alertcondition((not _color_con[1] and _color_con), title = 'Entry', message = 'B
 alertcondition((_color_con[1] and not _color_con), title = 'Close', message = 'Sell/Short entry point detected')
 
 
-// strategy test
-percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
-long_condition = _color_con
-short_condition = not _color_con
+// // strategy test
+// percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
+// long_condition = _color_con
+// short_condition = not _color_con
 
-long_sl = 0.00
-long_sl := long_condition ? _series*(1-percent_sl/100) : nz(long_sl[1])
+// long_sl = 0.00
+// long_sl := long_condition ? _series*(1-percent_sl/100) : nz(long_sl[1])
 
-if long_condition
-    strategy.entry(id = 'long', direction = strategy.long)
-if not long_condition
-    strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
+// if long_condition
+//     strategy.entry(id = 'long', direction = strategy.long)
+// if not long_condition
+//     strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
 
-plot(strategy.position_size > 0 ? long_sl : na, color = color.gray, style = plot.style_linebr)
+// plot(strategy.position_size > 0 ? long_sl : na, color = color.gray, style = plot.style_linebr)
