@@ -141,23 +141,34 @@ kama := nz(kama[1]) + sc*(src-nz(kama[1]))
 // visualize
 // color condition
 color_con = kama > kama[1] and kama[1] > kama[2] ? color.green : color.red
-color_con_ = kama > kama[1] and kama[1] > kama[2]
+_color_con = kama > kama[1] and kama[1] > kama[2]
 
-plot(kama, color = color_con, linewidth = 3)
+high_kama = ta.highest(kama, int(dominant_cycle))
+low_kama = ta.lowest(kama, int(dominant_cycle))
+norm_kama = (kama - low_kama)/(high_kama-low_kama)
+
+color_con(x)=>
+    if x > .5
+        color.rgb(255*(2-2*x), 255, 0)
+    else if x < .5
+        color.rgb(255, 2*255*x, 0)
+
+plot(kama, color = color_con(norm_kama), linewidth = 3)
+// plot(kama, color = color_con, linewidth = 2)
 plot(hysteresis ? kama*(1+(band/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
 plot(hysteresis ? kama*(1-(band/100)) : na, color = color.new(color.yellow, 50), linewidth = 1)
-barcolor(bar_color ? color_con : na)
+// barcolor(bar_color ? color_con : na)
 
 
 // alert condition
-alertcondition((not color_con_[1] and color_con_ and barstate.isconfirmed), title = 'Kama Entry', message = 'Buy/Long entry detected')
-alertcondition((color_con_[1] and not color_con_ and barstate.isconfirmed), title = 'Kama Close', message = 'Sell/Short entry detected ')
+alertcondition((not _color_con[1] and _color_con and barstate.isconfirmed), title = 'Kama Entry', message = 'Buy/Long entry detected')
+alertcondition((_color_con[1] and not _color_con and barstate.isconfirmed), title = 'Kama Close', message = 'Sell/Short entry detected ')
 
 
-// strategy test
+// // strategy test
 // percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
-// long_condition = color_con_
-// short_condition = not color_con_
+// long_condition = _color_con
+// short_condition = not _color_con
 
 // long_sl = 0.00
 // long_sl := long_condition ? kama*(1-percent_sl/100) : nz(long_sl[1])
@@ -168,4 +179,3 @@ alertcondition((color_con_[1] and not color_con_ and barstate.isconfirmed), titl
 //     strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
 
 // plot(strategy.position_size > 0 ? long_sl : na, color = color.gray, style = plot.style_linebr)
-
