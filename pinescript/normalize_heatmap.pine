@@ -81,7 +81,7 @@ alertcondition((not _ma_color[1] and _ma_color), title = 'MA Entry', message = '
 alertcondition((_ma_color[1] and not _ma_color), title = 'MA Close', message = 'Sell/Short entry detected ')
 
 // (2) normalize heatmap - alert
-buy_ = ta.crossunder(normalize, buy_alert)
-sell_ = ta.crossover(normalize, sell_alert)
-alertcondition(buy_, title = 'Normalized Entry', message = 'Buy/Long entry detected')
-alertcondition(sell_, title = 'Normalized Close', message = 'Sell/Short entry detected')
+_buy = ta.crossunder(normalize, buy_alert)
+_sell = ta.crossover(normalize, sell_alert)
+alertcondition(_buy, title = 'Normalized Entry', message = 'Buy/Long entry detected')
+alertcondition(_sell, title = 'Normalized Close', message = 'Sell/Short entry detected')
