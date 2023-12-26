@@ -2,7 +2,7 @@
 // © palitoj_endthen
 
 //@version=5
-indicator(title = 'John F. Ehlers - Even Better Sinewave Modified', shorttitle = 'even_better_sinewave', overlay = false, timeframe = '', timeframe_gaps = true)
+strategy(title = 'John F. Ehlers - Even Better Sinewave Modified', shorttitle = 'even_better_sinewave', overlay = false)
 
 
 // input
@@ -62,14 +62,14 @@ alertcondition(con == 0, title = 'Close', message = 'Sell/Short entry point dete
 
 
 // strategy test
-// percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
-// long_condition = con == 1
-// short_condition = con == 0
+percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
+long_condition = con == 1
+short_condition = con == 0
 
-// long_sl = 0.00
-// long_sl := long_condition ? close*(1-percent_sl/100) : nz(long_sl[1])
+long_sl = 0.00
+long_sl := long_condition ? close*(1-percent_sl/100) : nz(long_sl[1])
 
-// if long_condition
-//     strategy.entry(id = 'long', direction = strategy.long)
-// if not long_condition
-//     strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
+if long_condition
+    strategy.entry(id = 'long', direction = strategy.long)
+if not long_condition
+    strategy.exit(id = 'exit-long', from_entry = 'long', stop = long_sl)
