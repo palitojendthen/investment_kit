@@ -20,10 +20,10 @@ if barstate.islast and cum_vol == 0
 
 // money flow
 // @length: input lookback period to compute the money flow
-money_flow(length_)=>
+money_flow(_length)=>
     ad = close == high and close == low or high == low ? 0 : ((((close-low)-(high-close))/(high-low))*volume)
     cmf = 0.00
-    cmf := math.sum(ad, length_)/math.sum(vol, length_)
+    cmf := math.sum(ad, _length)/math.sum(vol, _length)
     if cmf < -0.5
         cmf := -0.5
     if cmf > 0.5
