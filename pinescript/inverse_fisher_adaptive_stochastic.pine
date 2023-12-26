@@ -150,21 +150,21 @@ trigger := .9*ifish[1]
 
 // visualize
 color_con = ifish > trigger and ifish > ifish[1] ? color.green : color.red
-color_con_ = ifish > trigger and ifish > ifish[1]
+_color_con = ifish > trigger and ifish > ifish[1]
 
 plot(ifish, color = color_con, linewidth = 3)
 plot(trigger, color = color.new(color.aqua, 50))
 
 
 // create alert
-alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
-alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
+alertcondition((not _color_con[1] and _color_con), title = 'Entry', message = 'Buy/Long entry detected')
+alertcondition((_color_con and not _color_con), title = 'Close', message = 'Sell/Short entry detected')
 
 
 // // strategy test
 // percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
-// long_condition = color_con_
-// short_condition = not color_con_
+// long_condition = _color_con
+// short_condition = not _color_con
 
 // long_sl = 0.00
 // long_sl := long_condition ? close*(1-percent_sl/100) : nz(long_sl[1])
