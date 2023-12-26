@@ -22,9 +22,9 @@ float ma = switch ma_type
     "HMA" => ta.hma(src, length)
 
 // multiple moving envelope
-env(mult_)=>
-    upper_band = ma*(1+mult_)
-    lower_band = ma*(1-mult_)
+env(_mult)=>
+    upper_band = ma*(1+_mult)
+    lower_band = ma*(1-_mult)
     [upper_band, lower_band]
 
 
