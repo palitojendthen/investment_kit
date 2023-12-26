@@ -18,10 +18,10 @@ sell_alert = input.float(defval = .9, title = 'Sell', group = 'Alert', tooltip =
 // normalize data
 // @source: source of input data
 // @length: lookback period
-norm(src_, length_)=>
-    high_ = ta.highest(src_, length_)
-    low_ = ta.lowest(src_, length_)
-    normalized = (src_-low_)/(high_-low_)
+norm(_src, _length)=>
+    _high = ta.highest(_src, _length)
+    _low = ta.lowest(_src, _length)
+    normalized = (_src-_low)/(_high-_low)
 
 normalize = norm(src, length)
 
@@ -67,7 +67,7 @@ color_shift = color_scheme == 'Rainbow' ? scheme1 : scheme2(normalize)
 
 // (3) moving average - condition
 ma_color = src > ma and ma > ma[1] ? color.green : color.red
-ma_color_ = src > ma and ma > ma[1]
+_ma_color = src > ma and ma > ma[1]
 
 
 // visualize
@@ -76,11 +76,11 @@ plot(show_ma ? ma : na, color = ma_color, linewidth = 2)
 
 
 // create alert
-// moving average - alert
-alertcondition((not ma_color_[1] and ma_color_), title = 'MA Entry', message = 'Buy/Long entry detected')
-alertcondition((ma_color_[1] and not ma_color_), title = 'MA Close', message = 'Sell/Short entry detected ')
+// (1) moving average - alert
+alertcondition((not _ma_color[1] and _ma_color), title = 'MA Entry', message = 'Buy/Long entry detected')
+alertcondition((_ma_color[1] and not _ma_color), title = 'MA Close', message = 'Sell/Short entry detected ')
 
-// normalize heatmap alert
+// (2) normalize heatmap - alert
 buy_ = ta.crossunder(normalize, buy_alert)
 sell_ = ta.crossover(normalize, sell_alert)
 alertcondition(buy_, title = 'Normalized Entry', message = 'Buy/Long entry detected')
