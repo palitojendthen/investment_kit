@@ -39,17 +39,17 @@ filt2 := (1-alpha1/2)*(filt-filt[1])+(1-alpha1)*nz(filt2[1])
 
 
 // visualize
-color_ = filt > filt[1] and filt > 0 ? color.green : filt > filt[1] and filt < 0 ? color.new(color.green, 80) : filt < filt[1] and filt > 0 ? color.new(color.red, 80) : color.red
+_color = filt > filt[1] and filt > 0 ? color.green : filt > filt[1] and filt < 0 ? color.new(color.green, 80) : filt < filt[1] and filt > 0 ? color.new(color.red, 80) : color.red
 color_con = filt > filt2 ? color.green : color.red
-color_con_ = filt > filt2
-plot(filt, color = color_, linewidth = 3)
+_color_con = filt > filt2
+plot(filt, color = _color, linewidth = 3)
 hline(0, color = color.gray, linestyle = hline.style_dashed)
 
 
 // // strategy test
 // percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
-// long_condition = color_con_
-// short_condition = not color_con_
+// long_condition = _color_con
+// short_condition = not _color_con
 
 // long_sl = 0.00
 // long_sl := long_condition ? close*(1-percent_sl/100) : nz(long_sl[1])
