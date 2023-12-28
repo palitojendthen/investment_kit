@@ -19,7 +19,6 @@ from numpy.linalg import inv
 import yfinance as yf
 
 
-# Fibonacci Retracement Level
 def fibonacci_retracement_sr(_bottom, _top):
     """
     return retracement level of a given price range,
@@ -34,16 +33,17 @@ def fibonacci_retracement_sr(_bottom, _top):
     """
     if _bottom > _top:
         raise ValueError('Bottom/Support cant be greater than Top/Peak value')
+
     _range = _top - _bottom
     _ratio =  pd.Series([0, 23.6, 38.2, 50, 61.8, 78.6, 1])/100
     _level = []
+    
     for i in _ratio:
         _results = _bottom+_range*(1-i)
         _level.append(_results)
+    
     return pd.Series(_level)
 
-
-# Exponential Moving Average
 def ema(src, periods = 14):
     """
     technical analysis indicator:
@@ -57,49 +57,63 @@ def ema(src, periods = 14):
     src = src.dropna()
     n = len(src)
     alpha = 2/(periods+1)
+    
     if n < periods:
         raise ValueError('Periods cant be greater than data length')
+    
     _sma = src.rolling(window = periods).mean()
     _ema = pd.DataFrame({'values':np.nan}, index = src.index)
+    
     for i in range(periods, n):
         _ema['values'][i] = alpha*src[i]+(1-alpha)*_sma[i]
+    
     return pd.Series(_ema['values'])
 
-# Weighted Moving Average
 def wma(src, periods = 14):
     """
-    computes weighted moving average,
-    of given time-series data
+    technical analysis indicator:
+    return weighted moving average,
+    on a given time-series data
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/wma
+    params:
+    @src: time-series input data
+    @periods: n lookback period
     """
     src = src.dropna()
     n = len(src)
+    
     if n < periods:
-        raise ValueError('Periods cannot be greater than data length')
-    else:
-        w = np.arange(1, periods+1)
-        w_sum = w.sum()
-        weights = w/w_sum
-        wma = src.rolling(window = periods).apply(lambda y: np.dot(y, weights), raw = True)    
+        raise ValueError('Periods cant be greater than data length')
+    
+    w = np.arange(1, periods+1)
+    w_sum = w.sum()
+    weights = w/w_sum
+    wma = src.rolling(window = periods).apply(lambda y: np.dot(y, weights), raw = True)    
+    
     return wma
 
-# Hull Moving Average
 def hma(src, periods = 14):
     """
-    computes hull moving average,
-    of given time-series data,
+    technical analysis indicator:
+    return hull moving average,
+    on a given time-series data,
     an improvement to fast and smooth moving average
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/hull-moving-average
+    params:
+    @src: time-series input data
+    @periods: n lookback period
     """
     src = src.dropna()
     n = len(src)
+    
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
-    else:
-        wma1 = wma(src, periods = int(periods/2))
-        wma2 = wma(src, periods = periods)
-        hma_ = (2*wma1) - wma2
-        hma = wma(hma_, periods = int(np.sqrt(periods)))    
+    
+    wma1 = wma(src, periods = int(periods/2))
+    wma2 = wma(src, periods = periods)
+    _hma = (2*wma1)-wma2
+    hma = wma(_hma, periods = int(np.sqrt(periods)))    
+    
     return hma
 
 # Stochastic Oscillator
