@@ -150,10 +150,15 @@ def stochastic(close, high, low, periods = 14, smooth = 3, return_df = False, ):
 
 def rsi(src, periods = 14, return_df = False):
     """
-    computes relative strength index value,
-    of a given time-series data,
-    as techincal analysis aim to identify overbought or oversold area,
+    techical analysis indicator:
+    return relative strength index,
+    on a given time-series data,
+    aim to identify overbought or oversold area,
     reference: https://www.investopedia.com/terms/r/rsi.asp
+    params:
+    @src: time-series input data
+    @periods: n lookback period
+    @return df: defaul to false, if true would return as dataframe
     """
     src = src.dropna()
     n = len(src)
