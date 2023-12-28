@@ -179,41 +179,32 @@ def rsi(src, periods = 14, return_df = False):
     else:
         return pd.Series(df['rsi'][periods:])
 
-# Stochastic Relative Strength Index
-def stochastic_rsi(src, periods = 14):
+def stochastic_rsi(src, periods = 14, smooth = 3):
     """
-    computes stochastic oscillator value,
-    instead of use e.g. 'closing' or 'ohlc',
-    the indicator use rsi value as input,
-    as momemntum technical analysis indicator,
-    identify overbought if > 0.8 and oversold if < 0.2,
+    technical analysis indicator:
+    return stochastic oscillator value,
+    on an input rsi value,
+    a momemntum indicator to identify overbought > 0.8,
+    and oversold < 0.2,
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/stochrsi
+    params:
+    @src: time-series input data
+    @periods: n lookback period
+    @smooth: smoothing function
     """
     src = src.dropna()
     n = len(src)
-    if n < periods:
-        raise ValueError('Periods cannot be greater than data length')
-    else:
-        rsi_ = rsi(src, periods = periods)
-        low_ = rsi_.rolling(window = periods).min()
-        high_ = rsi_.rolling(window = periods).max()
-        stoch_rsi = ((rsi_-low_)/(high_-low_))*100
-        return stoch_rsi
 
-# Fibonacci Retracement Level
-def fibonacci_retracement(src):
-    """
-    find the retracement level of a given price,
-    which expected to have a reverse,
-    reference: https://www.investopedia.com/terms/f/fibonacciretracement.asp
-    """
-    n = len(src)
-    src = src[n-1]
-    ratio_ =  pd.Series([0, 23.6, 38.2, 50, 61.8, 78.6, 1])/100
-    level_ = []
-    for i in ratio_:
-        level_.append(src*(1-i))
-    return pd.Series(level_)
+    if n < periods:
+        raise ValueError('Periods cant be greater than data length')
+    
+    _rsi = rsi(src, periods = periods)
+    _low = _rsi.rolling(window = periods).min()
+    _high = _rsi.rolling(window = periods).max()
+    _stoch_rsi = pd.DataFrame({'%k':((_rsi-_low)/(_high-_low))*100})
+    _stoch_rsi['%d'] = _stoch_rsi['%k'].rolling(window = smooth).mean()
+
+    return _stoch_rsi
 
 # Ehlers - Simple Decycler
 def simple_decycler(src, hp_period = 89, return_df = False):
