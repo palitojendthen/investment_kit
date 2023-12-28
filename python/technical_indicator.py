@@ -206,7 +206,7 @@ def stochastic_rsi(src, periods = 14, smooth = 3):
 
     return _stoch_rsi
 
-def simple_decycler(src, hp_period = 48, return_df = False):
+def simple_decycler(src, hp_period = 48, hyst_percentage = 5, return_df = False):
     """
     technical analysis indicator:
     originated by John F. Ehlers, with aim to identified trend,
@@ -239,8 +239,8 @@ def simple_decycler(src, hp_period = 48, return_df = False):
     for i in range(hp_period, n):
         _df['hp'][i] = (1-_alpha1/2)*(1-_alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-_alpha1)*_df['hp'][i-1]-(1-_alpha1)*(1-_alpha1)*_df['hp'][i-2]
         _df['decycler'][i] = src[i]-_df['hp'][i]
-        _df['hyst_up'][i] = _df['decycler'][i]*(1+(.5/100))
-        _df['hyst_dn'][i] = _df['decycler'][i]*(1-(.5/100))
+        _df['hyst_up'][i] = _df['decycler'][i]*(1+(hyst_percentage/100))
+        _df['hyst_dn'][i] = _df['decycler'][i]*(1-(hyst_percentage/100))
     
     if return_df:
         return _df.iloc[hp_period:, :]
