@@ -1,7 +1,12 @@
+"""technical_indicator.py: a collection of technical analysis/indicator used to support an applied trading strategy/algorithmic trading"""
+__author__     = "Palito Endthen"
+__version__    = "1.0.0"
+__maintainer__ = "Palito Endthen"
+__email__      = "palitoj.endthen@outlook.com"
+__status__     = "Prototype"
 
-"""
-Library
-"""
+
+# Library
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -11,32 +16,54 @@ import statsmodels.stats.moment_helpers as mh
 from scipy.stats import norm
 from scipy.optimize import minimize
 from numpy.linalg import inv
-import plotly.express as px
 import yfinance as yf
 
 
+# Fibonacci Retracement Level
+def fibonacci_retracement_sr(_bottom, _top):
+    """
+    return retracement level of a given price range,
+    e.g. 23.6%, 38.2%, 50%, 61.8%, and 100%
+    based on the fibonacci retracement
+    with specified peak and bottom
+    which aim to use support/resistance level among traders,
+    reference: https://www.investopedia.com/terms/f/fibonacciretracement.asp
+    params:
+    @top: identified peak/resistance current level
+    @bottom: identified bottom/support current level
+    """
+    if _bottom > _top:
+        raise ValueError('Bottom/Support cant be greater than Top/Peak value')
+    _range = _top - _bottom
+    _ratio =  pd.Series([0, 23.6, 38.2, 50, 61.8, 78.6, 1])/100
+    _level = []
+    for i in _ratio:
+        _results = _bottom+_range*(1-i)
+        _level.append(_results)
+    return pd.Series(_level)
 
-"""
-Technical Analysis Indicator
-"""
+
 # Exponential Moving Average
 def ema(src, periods = 14):
     """
-    computes exponential moving average
-    of given time-series data
+    technical analysis indicator:
+    return exponential moving average,
+    on a given time-series data
     referece: https://www.investopedia.com/terms/e/ema.asp
+    params:
+    @src: time-series input data
+    @periods: n lookback period 
     """
     src = src.dropna()
     n = len(src)
     alpha = 2/(periods+1)
     if n < periods:
-        raise ValueError('Periods cannot be greater than data length')
-    else:
-        sma_ = src.rolling(window = periods).mean()
-        ema = pd.DataFrame({'values':np.nan}, index = src.index)
-        for i in range(periods, n):
-            ema['values'][i] = alpha*src[i]+(1-alpha)*sma_[i]
-    return pd.Series(ema['values'])
+        raise ValueError('Periods cant be greater than data length')
+    _sma = src.rolling(window = periods).mean()
+    _ema = pd.DataFrame({'values':np.nan}, index = src.index)
+    for i in range(periods, n):
+        _ema['values'][i] = alpha*src[i]+(1-alpha)*_sma[i]
+    return pd.Series(_ema['values'])
 
 # Weighted Moving Average
 def wma(src, periods = 14):
