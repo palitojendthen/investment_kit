@@ -247,36 +247,43 @@ def simple_decycler(src, hp_period = 48, hyst_percentage = 5, return_df = False)
     else:
         return _df['decycler'][hp_period:]
 
-# Ehlers - Predictive Moving Average
 def predictive_moving_average(src, return_df = False):
     """
-    technical analysis indicator originated by John F. Ehlers,
+    technical analysis indicator:
+    originated by John F. Ehlers,
     by taking difference of 2 lagging line of 7-bars Weighted Moving Average,
     given signal when predict crossing it's trigger
     reference: John F. Ehlers, Rocket Science for Traders pg. 212
+    params:
+    @src: time-series input data
+    @return df: default to false, if true would return as dataframe
     """
     src = src.dropna()
     n = len(src)
-    wma1 = [0.00]*n
-    wma2 = [0.00]*n
-    predict = [0.00]*n
-    trigger = [0.00]*n
-    series_ = [0.00]*n
+    
+    _df = pd.DataFrame({
+        'close':src,
+        'wma1': 0.00,
+        'wma2':0.00,
+        'predict':0.00,
+        'trigger':0.00,
+        'series':0.00
+    }, index = src.index)
+    
     for i in range(7, n):
-        wma1[i] = (7*src[i] + 6*src[i-1] + 5*src[i-2] + 4*src[i-3] + 3*src[i-4] + 2*src[i-5] + src[i-6])/28
-        wma2[i] = (7*wma1[i] + 6*wma1[i-1] + 5*wma1[i-2] + 4*wma1[i-3] + 3*wma1[i-4] + 2*wma1[i-5] + wma1[i-6])/28
-        predict[i] = (2*wma1[i])-wma2[i]
-        trigger[i] = (4*predict[i] + 3*predict[i-1] + 2*predict[i-2] + predict[i])/10
-        if predict[i] > trigger[i]:
-            series_[i] = predict[i]
+        _df['wma1'][i] = (7*src[i]+6*src[i-1]+5*src[i-2]+4*src[i-3]+3*src[i-4]+2*src[i-5]+src[i-6])/28
+        _df['wma2'][i] = (7*_df['wma1'][i]+6*_df['wma1'][i-1]+5*_df['wma1'][i-2]+4*_df['wma1'][i-3]+3*_df['wma1'][i-4]+2*_df['wma1'][i-5]+_df['wma1'][i-6])/28
+        _df['predict'][i] = (2*_df['wma1'][i])-_df['wma2'][i]
+        _df['trigger'][i] = (4*_df['predict'][i]+3*_df['predict'][i-1]+2*_df['predict'][i-2]+_df['predict'][i])/10
+        if _df['predict'][i] > _df['trigger'][i]:
+            _df['series'][i] = _df['predict'][i]
         else:
-            series_[i] = trigger[i]
+            _df['series'][i] = _df['trigger'][i]
+    
     if return_df:
-        return pd.DataFrame({'price':src[14:],
-                             'predict':predict[14:],
-                             'trigger':trigger[14:]})
+        return _df.iloc[(7*3):]
     else:
-        return pd.Series(series_[14:])
+        return _df['series'][(7*3):]
 
 # Ehlers - Even Better Sinewave
 def even_better_sinewave(src, hp_period = 89, return_df = None):
