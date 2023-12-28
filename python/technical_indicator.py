@@ -206,41 +206,46 @@ def stochastic_rsi(src, periods = 14, smooth = 3):
 
     return _stoch_rsi
 
-# Ehlers - Simple Decycler
-def simple_decycler(src, hp_period = 89, return_df = False):
+def simple_decycler(src, hp_period = 48, return_df = False):
     """
-    technical analysis indicator originated by John F. Ehlers
-    by subtracting high-frequency components from price data, 
+    technical analysis indicator:
+    originated by John F. Ehlers, with aim to identified trend,
+    of a given time-series data, by subtracting high-frequency, 
     while retain the low-frequency components of price data,
-    i.e. trends are kept intact with little to no lag
-    return trend, including a hyteresis band
+    trends are kept intact with little to no lag
     reference: https://tlc.thinkorswim.com/center/reference/Tech-Indicators/studies-library/E-F/EhlersSimpleDecycler
+    params:
+    @src: time-series input data
+    @hp period: length of a high-pass period e.g. 48, 89, 125
+    @return df: default to false, if true would return as dataframe
     """
     src = src.dropna()
     n = len(src)
+    
     if n < hp_period:
-        raise ValueError('Periods cannot be greater than data length')
+        raise ValueError('Periods cant be greater than data length')
+    
+    _df = pd.DataFrame({
+        'close':src,
+        'hp':0.00,
+        'decycler':0.00,
+        'hyst_up':0.00,
+        'hyst_dn':0.00
+    }, index = src.index)
+    
+    _pi = 2*np.arcsin(1)
+    _alpha1 = (np.cos(.707*2*_pi/hp_period)+np.sin(.707*2*_pi/hp_period)-1)/np.cos(.707*2*_pi/hp_period)
+    
+    for i in range(hp_period, n):
+        _df['hp'][i] = (1-_alpha1/2)*(1-_alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-_alpha1)*_df['hp'][i-1]-(1-_alpha1)*(1-_alpha1)*_df['hp'][i-2]
+        _df['decycler'][i] = src[i]-_df['hp'][i]
+        _df['hyst_up'][i] = _df['decycler'][i]*(1+(.5/100))
+        _df['hyst_dn'][i] = _df['decycler'][i]*(1-(.5/100))
+    
+    if return_df:
+        return _df.iloc[hp_period:, :]
     else:
-        hp = [0.00]*n
-        decycler = [0.00]*n
-        hysteresis_up = [0.00]*n
-        hysteresis_down = [0.00]*n
-        pi = 2*np.arcsin(1)
-        alpha1 = (np.cos(.707*2*pi/hp_period)+np.sin(.707*2*pi/hp_period)-1)/np.cos(.707*2*pi/hp_period)
-
-        for i in range(1, n):
-            hp[i] = (1-alpha1/2)*(1-alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-alpha1)*hp[i-1]-(1-alpha1)*(1-alpha1)*hp[i-2]
-            decycler[i] = src[i]-hp[i]
-            hysteresis_up[i] = decycler[i]*(1+(.5/100))
-            hysteresis_down[i] = decycler[i]*(1-(.5/100))
-        if return_df:
-            return pd.DataFrame({'hp':hp[hp_period:],
-                                 'price':src[hp_period:],
-                                 'decycler':decycler[hp_period:], 
-                                 'hysteresis_up':hysteresis_up[hp_period:], 
-                                 'hysteresis_down':hysteresis_down[hp_period:]})
-        else:
-            return pd.Series(decycler[hp_period:])
+        return _df['decycler'][hp_period:]
 
 # Ehlers - Predictive Moving Average
 def predictive_moving_average(src, return_df = False):
