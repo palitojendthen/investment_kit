@@ -285,40 +285,46 @@ def predictive_moving_average(src, return_df = False):
     else:
         return _df['series'][(7*3):]
 
-# Ehlers - Even Better Sinewave
-def even_better_sinewave(src, hp_period = 89, return_df = None):
+def even_better_sinewave(src, hp_period = 48, return_df = None):
     """
-    technical analysis indicator by John F. Ehlers,
-    aims to create artificially predictive indicator,
+    technical analysis indicator:
+    originate by John F. Ehlers, aim to create artificially predictive indicator,
     by transfering cyclic data swings into a sinewave
     referece: John F. Ehlers, Cycle Analytics for Traders pg. 159
+    params:
+    @src: time-series input data
+    @hp_period: length of a high-pass period e.g. 48, 89, 125
+    @return df: default to false, if true would return as dataframe
     """
     src = src.dropna()
     n = len(src)
+    
     if n < hp_period:
-        raise ValueError('Periods cannot be greater than data length')
+        raise ValueError('Periods cant be greater than data length')
+
+    _df = pd.DataFrame({
+        'close': src,
+        'hp': 0.00,
+        'decycler': 0.00,
+        'filt': 0.00,
+        'wave': 0.00,
+        'pwr': 0.00,
+    }, index = src.index)
+    
+    _pi = 2*np.arcsin(1)
+    _alpha1 = (np.cos(.707*2*_pi/hp_period)+np.sin(.707*2*_pi/hp_period)-1)/np.cos(.707*2*_pi/hp_period)
+
+    for i in range(hp_period, n):
+        _df['hp'][i] = (1-_alpha1/2)*(1-_alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-_alpha1)*_df['hp'][i-1]-(1-_alpha1)*(1-_alpha1)*_df['hp'][i-2]
+        _df['filt'][i] = (7*_df['hp'][i]+6*_df['hp'][i-1]+5*_df['hp'][i-2]+4*_df['hp'][i-3]+3*_df['hp'][i-4]+2*_df['hp'][i-5]+_df['hp'][i])/28
+        _df['wave'][i] = (_df['filt'][i]+_df['filt'][i-1]+_df['filt'][i-2])/3
+        _df['pwr'][i] = (_df['filt'][i]*_df['filt'][i]+_df['filt'][i-1]*_df['filt'][i-1]+_df['filt'][i-2]*_df['filt'][i-2])/3
+        _df['wave'][i] = _df['wave'][i]/np.sqrt(_df['pwr'][i])
+
+    if return_df:
+        return _df.iloc[hp_period:, :]
     else:
-        hp = [0.00]*n
-        decycler = [0.00]*n
-        filt = [0.00]*n
-        wave = [0.00]*n
-        pwr = [0.00]*n
-        pi = 2*np.arcsin(1)
-        alpha1 = (np.cos(.707*2*pi/hp_period)+np.sin(.707*2*pi/hp_period)-1)/np.cos(.707*2*pi/hp_period)
-
-        for i in range(1, n):
-            hp[i] = (1-alpha1/2)*(1-alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-alpha1)*hp[i-1]-(1-alpha1)*(1-alpha1)*hp[i-2]
-            filt[i] = (7*hp[i] + 6*hp[i-1] + 5*hp[i-2] + 4*hp[i-3] + 3*hp[i-4] + 2*hp[i-5] + hp[i])/28
-            wave[i] = (filt[i]+filt[i-1]+filt[i-2])/3
-            pwr[i] = (filt[i]*filt[i]+filt[i-1]*filt[i-1]+filt[i-2]*filt[i-2])/3
-
-            wave[i] = wave[i]/np.sqrt(pwr[i])
-        
-        if return_df:
-            return pd.DataFrame({'price': src[hp_period:],
-                                'wave': wave[hp_period:]})
-        else:
-            return pd.Series(wave[hp_period:])
+        return _df['wave'][hp_period:]
 
 # Kaufman - Adaptive Moving Average
 def kama(src, length = 14, fast_length = 2, slow_length = 30, return_df = False):
