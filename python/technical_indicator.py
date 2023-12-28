@@ -158,7 +158,7 @@ def rsi(src, periods = 14, return_df = False):
     params:
     @src: time-series input data
     @periods: n lookback period
-    @return df: defaul to false, if true would return as dataframe
+    @return df: default to false, if true would return as dataframe
     """
     src = src.dropna()
     n = len(src)
