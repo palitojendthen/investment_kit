@@ -116,33 +116,39 @@ def hma(src, periods = 14):
     
     return hma
 
-# Stochastic Oscillator
-def stochastic(close, high, low, periods = 14, return_df = False, smooth = 3):
+def stochastic(close, high, low, periods = 14, smooth = 3, return_df = False, ):
     """
-    computes stochastic oscillator,
-    of given time-series data,
-    as an technical analysis indicator aim to identify momentum, 
-    and identify overbought or oversold area
+    technical analysis indicator:
+    return stochastic oscillator,
+    on a given time-series data,
+    aim to identify momentum, overbought and oversold area
     reference: https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    params:
+    @close: close price time-series data
+    @high: high price time-series data
+    @low: low price time-series data
+    @periods: n lookback period
+    @return df: default to false, if true would return as dataframe
+    @smooth: smoothing function
     """
     close, high, low = close.dropna(), high.dropna(), low.dropna()
-    
     n = len(close)
+    
     if n < periods:
         raise ValueError('Periods cannot be greater than data length')
-    else:
-        low_ = low.rolling(window = periods).min()
-        high_ = high.rolling(window = periods).max()
-        stoch = pd.DataFrame({'%k':np.nan}, index = close.index)
-        for i in range(periods, n):
-            stoch['%k'][i] = ((close[i]-low_[i])/(high_[i]-low_[i]))*100
-        if return_df:
-            stoch['%d'] = stoch['%k'].rolling(window = smooth).mean()
-            return stoch
-        return pd.Series(stoch['%k'])
     
-# Relative Strength Index
-def rsi(src, periods = 14, return_df = None):
+    _low = low.rolling(window = periods).min()
+    _high = high.rolling(window = periods).max()
+    _stoch = pd.DataFrame({'%k':np.nan}, index = close.index)
+    
+    for i in range(periods, n):
+        _stoch['%k'][i] = ((close[i]-_low[i])/(_high[i]-_low[i]))*100
+    if return_df:
+        _stoch['%d'] = _stoch['%k'].rolling(window = smooth).mean()
+        return _stoch
+    return pd.Series(_stoch['%k'])
+
+def rsi(src, periods = 14, return_df = False):
     """
     computes relative strength index value,
     of a given time-series data,
@@ -151,21 +157,22 @@ def rsi(src, periods = 14, return_df = None):
     """
     src = src.dropna()
     n = len(src)
+
     if n < periods:
-        raise ValueError('Periods cannot be greater than data length')
+        raise ValueError('Periods cant be greater than data length')
+
+    df = pd.DataFrame({'value':src.copy()}, index = src.index)
+    df['diff'] = src.diff()
+    df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
+    df['loss'] = np.where(df['diff'] < 0, df['diff'], 0)
+    df['avg_gain'] = df['gain'].ewm(com = periods-1, adjust = False).mean()
+    df['avg_loss'] = df['loss'].ewm(com = periods-1, adjust = False).mean().abs()
+    df['rs'] = df['avg_gain']/df['avg_loss']
+    df['rsi'] = (100 - (100/(1+df['rs'])))
+    if return_df is True:
+        return df[periods:]
     else:
-        df = pd.DataFrame({'value':src.copy()}, index = src.index)
-        df['diff'] = src.diff()
-        df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
-        df['loss'] = np.where(df['diff'] < 0, df['diff'], 0)
-        df['avg_gain'] = df['gain'].ewm(com = periods-1, adjust = False).mean()
-        df['avg_loss'] = df['loss'].ewm(com = periods-1, adjust = False).mean().abs()
-        df['rs'] = df['avg_gain']/df['avg_loss']
-        df['rsi'] = (100 - (100/(1+df['rs'])))
-        if return_df is not None:
-            return df[periods:]
-        else:
-            return pd.Series(df['rsi'][periods:])
+        return pd.Series(df['rsi'][periods:])
 
 # Stochastic Relative Strength Index
 def stochastic_rsi(src, periods = 14):
