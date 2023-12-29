@@ -11,11 +11,6 @@ import pandas as pd
 import numpy as np
 import statsmodels.api as sm
 import math
-import scipy.stats
-import statsmodels.stats.moment_helpers as mh
-from scipy.stats import norm
-from scipy.optimize import minimize
-from numpy.linalg import inv
 import yfinance as yf
 
 
@@ -326,7 +321,7 @@ def even_better_sinewave(src, hp_period = 48, return_df = None):
     else:
         return _df['wave'][hp_period:]
 
-def kama(src, length = 10, fast_length = 2, slow_length = 30, return_df = False):
+def kama(src, length = 14, fast_length = 2, slow_length = 30, return_df = False):
     """
     technical analysis indicator:
     originated by Perry J. Kaufman,
