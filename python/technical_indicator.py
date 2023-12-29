@@ -326,49 +326,52 @@ def even_better_sinewave(src, hp_period = 48, return_df = None):
     else:
         return _df['wave'][hp_period:]
 
-# Kaufman - Adaptive Moving Average
-def kama(src, length = 14, fast_length = 2, slow_length = 30, return_df = False):
+def kama(src, length = 10, fast_length = 2, slow_length = 30, return_df = False):
     """
-    technical analysis indicator originated by Perry J. Kaufman,
-    an adaptive trendline indicator, with notion of using the fastest trend possible,
-    based on the smallest calculation period for the existing market conditions,
-    by applying an exponential smoothing formula to vary the speed of the trend,
+    technical analysis indicator:
+    originated by Perry J. Kaufman,
+    an adaptive trendline indicator, that one changes with market conditions,
+    with notion of using the fastest trend possible, based on the smallest calculation period,
+    for the existing market conditions, by applying an exponential smoothing formula,
+    to vary the speed of the trend
     reference: https://corporatefinanceinstitute.com/resources/capital-markets/kaufmans-adaptive-moving-average-kama/
+    params:
+    @src: time-series input data
+    @length: periods that affect efficiency ratio, keep the n below 14, period > 14 will not
+        change the value, only make them smaller
+    @fast length: the fastest values represent the range of calc periods, default to 2
+    @slow length: the slowest values represent the range of calc periods, default to 30
+    return df: default to false, if true would return as dataframe
     """
     src = src.dropna()
     n = len(src)
 
     if n < length:
         raise ValueError('Periods cannot be greater than data length')
+
+    fastest = 2/(fast_length+1)
+    slowest = 2/(slow_length+1)
+
+    _df = pd.DataFrame({
+        'close': src,
+        'num': 0.00,
+        'delta': 0.00,
+        'denom': 0.00,
+        'er': 0.00,
+        'sc':0.00,
+        'kama':0.00
+    }, index = src.index)
+
+    for i in range(length, n):
+        _df['num'][i] = abs(src[i]-src[i-length])
+        _df['delta'][i] = abs(src[i]-src[i-1])
+        _df['denom'][length-1:] = np.convolve(_df['delta'], np.ones(length), 'valid')
+        _df['er'][i] = _df['num'][i]/_df['denom'][i]
+        _df['sc'][i] = math.pow(_df['er'][i]*(fastest-slowest)+slowest, 2)
+        _df['kama'][i] = _df['kama'][i-1]+_df['sc'][i]*(_df['close'][i]-_df['kama'][i-1])
+
+    if return_df:
+        return _df.iloc[length:, :]
     else:
-        fastest = 2/(fast_length+1)
-        slowest = 2/(slow_length+1)
-        
-        # variable
-        num = [0.00]*n
-        delta = [0.00]*n
-        denom = [0.00]*n
-        er = [0.00]*n
-        sc = [0.00]*n
-        kama = [0.00]*n
-        
-        for i in range(length, n):
-            
-            # efficiency ratio
-            num[i] = abs(src[i] - src[i-length])
-            delta[i] = abs(src[i] - src[i-1])
-            denom[length-1:] = np.convolve(delta, np.ones(length), 'valid')
-            er[i] = num[i]/denom[i]
-            
-            # smoothing constant
-            sc[i] = math.pow(er[i]*(fastest-slowest)+slowest, 2)
-            
-            # adaptive moving average
-            kama[i] = kama[i-1]+sc[i]*(src[i]-kama[i-1])
-        
-        if return_df:
-            return pd.DataFrame({'price':src[slow_length+length:],
-                                 'kama': kama[slow_length+length:]})
-        else:
-            return pd.Series(kama[slow_length+length:])
+        return _df['kama'][length:]
 
