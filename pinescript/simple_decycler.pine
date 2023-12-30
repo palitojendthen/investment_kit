@@ -4,46 +4,46 @@
 //@version=5
 indicator(title = 'John F. Ehlers - Simple Decycler', shorttitle = 'decycler', overlay = true)
 
-
 // input
 src = input.source(defval = ohlc4, title = 'Source', group = 'Options', tooltip = 'Determines the input data, default to OHLC4, users can choose different input such close')
-hp_period = input.int(defval = 89, title = 'High Pass Period', group = 'Value', tooltip = 'Determines of High Pass period (impedes low frequency)')
+hp_period = input.int(defval = 89, title = 'High Pass Period', group = 'Options', tooltip = 'Determines of High Pass period (impedes low frequency)')
+_hyst = input.bool(defval = true, title = 'Show Hysteresis', group = 'Options', tooltip = 'Determines whether to display hsyteresis up/down')
 
 
 // compute simple decycler
-simple_decycler(source_, hp_period_)=>
+simple_decycler(_source, _hp_period)=>
     alpha1 = 0.00
     hp = 0.00
     decycler = 0.00
     pi = 2*math.asin(1)
 
-    alpha1 := (math.cos(.707*2*pi/hp_period_)+math.sin(.707*2*pi/hp_period_)-1)/math.cos(.707*2*pi/hp_period_)
-    hp := (1-alpha1/2)*(1-alpha1/2)*(source_-2*nz(source_[1])+nz(source_[2]))+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
-    decycler := source_-hp
+    alpha1 := (math.cos(.707*2*pi/_hp_period)+math.sin(.707*2*pi/_hp_period)-1)/math.cos(.707*2*pi/_hp_period)
+    hp := (1-alpha1/2)*(1-alpha1/2)*(_source-2*nz(_source[1])+nz(_source[2]))+2*(1-alpha1)*nz(hp[1])-(1-alpha1)*(1-alpha1)*nz(hp[2])
+    decycler := _source-hp
 
 decycler =  simple_decycler(src, hp_period)
-hysteresis_up = decycler*(1+(.5/100))
-hysteresis_down = decycler*(1-(.5/100))
+hyst_up = decycler*(1+(.5/100))
+hyst_dn = decycler*(1-(.5/100))
 
 
 // visualize
 color_con = decycler > decycler[1] and decycler[1] > decycler[2] ? color.green : color.red
-color_con_ = decycler > decycler[1] and decycler[1] > decycler[2]
+_color_con = decycler > decycler[1] and decycler[1] > decycler[2]
 
 plot(decycler, color = color_con, linewidth = 3)
-plot(hysteresis_up, color = color.new(color.yellow, 50), linewidth = 1)
-plot(hysteresis_down, color = color.new(color.yellow, 50), linewidth = 1)
+plot(_hyst ? hyst_up : na, color = color.new(color.yellow, 50), linewidth = 1)
+plot(_hyst ? hyst_dn : na, color = color.new(color.yellow, 50), linewidth = 1)
 
 
 // create alert
-alertcondition((not color_con_[1] and color_con_), title = 'Entry', message = 'Buy/Long entry detected')
-alertcondition((color_con_ and not color_con_), title = 'Close', message = 'Sell/Short entry detected')
+alertcondition((not _color_con[1] and _color_con), title = 'Entry', message = 'Buy/Long entry detected')
+alertcondition((_color_con and not _color_con), title = 'Close', message = 'Sell/Short entry detected')
 
 
-// strategy test
+// // strategy test
 // percent_sl = input.float(defval = 3, title = 'Stop Loss', group = 'Value', tooltip = 'Determines the stop-loss percentage')
-// long_condition = color_con_
-// short_condition = not color_con_
+// long_condition = _color_con
+// short_condition = not _color_con
 
 // long_sl = 0.00
 // long_sl := long_condition ? decycler*(1-percent_sl/100) : nz(long_sl[1])
