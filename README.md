@@ -12,7 +12,7 @@
 
 Items | Description
 --- | ---
-[Pine Script](https://github.com/palitojendthen/investment_kit/tree/main/pinescript) | Collection of Technical Analysis Indicator written in [Pine Script <sup>TM</sup>](https://www.tradingview.com/pine-script-docs/en/v5/Introduction.html) [TradingView](https://www.tradingview.com/)
+[Pine Script](https://github.com/palitojendthen/pinescript?tab=readme-ov-file) | Collection of Technical Analysis Indicator written in [Pine Script <sup>TM</sup>](https://www.tradingview.com/pine-script-docs/en/v5/Introduction.html) [TradingView](https://www.tradingview.com/)
 Python
 [Technical Indicator](https://github.com/palitojendthen/investment_kit/blob/main/python/technical_indicator.py) | Collection of Technical Analysis Indicator written in Python
 [Portfolio Management](https://github.com/palitojendthen/investment_kit/blob/main/python/portfolio_management.py) | Collection of portfolio management/optimization tools written in Python
