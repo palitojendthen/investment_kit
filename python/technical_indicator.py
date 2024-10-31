@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+
 """technical_indicator.py: a collection of technical analysis/indicator used to support an applied trading strategy/algorithmic trading"""
 __author__     = "Palito Endthen"
 __version__    = "1.0.0"
 __maintainer__ = "Palito Endthen"
 __email__      = "palitoj.endthen@outlook.com"
+__license__    = "GPL-3.0"
 __status__     = "Prototype"
 
 
@@ -14,6 +17,7 @@ import math
 import yfinance as yf
 
 
+# function
 def fibonacci_retracement_sr(_bottom, _top):
     """
     return retracement level of a given price range,
