@@ -27,7 +27,6 @@ def fibonacci(n):
 
     example:
     >>> technical_indicator.fibonacci(5)
-    [0, 1, 1, 2, 3, 5]
     """
     f = [0,1]
     for i in range(2, n + 1):
@@ -46,7 +45,6 @@ def fibonacci_retracement_sr(_bottom, _top):
     @_top: number, peak price level
     example:
     >>> technical_indicator.fibonacci_retracement_sr(10, 15.8)
-    array([15.8   , 14.4312, 13.5844, 12.9   , 12.2156, 11.2412, 15.742 ])
     """
     if _bottom > _top:
         raise ValueError("Bottom can't be greater than Top value")
@@ -72,13 +70,8 @@ def ema(src, periods = 14):
     @periods: integer, n lookback period
     example:
     >>> arr = np.random.randint(10, 30, 20)
-    >>> df = pd.DataFrame(close, columns = ['close'])
+    >>> df = pd.DataFrame(arr, columns = ['close'])
     >>> technical_indicator.ema(df['close'])[-5:]
-    15    20.961905
-    16    21.033333
-    17    22.409524
-    18    22.338095
-    19    23.119048
     """
     src = src.dropna()
     n = len(src)
@@ -102,14 +95,18 @@ def wma(src, periods = 14):
     on a given time-series data
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/wma
     params:
-    @src: time-series input data
-    @periods: n lookback period
+    @src: series, time-series input data
+    @periods: integer, n lookback period
+    example:
+    >>> arr = np.random.randint(10, 30, 20)
+    >>> df = pd.DataFrame(arr, columns = ['close'])
+    >>> technical_indicator.wma(df['close'])
     """
     src = src.dropna()
     n = len(src)
     
     if n < periods:
-        raise ValueError('Periods cant be greater than data length')
+        raise ValueError("Periods can't be greater than data length")
     
     w = np.arange(1, periods+1)
     w_sum = w.sum()
