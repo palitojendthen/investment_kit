@@ -23,7 +23,11 @@ def fibonacci(n):
     return sequence number generated based on fibonacci sequence,
     given the number of n
     params:
-    @n: integer,number of expected output data    
+    @n: integer,number of expected output data
+
+    example:
+    >>> technical_indicator.fibonacci(5)
+    [0, 1, 1, 2, 3, 5]
     """
     f = [0,1]
     for i in range(2, n + 1):
@@ -33,13 +37,16 @@ def fibonacci(n):
 def fibonacci_retracement_sr(_bottom, _top):
     """
     return retracement level of a given price range,
-    e.g. 23.6%, 38.2%, 50%, 61.8%, and 100%,
+    i.e. 23.6%, 38.2%, 50%, 61.8%, and 100%,
     based on the fibonacci retracement with specified bottom and top value,
     which aim identified as support/resistance level,
-    reference: https://www.investopedia.com/terms/f/fibonacciretracement.asp
+    reference: https://www.investopedia.com/terms/f/fibonacciretracement.asp    
     params:
     @_bottom: number, bottom price level
     @_top: number, peak price level
+    example:
+    >>> technical_indicator.fibonacci_retracement_sr(10, 15.8)
+    array([15.8   , 14.4312, 13.5844, 12.9   , 12.2156, 11.2412, 15.742 ])
     """
     if _bottom > _top:
         raise ValueError("Bottom can't be greater than Top value")
@@ -52,7 +59,7 @@ def fibonacci_retracement_sr(_bottom, _top):
         _results = _bottom+_range*(1-i)
         _level.append(_results)
     
-    return pd.Series(_level)
+    return np.array(_level)
 
 def ema(src, periods = 14):
     """
@@ -61,15 +68,24 @@ def ema(src, periods = 14):
     on a given time-series data
     referece: https://www.investopedia.com/terms/e/ema.asp
     params:
-    @src: time-series input data
-    @periods: n lookback period 
+    @src: series, time-series input data
+    @periods: integer, n lookback period
+    example:
+    >>> arr = np.random.randint(10, 30, 20)
+    >>> df = pd.DataFrame(close, columns = ['close'])
+    >>> technical_indicator.ema(df['close'])[-5:]
+    15    20.961905
+    16    21.033333
+    17    22.409524
+    18    22.338095
+    19    23.119048
     """
     src = src.dropna()
     n = len(src)
     alpha = 2/(periods+1)
     
     if n < periods:
-        raise ValueError('Periods cant be greater than data length')
+        raise ValueError("Periods can't be greater than data length")
     
     _sma = src.rolling(window = periods).mean()
     _ema = pd.DataFrame({'values':np.nan}, index = src.index)
