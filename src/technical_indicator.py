@@ -121,10 +121,14 @@ def hma(src, periods = 14):
     return hull moving average,
     on a given time-series data,
     an improvement to fast and smooth moving average
-    reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/hull-moving-average
+    reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/hull moving-average
     params:
-    @src: time-series input data
-    @periods: n lookback period
+    @src: series, time-series input data
+    @periods: integer, n lookback period
+    example:
+    >>> arr = np.random.randint(10, 30, 20)
+    >>> df = pd.DataFrame(arr, columns = ['close'])
+    >>> technical_indicator.hma(df['close'])
     """
     src = src.dropna()
     n = len(src)
