@@ -12,26 +12,37 @@ __status__     = "Prototype"
 # Library
 import pandas as pd
 import numpy as np
-import statsmodels.api as sm
 import math
-import yfinance as yf
+import statsmodels.api as sm
+# import yfinance as yf
 
 
 # function
+def fibonacci(n):
+    """
+    return sequence number generated based on fibonacci sequence,
+    given the number of n
+    params:
+    @n: integer,number of expected output data    
+    """
+    f = [0,1]
+    for i in range(2, n + 1):
+        f.append(f[i - 1] + f[i - 2])        
+    return f
+
 def fibonacci_retracement_sr(_bottom, _top):
     """
     return retracement level of a given price range,
-    e.g. 23.6%, 38.2%, 50%, 61.8%, and 100%
-    based on the fibonacci retracement
-    with specified peak and bottom
-    which aim to use support/resistance level among traders,
+    e.g. 23.6%, 38.2%, 50%, 61.8%, and 100%,
+    based on the fibonacci retracement with specified bottom and top value,
+    which aim identified as support/resistance level,
     reference: https://www.investopedia.com/terms/f/fibonacciretracement.asp
     params:
-    @top: identified peak/resistance current level
-    @bottom: identified bottom/support current level
+    @_bottom: number, bottom price level
+    @_top: number, peak price level
     """
     if _bottom > _top:
-        raise ValueError('Bottom/Support cant be greater than Top/Peak value')
+        raise ValueError("Bottom can't be greater than Top value")
 
     _range = _top - _bottom
     _ratio =  pd.Series([0, 23.6, 38.2, 50, 61.8, 78.6, 1])/100
