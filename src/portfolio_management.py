@@ -1,13 +1,15 @@
+#!/usr/bin/env python
 
 """portfolio_management.py: a collection of tools use to support within portfolio management/asset allocation"""
 __author__     = "Palito J. Endthen"
 __version__    = "1.0.0"
 __maintainer__ = "Palito J. Endthen"
 __email__      = "palitoj.endthen@outlook.com"
+__license__    = "GPL-3.0"
 __status__     = "Prototype"
 
 
-# Load library
+# Library
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -17,12 +19,13 @@ import statsmodels.stats.moment_helpers as mh
 from scipy.stats import norm
 from scipy.optimize import minimize
 from numpy.linalg import inv
-import plotly.express as px
-import plotly.io as pio
-pio.renderers.default = 'iframe'
+# import plotly.express as px
+# import plotly.io as pio
+# pio.renderers.default = 'iframe'
 import yfinance as yf
 
 
+# Function
 def rate_of_return(x):
     """
     return rate of returns,
@@ -116,10 +119,3 @@ def annualize_rets(r, periods_per_year=12):
     compounded_growth = (1+r).prod()
     n_periods = r.shape[0]
     return compounded_growth**(periods_per_year/n_periods) - 1
-
-def annualize_vol(r, periods_per_year = 12):
-    """
-    return annualized volatility set of returns,
-    params:
-    @r: returns time-series data
-    @periods per year: default to 12 months

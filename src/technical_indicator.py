@@ -17,7 +17,7 @@ import statsmodels.api as sm
 # import yfinance as yf
 
 
-# function
+# Function
 def fibonacci(n):
     """
     return sequence number generated based on fibonacci sequence,
