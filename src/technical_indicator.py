@@ -212,7 +212,7 @@ def stochastic(src, close, high, low, periods = 14, smooth = 3, return_df = Fals
         return src
     return pd.Series(src['%k'])
 
-def rsi(src, periods = 14, return_df = False):
+def rsi(src, col, periods = 14, return_df = False):
     """
     techical analysis indicator:
     return relative strength index,
@@ -220,9 +220,11 @@ def rsi(src, periods = 14, return_df = False):
     aim to identify overbought or oversold area,
     reference: https://www.investopedia.com/terms/r/rsi.asp
     params:
-    @src: time-series input data
-    @periods: n lookback period
-    @return df: default to false, if true would return as dataframe
+    @src: series, time-series input data
+    @col: strings, input data column
+    @periods: integer, n lookback period
+    @return_df: boolean, default to false, if true would return as dataframe
+    >>> technical_indicator.rsi(df, 'close', return_df=True)
     """
     src = src.dropna()
     n = len(src)
@@ -230,18 +232,17 @@ def rsi(src, periods = 14, return_df = False):
     if n < periods:
         raise ValueError('Periods cant be greater than data length')
 
-    df = pd.DataFrame({'value':src.copy()}, index = src.index)
-    df['diff'] = src.diff()
-    df['gain'] = np.where(df['diff'] > 0, df['diff'], 0)
-    df['loss'] = np.where(df['diff'] < 0, df['diff'], 0)
-    df['avg_gain'] = df['gain'].ewm(com = periods-1, adjust = False).mean()
-    df['avg_loss'] = df['loss'].ewm(com = periods-1, adjust = False).mean().abs()
-    df['rs'] = df['avg_gain']/df['avg_loss']
-    df['rsi'] = (100 - (100/(1+df['rs'])))
+    src['diff'] = src[col].diff()
+    src['gain'] = np.where(src['diff'] > 0, src['diff'], 0)
+    src['loss'] = np.where(src['diff'] < 0, src['diff'], 0)
+    src['avg_gain'] = src['gain'].ewm(com = periods-1, adjust = False).mean()
+    src['avg_loss'] = src['loss'].ewm(com = periods-1, adjust = False).mean().abs()
+    src['rs'] = src['avg_gain']/src['avg_loss']
+    src['rsi'] = (100-(100/(1+src['rs'])))
     if return_df is True:
-        return df[periods:]
+        return src[periods:]
     else:
-        return pd.Series(df['rsi'][periods:])
+        return pd.Series(src['rsi'][periods:])
 
 def stochastic_rsi(src, periods = 14, smooth = 3):
     """
