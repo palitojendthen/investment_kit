@@ -223,7 +223,7 @@ def rsi(src, col, periods = 14, return_df = False):
     @src: series, time-series input data
     @col: strings, input data column
     @periods: integer, n lookback period
-    @return_df: boolean, default to false, if true would return as dataframe
+    @return_df: boolean, whether to return include input dataframe or result only
     >>> technical_indicator.rsi(df, 'close', return_df=True)
     """
     src = src.dropna()
@@ -239,23 +239,28 @@ def rsi(src, col, periods = 14, return_df = False):
     src['avg_loss'] = src['loss'].ewm(com = periods-1, adjust = False).mean().abs()
     src['rs'] = src['avg_gain']/src['avg_loss']
     src['rsi'] = (100-(100/(1+src['rs'])))
-    if return_df is True:
+
+    if return_df:
         return src[periods:]
     else:
         return pd.Series(src['rsi'][periods:])
 
-def stochastic_rsi(src, periods = 14, smooth = 3):
+def stochastic_rsi(src, col, periods = 14, smooth = 3, return_df = False):
     """
     technical analysis indicator:
     return stochastic oscillator value,
-    on an input rsi value,
+    on an input relative strength index value,
     a momemntum indicator to identify overbought > 0.8,
     and oversold < 0.2,
     reference: https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/stochrsi
     params:
-    @src: time-series input data
-    @periods: n lookback period
-    @smooth: smoothing function
+    @src: series, time-series input data
+    @col: strings, input data column
+    @periods: integer, n lookback period
+    @smooth: integer, smoothing function
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.stochastic_rsi(df, 'close', return_df = True)
     """
     src = src.dropna()
     n = len(src)
@@ -263,13 +268,16 @@ def stochastic_rsi(src, periods = 14, smooth = 3):
     if n < periods:
         raise ValueError('Periods cant be greater than data length')
     
-    _rsi = rsi(src, periods = periods)
-    _low = _rsi.rolling(window = periods).min()
-    _high = _rsi.rolling(window = periods).max()
-    _stoch_rsi = pd.DataFrame({'%k':((_rsi-_low)/(_high-_low))*100})
-    _stoch_rsi['%d'] = _stoch_rsi['%k'].rolling(window = smooth).mean()
+    src['rsi'] = rsi(src, col, periods = periods)
+    src['low'] = src['rsi'].rolling(window = periods).min()
+    src['high'] = src['rsi'].rolling(window = periods).max()
+    src['%k'] = ((src['rsi']-src['low'])/(src['high']-src['low']))*100
+    src['%d'] = src['%k'].rolling(window=smooth).mean()
 
-    return _stoch_rsi
+    if return_df:
+        return src[periods:]
+    else:
+        return src[['%k', '%d']][periods:]
 
 def simple_decycler(src, hp_period = 48, hyst_percentage = 5, return_df = False):
     """
