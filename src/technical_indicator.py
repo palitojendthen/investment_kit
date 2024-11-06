@@ -370,9 +370,11 @@ def even_better_sinewave(src, hp_period = 48, return_df = None):
     by transfering cyclic data swings into a sinewave
     referece: John F. Ehlers, Cycle Analytics for Traders pg. 159
     params:
-    @src: time-series input data
-    @hp_period: length of a high-pass period e.g. 48, 89, 125
-    @return df: default to false, if true would return as dataframe
+    @src: series, time-series input data
+    @hp_period: integer, length of a high-pass period e.g. 48, 89, 125
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.even_better_sinewave(df['close'], return_df=True) 
     """
     src = src.dropna()
     n = len(src)
