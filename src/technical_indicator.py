@@ -331,8 +331,10 @@ def predictive_moving_average(src, return_df = False):
     given signal when predict crossing it's trigger
     reference: John F. Ehlers, Rocket Science for Traders pg. 212
     params:
-    @src: time-series input data
-    @return df: default to false, if true would return as dataframe
+    @src: series, time-series input data
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.predictive_moving_average(df['close'], return_df=True)
     """
     src = src.dropna()
     n = len(src)
