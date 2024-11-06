@@ -415,12 +415,13 @@ def kama(src, length = 14, fast_length = 2, slow_length = 30, return_df = False)
     to vary the speed of the trend
     reference: https://corporatefinanceinstitute.com/resources/capital-markets/kaufmans-adaptive-moving-average-kama/
     params:
-    @src: time-series input data
-    @length: periods that affect efficiency ratio, keep the n below 14, period > 14 will not
-        change the value, only make them smaller
-    @fast length: the fastest values represent the range of calc periods, default to 2
-    @slow length: the slowest values represent the range of calc periods, default to 30
-    return df: default to false, if true would return as dataframe
+    @src: series, time-series input data
+    @length: integer, periods that affect efficiency ratio, keep the n below 14, period > 14 will not change the value, only make them smaller
+    @fast_length: integer, the fastest values represent the range of calc periods, default to 2
+    @slow_length: integer, the slowest values represent the range of calc periods, default to 30
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.kama(df['close'], return_df=True)
     """
     src = src.dropna()
     n = len(src)
