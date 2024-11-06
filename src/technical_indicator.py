@@ -23,8 +23,7 @@ def fibonacci(n):
     return sequence number generated based on fibonacci sequence,
     given the number of n
     params:
-    @n: integer,number of expected output data
-
+    @n: integer, number of expected output data
     example:
     >>> technical_indicator.fibonacci(5)
     """
