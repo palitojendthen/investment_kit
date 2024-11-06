@@ -19,10 +19,10 @@ import statsmodels.stats.moment_helpers as mh
 from scipy.stats import norm
 from scipy.optimize import minimize
 from numpy.linalg import inv
+# import yfinance as yf
 # import plotly.express as px
 # import plotly.io as pio
 # pio.renderers.default = 'iframe'
-import yfinance as yf
 
 
 # Function
