@@ -283,14 +283,17 @@ def simple_decycler(src, hp_period = 48, hyst_percentage = 5, return_df = False)
     """
     technical analysis indicator:
     originated by John F. Ehlers, with aim to identified trend,
-    of a given time-series data, by subtracting high-frequency, 
+    of a given time-series data, by subtracting high-frequency component, 
     while retain the low-frequency components of price data,
     trends are kept intact with little to no lag
     reference: https://tlc.thinkorswim.com/center/reference/Tech-Indicators/studies-library/E-F/EhlersSimpleDecycler
     params:
-    @src: time-series input data
-    @hp period: length of a high-pass period e.g. 48, 89, 125
-    @return df: default to false, if true would return as dataframe
+    @src: series, time-series input data
+    @hp_period: integer, length of a high-pass period e.g. 48, 89, 125
+    @hyst_percentage: integer, hysteresis band percentage %
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.simple_decycler(df['close'], hp_period=89, hyst_percentage=3, return_df=True)
     """
     src = src.dropna()
     n = len(src)
