@@ -152,7 +152,7 @@ def atr(src, periods = 10, return_df = False):
     params:
     @src: series, time-series input data
     @periods: integer, n loockback period
-    @return_df: boolean, whether to return inlcude input dataframe or result only
+    @return_df: boolean, whether to return include input dataframe or result only
     example:
     >>> technical_indicator.atr(df, return_df = True)
     """
@@ -178,7 +178,7 @@ def atr(src, periods = 10, return_df = False):
     else:
         return src[['tr', 'atr']]
 
-def stochastic(close, high, low, periods = 14, smooth = 3, return_df = False, ):
+def stochastic(src, close, high, low, periods = 14, smooth = 3, return_df = False):
     """
     technical analysis indicator:
     return stochastic oscillator,
@@ -186,14 +186,16 @@ def stochastic(close, high, low, periods = 14, smooth = 3, return_df = False, ):
     aim to identify momentum, overbought and oversold area
     reference: https://www.investopedia.com/terms/s/stochasticoscillator.asp
     params:
-    @close: close price time-series data
-    @high: high price time-series data
-    @low: low price time-series data
-    @periods: n lookback period
-    @return df: default to false, if true would return as dataframe
-    @smooth: smoothing function
+    @close: series, close price of a time-series data
+    @high: series, high price of a time-series data
+    @low: series, low price of a time-series data
+    @periods: integer, n lookback period
+    @smooth: integer, smoothing function
+    @return_df: boolean, whether to return include input dataframe or result only
+    >>> technical_indicator.stochastic(df, 'close', 'high', 'low', return_df=True)
     """
-    close, high, low = close.dropna(), high.dropna(), low.dropna()
+    src = src.dropna()
+    close, high, low = src[close], src[high], src[low]
     n = len(close)
     
     if n < periods:
@@ -201,14 +203,14 @@ def stochastic(close, high, low, periods = 14, smooth = 3, return_df = False, ):
     
     _low = low.rolling(window = periods).min()
     _high = high.rolling(window = periods).max()
-    _stoch = pd.DataFrame({'%k':np.nan}, index = close.index)
+    src['%k'] = .00
     
     for i in range(periods, n):
-        _stoch['%k'][i] = ((close[i]-_low[i])/(_high[i]-_low[i]))*100
+        src['%k'][i] = ((close[i]-_low[i])/(_high[i]-_low[i]))*100
     if return_df:
-        _stoch['%d'] = _stoch['%k'].rolling(window = smooth).mean()
-        return _stoch
-    return pd.Series(_stoch['%k'])
+        src['%d'] = src['%k'].rolling(window=smooth).mean()
+        return src
+    return pd.Series(src['%k'])
 
 def rsi(src, periods = 14, return_df = False):
     """
