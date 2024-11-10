@@ -31,9 +31,13 @@ def rate_of_return(x):
     return rate of returns,
     on a given time-series data
     params:
-    @x: time-series input data
+    @x: series, time-series input data
+    example:
+    >>> arr = np.random.randint(10, 30, 20)
+    >>> df = pd.DataFrame(arr, columns = ['close'])
+    >>> portfolio_management.rate_of_return(df)
     """
-    ret = ((x[:-1].values / x[1:]).values - 1).round(2)
+    ret = ((x[1:].values/x[:-1]).values-1).round(2)
     return np.append(np.nan, ret)
 
 def compound(r):
