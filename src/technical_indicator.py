@@ -360,7 +360,7 @@ def predictive_moving_average(src, return_df = False):
     if return_df:
         return _df.iloc[(7*3):]
     else:
-        return _df['series'][(7*3):]
+        return _df[['predict','trigger','series']][(7*3):]
 
 def even_better_sinewave(src, hp_period = 48, return_df = None):
     """
@@ -454,4 +454,5 @@ def kama(src, length = 14, fast_length = 2, slow_length = 30, return_df = False)
         return _df.iloc[length:, :]
     else:
         return _df['kama'][length:]
+
 
