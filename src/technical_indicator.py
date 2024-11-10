@@ -455,4 +455,52 @@ def kama(src, length = 14, fast_length = 2, slow_length = 30, return_df = False)
     else:
         return _df['kama'][length:]
 
+def zero_mean_roofing_filter(src, hp_period = 48, return_df = False):
+    """
+    technical analysis indicator:
+    originated by John F. Ehlers, 
+    with aim to reducing noise in price data,
+    by eleminating wave components with long periods which are perceived as spectral dillation,
+    the filter only passes those spectral components whose periods are between 10 and 48 bars,
+    the technique noticeably reduces indicator lag and also help assess turning points more accurate
+    reference: https://tlc.thinkorswim.com/center/reference/Tech-Indicators/studies-library/E-F/EhlersRoofingFilter
+    params:
+    @src: series, time-series input data
+    @hp_period: integer, length of a high-pass period e.g. 48, 89, 125
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.zero_mean_roofing_filter(df['ohlc4'])
+    """
+    src = src.dropna()
+    n = len(src)
+    
+    if n < hp_period:
+        raise ValueError('Periods cant be greater than data length')
+        
+    _df = pd.DataFrame({
+        'close': src,
+        'hp': 0.00,
+        'filt': 0.00,
+        'filt2': 0.00
+    }, index = src.index)
+    
+    _pi = 2*np.arcsin(1)
+    a1 = math.exp(-1.414*_pi/10)
+    b1 = 2*a1*math.cos(1.414*180/10)
+    c2 = b1
+    c3 = -a1*a1
+    c1 = 1-c2-c3
+
+    _alpha1 = (np.cos(360/hp_period)+np.sin(360/hp_period)-1)/np.cos(360/hp_period)
+    
+    for i in range(hp_period, n):
+        _df['hp'][i] = (1-_alpha1/2)*(_df['close'][i]-_df['close'][i-1])+(1-_alpha1)*_df['hp'][i-1]
+        # _df['hp'][i] = (1-_alpha1/2)*(1-_alpha1/2)*(src[i]-2*src[i-1]+src[i-2])+2*(1-_alpha1)*_df['hp'][i-1]-(1-_alpha1)*(1-_alpha1)*_df['hp'][i-2]
+        _df['filt'][i] = c1*(_df['hp'][i]+_df['hp'][i-1])/2+c2*_df['filt'][i-1]+c3*_df['filt'][i-2]
+        _df['filt2'][i] = (1-_alpha1/2)*(_df['filt'][i]-_df['filt'][i-1])+(1-_alpha1)*_df['filt2'][i-1]
+ 
+    if return_df:
+        return _df.iloc[hp_period:, :]
+    else:
+        return _df[['filt', 'filt2']][hp_period:]
 
