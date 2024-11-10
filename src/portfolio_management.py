@@ -12,10 +12,10 @@ __status__     = "Prototype"
 # Library
 import pandas as pd
 import numpy as np
-import statsmodels.api as sm
 import math
-import scipy.stats
+import statsmodels.api as sm
 import statsmodels.stats.moment_helpers as mh
+import scipy.stats
 from scipy.stats import norm
 from scipy.optimize import minimize
 from numpy.linalg import inv
@@ -43,9 +43,13 @@ def rate_of_return(x):
 def compound(r):
     """
     return compounding or geometric mean returns
-    on a given percentage change/returns time-series data
+    on a given percentage change of a time-series data
     params:
-    @r: returns time-series data
+    @r: series, returns over time, of a time-series input data
+    example:
+    >>> arr = np.random.randint(10, 30, 20)
+    >>> df = pd.DataFrame(arr, columns = ['close'])
+    >>> portfolio_management.compound(df.pct_change())
     """
     return np.expm1(np.log1p(r).sum())
 
