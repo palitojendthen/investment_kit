@@ -6,8 +6,9 @@ import numpy as np
 import datetime as dt
 import yfinance as yf
 import sys
-path = r'path_to_cloned_repository'
-sys.path.insert(0, path)
+!git clone https://github.com/palitojendthen/investment_kit
+%cd investment_kit/src
+%run technical_indicator.py
 import technical_indicator
 
 # retrieve data
