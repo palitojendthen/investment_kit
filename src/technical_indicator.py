@@ -546,3 +546,38 @@ def ultimate_smoother(src, _length = 20, return_df = False):
         return _df.iloc[_length:, :]
     else:
         return _df['ultimate_smooth'][_length:]
+
+def heikin_ashi(src, return_df = False):
+    """
+    bar style:
+    return a smoothed ohlc that filters out market noise,
+    developed by Munehisa Homma,
+    aim to easier spotting trend and reversal,
+    reference: https://www.investopedia.com/terms/h/heikinashi.asp
+    params:
+    @src: series, time-series input data
+    @return_df: boolean, whether to return include input dataframe or result only
+    >>> technical_indicator.heikin_ashi(df,return_df=True)
+    """
+    src = src.dropna()
+    n = len(src)
+    src[['open_ha','high_ha','low_ha','close_ha']] = .00
+    
+    
+    src['close_ha'] = (src['open']+src['high']+src['low']+src['close'])/4
+    
+    for i in range(0, n):
+        if i==0:
+            src['open_ha'][i]=((src['open'][i]+src['close_ha'][i])/2)
+        else:
+            src['open_ha'][i]=((src['open_ha'][i-1]+src['close_ha'][i-1])/2)
+    
+    src['high_ha'] = src[['open_ha','close_ha','high']].max(axis=1)
+    src['low_ha'] = src[['open_ha','close_ha','low']].min(axis=1)
+    
+    if return_df:
+        return src
+    else:
+        src = src[['open_ha','high_ha','low_ha','close_ha']]
+        src.columns = ['open','high','low','close']
+        return src
