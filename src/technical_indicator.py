@@ -504,6 +504,44 @@ def zero_mean_roofing_filter(src, hp_period = 48, return_df = False):
     else:
         return _df[['filt', 'filt2']][hp_period:]
 
+def cyber_cycle(src, lag = 9, return_df = False):
+    """
+    technical analysis indicator:
+    originated by John F. Ehlers,
+    aim to isolated cycle mode components,
+    with smoothing and remove the two-three bar components,
+    that detract interpretation of the cyclic signals,
+    with finite impulse response
+    reference: John F. Ehlers, Cybernetic Analysis For Stocks and Futures pg. 33
+    params:
+    @src: series, time-series input data
+    @lag: integer, signal correction of n bar
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.cyber_cycle(df['ohlc4'],return_df=True)
+    """
+    src = src.dropna()
+    n = len(src)
+    alpha = .7
+    alpha2 = 1/(lag+1)
+
+    _df = pd.DataFrame({
+        'close':src,
+        'smooth':.00,
+        'cycle':.00,
+        'signal':.00
+    }, index=src.index)
+
+    for i in range(2, n):
+        _df['smooth'][i] = (src[i]+2*src[i-1]+2*src[i-2]+src[i-3])/6
+        _df['cycle'][i] = (1-.5*alpha)*(1-.5*alpha)*(_df['smooth'][i]-2*_df['smooth'][i-1]+_df['smooth'][i-2])+2*(1-alpha)*(_df['cycle'][i-2])
+        _df['signal'][i] = alpha2*_df['cycle'][i]+(1-alpha2)*(_df['signal'][i-1])
+    
+    if return_df:
+        return _df.iloc[lag:,:]
+    else:
+        return _df['signal'][lag:]
+
 def ultimate_smoother(src, _length = 20, return_df = False):
     """
     technical analysis indicator:
