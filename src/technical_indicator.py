@@ -585,6 +585,36 @@ def ultimate_smoother(src, _length = 20, return_df = False):
     else:
         return _df['ultimate_smooth'][_length:]
 
+def entry_measure(src, threshold = .1):
+    """
+    technical analysis indicator:
+    return entry measumerement to relative high/low,
+    assume in volatile market regime, 
+    whether entry point is proper   
+    params:
+    @src: series, time-series input data
+    @threshold: float, threshold to measure result
+    example:
+    >>> technical_indicator.entry_measure(df, threshold=.05)
+    """
+    
+    n = len(src)
+    
+    _df = pd.DataFrame({
+        'measure':.00,
+        'distant':0
+    }, index = src.index)
+    
+    for i in range(0, n):
+        if (src['close'][i]/src['open'][i])-1 > 0:
+            _df['measure'][i] = (src['close'][i]/src['low'][i])-1
+        if (src['close'][i]/src['open'][i])-1 < 0:
+            _df['measure'][i] = (src['close'][i]/src['high'][i])-1
+
+    _df['distant'] = np.where(((_df['measure']>-threshold) & (_df['measure']<threshold)), False, True)
+    
+    return _df['distant']
+
 def heikin_ashi(src, return_df = False):
     """
     bar style:
