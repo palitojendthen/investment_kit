@@ -585,6 +585,44 @@ def ultimate_smoother(src, _length = 20, return_df = False):
     else:
         return _df['ultimate_smooth'][_length:]
 
+def instantaneous_trendline(src, alpha = .07, return_df = False):
+    """
+    technical analysis indicator:
+    originated by John F. Ehlers, with aim to generate a responsive trend-following system,
+    by utilize ITrend forced to be a finite impulse response (FIR)-smoothed version of price for the seven bars of calculation,
+    and by adding trigger, the strategy is to open long position when trigger crossover the ITrend and vice versa
+    reference: John F. Ehlers, Cybernetic Analysis for Stocks and Futures pg. 21
+    params:
+    @src: series, time-series input data
+    @alpha: float, smoothing alpha
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.instantaneous_trendline(df['close'], return_df=True)
+    """
+    src = src.dropna()
+    n = len(src)
+    
+    _df = pd.DataFrame({
+        'close':src,
+        'itrend': 0.00,
+        'trigger': 0.00,
+        'series': 0.00
+    }, index = src.index)
+    
+    for i in range(7, n):
+        _df['itrend'][i] = (alpha-alpha*alpha/4)*src[i]+.5*alpha*alpha*src[i-1]-(alpha-.75*alpha*alpha)*src[i-2]+2*(1-alpha)*_df['itrend'][i-1]-(1-alpha)*(1-alpha)*_df['itrend'][i-2]
+        _df['trigger'][i] = 2*_df['itrend'][i]-_df['itrend'][i-2]
+        
+        if _df['itrend'][i] > _df['trigger'][i]:
+            _df['series'][i] = _df['itrend'][i]
+        else:
+            _df['series'][i] = _df['trigger'][i]
+
+    if return_df:
+        return _df.iloc[(7*3):, :]
+    else:
+        return _df[['itrend', 'trigger', 'series']][(7*3):]
+
 def entry_measure(src, threshold = .1):
     """
     technical analysis indicator:
