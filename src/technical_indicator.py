@@ -625,7 +625,7 @@ def instantaneous_trendline(src, alpha = .07, return_df = False):
 
 def entry_measure(src, threshold = .1):
     """
-    technical analysis indicator:
+    risk management tool:
     return entry measumerement to relative high/low,
     assume in volatile market regime, 
     whether entry point is proper   
