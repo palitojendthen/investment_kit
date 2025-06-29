@@ -653,6 +653,35 @@ def entry_measure(src, threshold = .1):
     
     return _df['distant']
 
+def pma_atr_volatility_filter(src, periods = 10, threshold = .2):
+    """
+    risk management tool:
+    return volatility regime analysis, 
+    based on absolute value of difference between predict and trigger,
+    from predictive moving average, 
+    and observe if it above or below ATR * threshold,
+    reference: personal development
+    params:
+    @src: series/df, time-series input data
+    @periods: integer, lookback period
+    @threshold: float, a multiplier for ATR
+    example:
+    >>> technical_indicator.pma_atr_volatility_filter(df)
+    """
+    src = src.dropna()
+    n = len(src)
+
+    if n < periods:
+        raise ValueError('Periods cant be greater than data length')
+
+    src['atr'] = atr(src, periods = periods)['atr']
+    src['pma_atr_volatile'] = True
+    diff = abs(src['pma_predict']-src['pma_trigger'])
+    src['pma_atr_volatile'] = np.where((diff>src['atr']*threshold), False, src['pma_atr_volatile'])
+
+    src.dropna(inplace=True)
+    return src
+
 def heikin_ashi(src, return_df = False):
     """
     bar style:
@@ -688,3 +717,5 @@ def heikin_ashi(src, return_df = False):
         src = src[['open_ha','high_ha','low_ha','close_ha']]
         src.columns = ['open','high','low','close']
         return src
+
+
