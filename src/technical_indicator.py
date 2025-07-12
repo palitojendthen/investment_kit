@@ -142,6 +142,36 @@ def hma(src, periods = 14):
     
     return hma
 
+def rma(series, periods=10):
+    """
+    technical analysis indicator:
+    return moving average in RSI,
+    an exponentially weighted moving average with alpha = 1/length
+    on a given time-series data
+    reference: TradingView, https://www.tradingview.com/pine-script-reference/v5/#fun_ta.rma
+    params:
+    @series: series, time-series input data
+    @periods: integer, n loockback period
+    example:
+    >>> technical_indicator.rma(df['ohlc4'])
+    """
+    
+    alpha = 1/periods
+    result = []
+
+    for i in range(len(series)):
+        if i < periods:
+            result.append(np.nan)
+        elif i == periods:
+            seed = series.iloc[:periods].mean()
+            result.append(seed)
+        else:
+            prev = result[-1]
+            value = alpha*series.iloc[i]+(1-alpha)*prev
+            result.append(value)
+
+    return pd.Series(result, index=series.index)
+
 def atr(src, periods = 10, return_df = False):
     """
     technical analysis indicator:
