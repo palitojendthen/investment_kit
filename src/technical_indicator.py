@@ -215,7 +215,6 @@ def adx(src, periods=10):
     @return_df: boolean, whether to return include input dataframe or result only
     example:
     >>> technical_indicator.rma(df['ohlc4'])
-    
     """
 
     src = src.dropna()
