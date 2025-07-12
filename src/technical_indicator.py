@@ -172,7 +172,7 @@ def rma(series, periods=10):
 
     return pd.Series(result, index=series.index)
 
-def atr(src, periods = 10, return_df = False):
+def atr(src, periods = 10):
     """
     technical analysis indicator:
     return average true range
@@ -201,11 +201,39 @@ def atr(src, periods = 10, return_df = False):
     
     src['atr'] = src['tr'].rolling(window=periods).mean()
     
-    if return_df:
-        src.dropna(inplace=True)
-        return src
-    else:
-        return src[['tr', 'atr']]
+    return src[['tr', 'atr']]
+
+def adx(src, periods=10):
+    """
+    technical analysis indicator:
+    return the Average Directional Index,
+    aim to determine the strength of a financial security's price trend,
+    reference: https://www.investopedia.com/articles/trading/07/adx-trend-indicator.asp
+    params:
+    @src: series, time-series input data
+    @periods: integer, n loockback period
+    @return_df: boolean, whether to return include input dataframe or result only
+    example:
+    >>> technical_indicator.rma(df['ohlc4'])
+    
+    """
+
+    src = src.dropna()
+    n = len(src)
+
+    if n < periods:
+        raise ValueError('Periods cant be greater than data length')
+
+    src['dx_up'] = src['high']-src['high'].shift(1)
+    src['dx_down'] = -(src['low']-src['low'].shift(1))
+    src['plus_dm'] = np.where(((src['dx_up'] > src['dx_down']) & (src['dx_up'] > 0)), src['dx_up'], 0)
+    src['minus_dm'] = np.where(((src['dx_down'] > src['dx_up']) & (src['dx_down'] > 0)), src['dx_down'], 0)
+    src['truerange'] = rma(src['tr'], periods=periods)
+    src['plus'] = (100*rma(src['plus_dm'],periods=periods)/src['truerange']).fillna(0)
+    src['minus'] = (100*rma(src['minus_dm'],periods=periods)/src['truerange']).fillna(0)
+    src['adx'] = 100*rma(abs(src['plus']-src['minus'])/np.where((src['plus']+src['minus'])==0, 1, src['plus']+src['minus']), periods=periods)
+
+    return src['adx']
 
 def stochastic(src, close, high, low, periods = 14, smooth = 3, return_df = False):
     """
@@ -704,7 +732,7 @@ def pma_atr_volatility_filter(src, periods = 10, threshold = .2):
     if n < periods:
         raise ValueError('Periods cant be greater than data length')
 
-    src['atr'] = atr(src, periods = periods)['atr']
+    src[['tr', 'atr']] = atr(src, periods = periods)
     src['pma_atr_volatile'] = True
     diff = abs(src['pma_predict']-src['pma_trigger'])
     src['pma_atr_volatile'] = np.where((diff>src['atr']*threshold), False, src['pma_atr_volatile'])
