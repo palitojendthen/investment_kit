@@ -752,10 +752,15 @@ def rolling_slope(series, periods=10):
     example:
     >>> technical_indicator.rolling_slope(df['ohlc4'], periods=14)
     """
+
+    n = len(series)
+
+    if n < periods:
+        raise ValueError('Periods cant be greater than data length')
     
     slopes = []
 
-    for i in range(len(series)):
+    for i in range(n):
         if i < periods-1:
             slopes.append(np.nan)
         else:
