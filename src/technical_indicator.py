@@ -739,6 +739,35 @@ def pma_atr_volatility_filter(src, periods = 10, threshold = .2):
     src.dropna(inplace=True)
     return src
 
+def rolling_slope(series, periods=10):
+    """
+    risk management tool:
+    return trend strength detection,
+    based on linear regression slope,
+    reference: https://trendspider.com/learning-center/linear-regression-slope-a-comprehensive-guide-for-traders/
+    params:
+    @src: series/df, time-series input data
+    @periods: integer, lookback period
+    @threshold: float, a multiplier for ATR
+    example:
+    >>> technical_indicator.rolling_slope(df['ohlc4'], periods=14)
+    """
+    
+    slopes = []
+
+    for i in range(len(series)):
+        if i < periods-1:
+            slopes.append(np.nan)
+        else:
+            y = series.iloc[i-periods+1:i+1]
+            x = np.arange(periods)
+            x = x-x.mean()
+            y = y-y.mean()
+            slope = (x*y).sum()/(x**2).sum()
+            slopes.append(slope)
+
+    return pd.Series(slopes, index=series.index)
+
 def heikin_ashi(src, return_df = False):
     """
     bar style:
