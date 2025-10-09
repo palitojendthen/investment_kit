@@ -58,6 +58,30 @@ def fibonacci_retracement_sr(_bottom, _top):
     
     return np.array(_level)
 
+def sma(src, periods=14):
+    """
+    technical analysis indicator:
+    return simple moving average,
+    on a given time-series data
+    referece: https://www.investopedia.com/terms/s/sma.asp
+    params:
+    @src: series, time-series input data
+    @periods: integer, n lookback period
+    example:
+    >>> arr = np.random.randint(10, 30, 20)
+    >>> df = pd.DataFrame(arr, columns = ['close'])
+    >>> technical_indicator.ema(df['close'])[-5:]
+    """
+    src = src.dropna()
+    n = len(src)
+
+    if n < periods:
+        raise ValueError("Periods can't be greater than data length")
+
+    _sma = src.rolling(window = periods).mean()
+
+    return pd.Series(_sma)
+
 def ema(src, periods = 14):
     """
     technical analysis indicator:
