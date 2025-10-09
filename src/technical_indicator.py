@@ -70,7 +70,7 @@ def sma(src, periods=14):
     example:
     >>> arr = np.random.randint(10, 30, 20)
     >>> df = pd.DataFrame(arr, columns = ['close'])
-    >>> technical_indicator.ema(df['close'])[-5:]
+    >>> technical_indicator.sma(df['close'])[-5:]
     """
     src = src.dropna()
     n = len(src)
