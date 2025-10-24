@@ -238,7 +238,8 @@ def adx(src, periods=10):
     @periods: integer, n loockback period
     @return_df: boolean, whether to return include input dataframe or result only
     example:
-    >>> technical_indicator.rma(df['ohlc4'])
+    >>> technical_indicator.adx(df,periods=14)
+    
     """
 
     src = src.dropna()
@@ -251,6 +252,7 @@ def adx(src, periods=10):
     src['dx_down'] = -(src['low']-src['low'].shift(1))
     src['plus_dm'] = np.where(((src['dx_up'] > src['dx_down']) & (src['dx_up'] > 0)), src['dx_up'], 0)
     src['minus_dm'] = np.where(((src['dx_down'] > src['dx_up']) & (src['dx_down'] > 0)), src['dx_down'], 0)
+    src['tr'] = atr(src,periods=periods)['tr']
     src['truerange'] = rma(src['tr'], periods=periods)
     src['plus'] = (100*rma(src['plus_dm'],periods=periods)/src['truerange']).fillna(0)
     src['minus'] = (100*rma(src['minus_dm'],periods=periods)/src['truerange']).fillna(0)
