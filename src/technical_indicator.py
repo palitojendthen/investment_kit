@@ -587,7 +587,7 @@ def zero_mean_roofing_filter(src, hp_period = 48, return_df = False):
     else:
         return _df[['filt', 'filt2']][hp_period:]
 
-def cyber_cycle(src, lag = 9, return_df = False):
+def cyber_cycle(src, lag = 9, alpha=.7, return_df = False):
     """
     technical analysis indicator:
     originated by John F. Ehlers,
@@ -605,25 +605,27 @@ def cyber_cycle(src, lag = 9, return_df = False):
     """
     src = src.dropna()
     n = len(src)
-    alpha = .7
+    alpha = alpha
     alpha2 = 1/(lag+1)
 
     _df = pd.DataFrame({
         'close':src,
         'smooth':.00,
         'cycle':.00,
-        'signal':.00
+        'signal':.00,
+        'trigger':.00
     }, index=src.index)
 
     for i in range(2, n):
         _df['smooth'][i] = (src[i]+2*src[i-1]+2*src[i-2]+src[i-3])/6
         _df['cycle'][i] = (1-.5*alpha)*(1-.5*alpha)*(_df['smooth'][i]-2*_df['smooth'][i-1]+_df['smooth'][i-2])+2*(1-alpha)*(_df['cycle'][i-2])
         _df['signal'][i] = alpha2*_df['cycle'][i]+(1-alpha2)*(_df['signal'][i-1])
+        _df['trigger'][i] = _df['signal'][i-1]
     
     if return_df:
         return _df.iloc[lag:,:]
     else:
-        return _df['signal'][lag:]
+        return _df[['signal','trigger']][lag:]
 
 def ultimate_smoother(src, _length = 20, return_df = False):
     """
